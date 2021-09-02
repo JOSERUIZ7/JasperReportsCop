@@ -1,0 +1,2069 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT_ISLR_Withholdings" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="dd801c74-63d6-4bae-9bde-0d8118234d17">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="idempierecoposa"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="217"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="776"/>
+	<property name="com.jaspersoft.studio.report.description" value=""/>
+	<parameter name="RECORD_ID" class="java.lang.Integer"/>
+	<parameter name="RESOURCE_DIR" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<queryString language="plsql">
+		<![CDATA[SELECT ci.dateinvoiced,
+     ci.ad_org_id::char(7) AS AD_Org_ID,
+    vw.lve_voucherwithholding_ID,
+    wt.type AS withholdingtype,Upper(wt."name") as withholding_name,Upper(wt.description) as withholding_description,
+    replace(ao.taxid::text, '-'::text, ''::text) AS rifempresa,
+    ao2.name AS empresa,
+    ao2.description AS direccion_empresa,
+    btrim(to_char(date_part('year'::text, iw.dateacct), '0000'::text)) AS anio_periodo,
+    btrim(to_char(date_part('month'::text, iw.dateacct), '00'::text)) AS mes_periodo,
+    TO_CHAR(iw.dateacct,'DD/MM/YYYY') AS fechareten,   
+    vw.withholdingno AS numerocomprobante,
+    COALESCE(tid.name,'')||replace(bp.taxid::text, '-'::text, ''::text) AS riftercero_old,
+    replace(bp.taxid::text, '-'::text, ''::text) AS riftercero,
+    bp.name AS tercero,bp.A_License_No b_partner_A_License_No,
+    lbp.address AS direccion_tercero,
+    TO_CHAR(ci.dateinvoiced,'DD/MM/YYYY') AS fechadocumento,
+    CASE WHEN dt.docbasetype = ANY (ARRAY['ARI'::bpchar,'API'::bpchar]) THEN COALESCE(ci.lve_poinvoiceno,ci.documentno) ELSE '' END AS numerodocumento,
+    ci.lve_controlnumber AS control,
+    CASE WHEN dt.docbasetype = ANY (ARRAY['ARD'::bpchar,'APD'::bpchar]) THEN COALESCE(ci.lve_poinvoiceno,ci.documentno) ELSE '' END AS numeronotadebito,
+    CASE WHEN dt.docbasetype = ANY (ARRAY['ARC'::bpchar,'APC'::bpchar]) THEN COALESCE(ci.lve_poinvoiceno,ci.documentno) ELSE '' END AS numeronotacredito,
+    CASE
+     WHEN dt.docbasetype = ANY (ARRAY['API'::bpchar, 'ARI'::bpchar]) THEN CASE WHEN wt.type = 'ISLR' THEN 'FACT'::text ELSE '01-reg'::text END 
+     WHEN dt.docbasetype = ANY (ARRAY['APD'::bpchar, 'ARD'::bpchar]) THEN CASE WHEN wt.type = 'ISLR' THEN 'N.DEB'::text ELSE '02-reg'::text END 
+     WHEN dt.docbasetype = ANY (ARRAY['APC'::bpchar, 'ARC'::bpchar]) THEN CASE WHEN wt.type = 'ISLR' THEN 'N.CRE'::text ELSE '03-reg'::text END 
+     ELSE ''::text
+    END AS tipodocumento,
+    (SELECT
+                COALESCE(ci2.lve_poinvoiceno,ci2.documentno) AS documentoafectado
+           FROM c_invoice ci2
+          WHERE ci2.c_invoice_id = ci.lve_invoiceaffected_id AND ci2.DocStatus = 'CO') AS documentoafectado,
+    ci.grandtotal AS montodocumento,
+    lve_calcexento(ci.c_invoice_id) AS exento,
+    lve_impbase('bf'::bpchar, ci.c_invoice_id, it.rate) AS baseimponible,
+    to_char((CASE WHEN wt.Type = 'IVA' THEN it.rate ELSE iw.percent END), '99.99'::text) AS alic,
+    abs(iw.taxamt) AS montoiva,
+    wct.name AS concepto  ,lc.value as LCO_ISIC_n, cbl.address_billto , wr.code , to_char(dmaxmin.d1 , 'DD/MM/YYYY') d1, to_char(dmaxmin.d2 , 'DD/MM/YYYY') d2 ,
+    ao.a_license_no ad_org_a_license_no,
+Case when extract(day from vw.datetrx) <16 then '  Del  01/'||to_char(vw.datetrx, 'MM/YYYY')||'  Al 15/'||to_char(vw.datetrx, 'MM/YYYY')
+else '  Del  16/'||to_char(vw.datetrx, 'MM/YYYY')||'  Al  '|| to_char(((select date_trunc('month',current_date) + interval '1 MONTH - 1 day')::date), 'DD/MM/YYYY')   --"31" 
+end as q1,
+to_char(vw.datefrom, 'DD/MM/YYYY') as fechaDesde,
+to_char(vw.dateto, 'DD/MM/YYYY') as fechahasta
+   FROM c_invoice ci
+     JOIN (SELECT it.c_invoice_id,t.rate FROM c_invoicetax it 
+     JOIN c_tax t ON it.c_tax_id = t.c_tax_id) it ON ci.c_invoice_id = it.c_invoice_id 
+     JOIN lco_invoicewithholding iw ON ci.c_invoice_id = iw.c_invoice_id 
+     JOIN lve_voucherwithholding vw ON vw.lve_voucherwithholding_id = iw.lve_voucherwithholding_id
+     JOIN lco_withholdingtype wt ON iw.lco_withholdingtype_id = wt.lco_withholdingtype_id
+     JOIN lco_withholdingrule wr ON iw.lco_withholdingrule_id = wr.lco_withholdingrule_id
+     JOIN lco_withholdingcalc wc ON wc.lco_withholdingcalc_id = wr.lco_withholdingcalc_id 
+     LEFT JOIN lco_withholdingcategory wct ON wr.lco_withholdingcategory_id = wct.lco_withholdingcategory_id 
+     JOIN c_doctype dt ON ci.c_doctype_id = dt.c_doctype_id AND (dt.docbasetype = ANY (ARRAY['API'::bpchar, 'APC'::bpchar, 'APD'::bpchar, 'ARI'::bpchar, 'ARD'::bpchar, 'ARC'::bpchar]))
+     JOIN c_bpartner bp ON bp.c_bpartner_id = ci.c_bpartner_id 
+     JOIN c_bpartner_location bpl ON bp.c_bpartner_id = bpl.c_bpartner_id AND ci.c_bpartner_location_id = bpl.c_bpartner_location_id 
+     JOIN ad_org_v ao ON ao.ad_org_id = ci.ad_org_id 
+     JOIN ad_client ao2 ON ao2.ad_client_id  = ci.ad_client_id      
+     JOIN lve_rv_location l ON ao.c_location_id = l.c_location_id 
+     JOIN lve_rv_location lbp ON bpl.c_location_id = lbp.c_location_id 
+     LEFT JOIN lco_taxidtype tid ON bp.lco_taxidtype_id = tid.lco_taxidtype_id 
+     left join LCO_ISIC lc on bp.lco_isic_id = lc.lco_isic_id 
+     left join cust_c_bpartner_location cbl on cbl.c_bpartner_id = ci.c_bpartner_id 
+     JOIN (SELECT vw.lve_voucherwithholding_ID,min(ci.dateinvoiced) d1 ,max(ci.dateinvoiced) d2
+FROM
+     c_invoice ci
+JOIN lco_invoicewithholding iw ON
+     ci.c_invoice_id = iw.c_invoice_id
+JOIN lve_voucherwithholding vw ON
+     vw.lve_voucherwithholding_id = iw.lve_voucherwithholding_id
+WHERE
+     vw.lve_voucherwithholding_ID = $P{RECORD_ID}
+     GROUP BY vw.lve_voucherwithholding_ID) AS dmaxmin ON vw.lve_voucherwithholding_ID = dmaxmin.lve_voucherwithholding_ID
+     WHERE vw.lve_voucherwithholding_ID =  $P{RECORD_ID}  and CASE WHEN wt.Type = 'IVA' THEN it.rate > 0 ELSE true end     
+     ORDER BY vw.lve_voucherwithholding_ID,ci.documentno ASC]]>
+	</queryString>
+	<field name="dateinvoiced" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="dateinvoiced"/>
+		<property name="com.jaspersoft.studio.field.label" value="dateinvoiced"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_invoice"/>
+	</field>
+	<field name="ad_org_id" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ad_org_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="ad_org_id"/>
+	</field>
+	<field name="lve_voucherwithholding_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="lve_voucherwithholding_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="lve_voucherwithholding_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lve_voucherwithholding"/>
+	</field>
+	<field name="withholdingtype" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="withholdingtype"/>
+		<property name="com.jaspersoft.studio.field.label" value="withholdingtype"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lco_withholdingtype"/>
+	</field>
+	<field name="withholding_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="withholding_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="withholding_name"/>
+	</field>
+	<field name="withholding_description" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="withholding_description"/>
+		<property name="com.jaspersoft.studio.field.label" value="withholding_description"/>
+	</field>
+	<field name="rifempresa" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="rifempresa"/>
+		<property name="com.jaspersoft.studio.field.label" value="rifempresa"/>
+	</field>
+	<field name="empresa" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="empresa"/>
+		<property name="com.jaspersoft.studio.field.label" value="empresa"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_client"/>
+	</field>
+	<field name="direccion_empresa" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="direccion_empresa"/>
+		<property name="com.jaspersoft.studio.field.label" value="direccion_empresa"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_client"/>
+	</field>
+	<field name="anio_periodo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="anio_periodo"/>
+		<property name="com.jaspersoft.studio.field.label" value="anio_periodo"/>
+	</field>
+	<field name="mes_periodo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="mes_periodo"/>
+		<property name="com.jaspersoft.studio.field.label" value="mes_periodo"/>
+	</field>
+	<field name="fechareten" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="fechareten"/>
+		<property name="com.jaspersoft.studio.field.label" value="fechareten"/>
+	</field>
+	<field name="numerocomprobante" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="numerocomprobante"/>
+		<property name="com.jaspersoft.studio.field.label" value="numerocomprobante"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lve_voucherwithholding"/>
+	</field>
+	<field name="riftercero_old" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="riftercero_old"/>
+		<property name="com.jaspersoft.studio.field.label" value="riftercero_old"/>
+	</field>
+	<field name="riftercero" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="riftercero"/>
+		<property name="com.jaspersoft.studio.field.label" value="riftercero"/>
+	</field>
+	<field name="tercero" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="tercero"/>
+		<property name="com.jaspersoft.studio.field.label" value="tercero"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_bpartner"/>
+	</field>
+	<field name="b_partner_a_license_no" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="b_partner_a_license_no"/>
+		<property name="com.jaspersoft.studio.field.label" value="b_partner_a_license_no"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_bpartner"/>
+	</field>
+	<field name="direccion_tercero" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="direccion_tercero"/>
+		<property name="com.jaspersoft.studio.field.label" value="direccion_tercero"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lve_rv_location"/>
+	</field>
+	<field name="fechadocumento" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="fechadocumento"/>
+		<property name="com.jaspersoft.studio.field.label" value="fechadocumento"/>
+	</field>
+	<field name="numerodocumento" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="numerodocumento"/>
+		<property name="com.jaspersoft.studio.field.label" value="numerodocumento"/>
+	</field>
+	<field name="control" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="control"/>
+		<property name="com.jaspersoft.studio.field.label" value="control"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_invoice"/>
+	</field>
+	<field name="numeronotadebito" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="numeronotadebito"/>
+		<property name="com.jaspersoft.studio.field.label" value="numeronotadebito"/>
+	</field>
+	<field name="numeronotacredito" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="numeronotacredito"/>
+		<property name="com.jaspersoft.studio.field.label" value="numeronotacredito"/>
+	</field>
+	<field name="tipodocumento" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="tipodocumento"/>
+		<property name="com.jaspersoft.studio.field.label" value="tipodocumento"/>
+	</field>
+	<field name="documentoafectado" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="documentoafectado"/>
+		<property name="com.jaspersoft.studio.field.label" value="documentoafectado"/>
+	</field>
+	<field name="montodocumento" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="montodocumento"/>
+		<property name="com.jaspersoft.studio.field.label" value="montodocumento"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_invoice"/>
+	</field>
+	<field name="exento" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="exento"/>
+		<property name="com.jaspersoft.studio.field.label" value="exento"/>
+	</field>
+	<field name="baseimponible" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="baseimponible"/>
+		<property name="com.jaspersoft.studio.field.label" value="baseimponible"/>
+	</field>
+	<field name="alic" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="alic"/>
+		<property name="com.jaspersoft.studio.field.label" value="alic"/>
+	</field>
+	<field name="montoiva" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="montoiva"/>
+		<property name="com.jaspersoft.studio.field.label" value="montoiva"/>
+	</field>
+	<field name="concepto" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="concepto"/>
+		<property name="com.jaspersoft.studio.field.label" value="concepto"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lco_withholdingcategory"/>
+	</field>
+	<field name="lco_isic_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="lco_isic_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="lco_isic_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lco_isic"/>
+	</field>
+	<field name="address_billto" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="address_billto"/>
+		<property name="com.jaspersoft.studio.field.label" value="address_billto"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cust_c_bpartner_location"/>
+	</field>
+	<field name="code" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="code"/>
+		<property name="com.jaspersoft.studio.field.label" value="code"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lco_withholdingrule"/>
+	</field>
+	<field name="d1" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="d1"/>
+		<property name="com.jaspersoft.studio.field.label" value="d1"/>
+	</field>
+	<field name="d2" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="d2"/>
+		<property name="com.jaspersoft.studio.field.label" value="d2"/>
+	</field>
+	<field name="ad_org_a_license_no" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ad_org_a_license_no"/>
+		<property name="com.jaspersoft.studio.field.label" value="ad_org_a_license_no"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="q1" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="q1"/>
+		<property name="com.jaspersoft.studio.field.label" value="q1"/>
+	</field>
+	<field name="fechadesde" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="fechadesde"/>
+		<property name="com.jaspersoft.studio.field.label" value="fechadesde"/>
+	</field>
+	<field name="fechahasta" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="fechahasta"/>
+		<property name="com.jaspersoft.studio.field.label" value="fechahasta"/>
+	</field>
+	<variable name="Total_GrandTotal" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{montodocumento}]]></variableExpression>
+	</variable>
+	<variable name="Total_Exent" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{exento}]]></variableExpression>
+	</variable>
+	<variable name="Total_TaxBaseAmt" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{baseimponible}]]></variableExpression>
+	</variable>
+	<variable name="Total_TaxAmt" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{montodocumento}.subtract( $F{baseimponible} )]]></variableExpression>
+	</variable>
+	<variable name="Total_WithholdingAmt" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{montoiva}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="249" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="63" width="800" height="20" uuid="2aac482c-2568-4eb8-af07-fbf9ce07913c">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ley Iva Art. 11: "Serán responsables del pago del impuesto en calidad de agentes de retención, los compradores o adquirientes de determinados 
+bienes muebles y los receptores de ciertos servicios, a quienes la Administración Tributaria designe como tal"]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="115" y="2" width="565" height="39" uuid="ad33b529-3eff-4609-b5e0-22ce7be59880">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["COMPROBANTE DE "+ $F{withholding_description}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="253" y="42" width="287" height="20" uuid="9b9f0f0a-d332-467e-89e1-05f36713ac0a">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Nro. de Comprobante: "+$F{numerocomprobante}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="700" y="103" width="100" height="15" uuid="4b33d63a-bf97-42c4-8bf5-648a789164be">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechareten}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="600" y="103" width="100" height="15" uuid="763a9836-766d-4eec-a04a-714128376cf1">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Fecha Entrega:"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="600" y="118" width="200" height="10" uuid="f276b33d-4bbb-41f3-8dd5-047eb01ae573">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["PERIODO FISCAL"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="600" y="128" width="100" height="10" uuid="d103b2ca-812a-4da9-9894-f06ded7e45dc">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box leftPadding="2">
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["AÑO: "+$F{anio_periodo}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="700" y="128" width="100" height="10" uuid="0dbbd764-9d81-4ded-93ba-51ff0f78a18d">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box leftPadding="2">
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["MES: "+$F{mes_periodo}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="142" width="468" height="25" uuid="6538433e-9a45-48f5-9779-82a878a49ce4">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<box topPadding="0" leftPadding="2" bottomPadding="0" rightPadding="0">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["NOMBRE O RAZÓN SOCIAL DEL AGENTE DE RETENCIÓN: \n"+
+$F{empresa}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="493" y="142" width="307" height="25" uuid="14ffeb7f-fef0-4743-ba9e-22f88717d38f">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["REGISTRO DE INFORMACIÓN FISCAL DEL AGENTE DE RETENCIÓN (R.I.F): \n"+
+$F{rifempresa}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="170" width="800" height="25" uuid="bc437f9d-df37-41a6-bac1-eca5cd15bdf5">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["DIRECCIÓN FISCAL DEL AGENTE DE RETENCIÓN: \n"+
+$F{direccion_empresa}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="195" width="468" height="25" uuid="ec3754c9-b2d3-4aa6-8b6c-b14fb8370512">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["NOMBRE O RAZÓN SOCIAL DEL SUJETO RETENIDO: \n"+
+$F{tercero}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="493" y="195" width="307" height="25" uuid="48bb5d2e-a891-49b4-aaf7-003b5716a5e9">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["REGISTRO DE INFORMACIÓN FISCAL DEL SUJETO RETENIDO (R.I.F): \n"+
+$F{riftercero}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="224" width="800" height="25" uuid="44e59d17-48f8-4284-afbd-7a067bb469eb">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["DIRECCIÓN FISCAL DEL SUJETO RETENIDO: \n"+
+$F{address_billto}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="64" width="800" height="19" uuid="61d3233b-2c49-4dab-8248-4ab828ff96af">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA["Conforme al Decreto 1808 de Fecha 12 de mayo de 1997, gaceta oficial Nº 36.203"]]></text>
+			</staticText>
+			<image>
+				<reportElement x="1" y="2" width="110" height="39" uuid="0179c37d-9bed-48ff-8768-83934e6c47df"/>
+				<imageExpression><![CDATA[$P{RESOURCE_DIR} + "logo.png"]]></imageExpression>
+			</image>
+			<textField isBlankWhenNull="true">
+				<reportElement x="600" y="88" width="100" height="15" uuid="138d6ba7-653b-460a-a652-d47f1c16d8ed">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Fecha Emisión:"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="700" y="88" width="100" height="15" uuid="39f5c7ae-e5b3-4642-a074-606cc1a31cf2">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechareten}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="493" y="142" width="195" height="25" uuid="5ad15595-2050-4c73-926f-3988b47a68c5">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["NUMERO DE (R.I.F): \n"+
+$F{rifempresa}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="606" y="142" width="194" height="25" uuid="8788a3e3-5e0b-46bd-96c5-9fab7fa49287">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["NUMERO DE LICENCIA: \n"+
+$F{b_partner_a_license_no}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="493" y="195" width="196" height="25" uuid="5f6122fb-9258-4fed-a461-510305ea9f1e">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["(R.I.F)  DEL SUJETO RETENIDO : \n"+
+$F{riftercero}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="606" y="195" width="194" height="25" uuid="6696362a-0786-4d54-a077-e7b82ef20238">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["NUMERO DE LICENCIA: \n"+
+$F{ad_org_a_license_no}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="493" y="142" width="307" height="25" uuid="6edbc617-1fe7-4569-8afb-20c8c70bb48d">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["REGISTRO DE INFORMACIÓN FISCAL DEL AGENTE DE RETENCIÓN (R.I.F): \n"+
+$F{rifempresa}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="493" y="195" width="307" height="25" uuid="8b806cea-0a60-4613-b784-2a6878b03493">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["REGISTRO DE INFORMACIÓN FISCAL DEL SUJETO RETENIDO (R.I.F): \n"+
+$F{riftercero}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="253" y="91" width="287" height="20" uuid="3699b5d2-83bf-4e0e-bee8-6137315fbccc">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{q1}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="77">
+			<printWhenExpression><![CDATA[$F{withholdingtype}.equals("IVA")]]></printWhenExpression>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="37" width="15" height="40" uuid="292c3ebc-b75f-407b-a4f8-ec77f29b52a6">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Nº Oper"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="15" y="37" width="40" height="40" uuid="f9bc070e-fade-465b-b46a-c8d79322a47f">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Fecha Del Documento"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="55" y="37" width="60" height="40" uuid="71574af2-e82b-454e-a622-edcca815f39a">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["N° de Factura"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="115" y="37" width="60" height="40" uuid="aa21ef6d-1414-43f2-82c4-1bf1e4b914c8">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["N° de Control Del Documento"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="175" y="37" width="60" height="40" uuid="679511d7-6a62-45e5-a5fc-49a912dbdd39">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["N° Nota de Débito"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="235" y="37" width="60" height="40" uuid="58042dfd-ca1d-4d79-935f-4cf0a24c24b9">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["N° Nota de Crédito"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="295" y="37" width="35" height="40" uuid="2d3c4b1a-56c8-4a6d-bd7c-491a047e9d32">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Tipo de Transacc."]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="330" y="37" width="60" height="40" uuid="8f180b13-7b14-4e28-b88f-60c8f8ca43a8">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["N° Documento Afectado"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="390" y="37" width="79" height="40" uuid="5046a984-6885-4c73-a083-cc54507af3c8">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Total de Compras Incluye IVA"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="469" y="37" width="75" height="40" uuid="c3b0299e-8020-4c67-8d29-66f15c211c8e">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Compras sin derecho a Crédito Fiscal"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="544" y="37" width="75" height="40" uuid="0923646a-e2d1-4d7f-9bcf-83f15c7666e4">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Base Imponible"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="544" y="17" width="171" height="20" uuid="50124c9c-3264-4bc8-b5be-9308515b685d">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[COMPRAS INTERNAS O IMPORTACIONES]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="619" y="37" width="25" height="40" uuid="63bac909-41e9-4770-a73d-1b2be63eaa3f">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" %Alic."]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="645" y="37" width="70" height="40" uuid="76a52cf2-59af-414f-ad74-e2a92d90a668">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Impuesto IVA"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="715" y="37" width="85" height="40" uuid="f5ea7040-e250-4db0-a310-1f17b5648d99">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["IVA Retenido"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="40">
+			<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" ) || $F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+			<textField>
+				<reportElement x="0" y="0" width="49" height="40" uuid="3c37ff53-90d1-4ee6-8372-f522615d78dd">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Fecha"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="49" y="0" width="35" height="40" uuid="1608da3a-bb6e-46f9-a3f9-a1211393ce40">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Tipo"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="85" y="0" width="60" height="40" uuid="cec7b3fa-a07d-4271-a9fc-550843ec9899">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["N° de Documento"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="145" y="0" width="60" height="40" uuid="1ce73ec8-5c27-4576-937f-00f66c1c5f2f">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["N° de Control"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="205" y="0" width="70" height="40" uuid="264a748d-37b7-4479-a6b8-90a7235c2c68">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Monto Documento"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="275" y="0" width="70" height="40" uuid="bf13b422-81c9-4a4d-b454-184d868aea1e">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Monto Abonado"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="345" y="0" width="60" height="40" uuid="aa8671a0-147d-41bc-80f8-95708f7f4b8b">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Exento"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="640" y="0" width="75" height="40" uuid="4d22154c-5cd5-432b-a224-667203ada916">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["   Cantidad Objeto de Retención"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="555" y="0" width="35" height="40" uuid="e066fd11-d6b9-41a1-8c14-b94c3c248747">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["(%)  Ret"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="405" y="0" width="150" height="40" uuid="ca31ca96-54b7-450b-8c48-181a6170b6b9">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Concepto de I.S.L.R."]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="715" y="0" width="85" height="40" uuid="4f2228f5-e891-4240-b4e8-94e5f8ca72e9">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Impuesto Retenido "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="346" y="0" width="134" height="40" uuid="e9a6c7df-d601-4a67-9730-ae3de88420be">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Monto Sujeto a Retencion"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="480" y="0" width="125" height="40" uuid="960f57e7-40a6-4606-bd92-6c611723407e">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Codigo Actividad"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="605" y="0" width="55" height="40" uuid="b714ee9f-a078-4cd3-bfd9-5e5c308fae20">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["(%) Retencion."]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="660" y="0" width="140" height="40" uuid="d75812f3-9cf2-4784-9c0a-598d2ca7509f">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Impuesto Retenido"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="49" y="0" width="102" height="40" uuid="1d48149d-0a83-47bc-842f-5ba19c316de0">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["N° de Factura"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="151" y="0" width="65" height="40" uuid="cff1ffb3-edb9-4a5e-bb6d-66b84df07410">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["N° de Control"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="217" y="0" width="129" height="40" uuid="ca19cf0f-0235-4163-84a5-e4a97dfee676">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Monto Total de La Factura"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="590" y="0" width="50" height="40" uuid="19d36a3a-478b-497b-ab2f-bb83a4665c27">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["  Codigo Concepto Retención"]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="15" height="15" uuid="7c8ac82e-c3a1-4919-8c50-025e4eaa1c10">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="15" y="0" width="40" height="15" uuid="d77ae34e-ca75-4e92-93e9-535f02577879">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechadocumento}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="55" y="0" width="60" height="15" uuid="3c1d35d7-b90d-4284-9076-221e3ba384dd">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numerodocumento}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="115" y="0" width="60" height="15" uuid="320e4187-e8d0-4d5e-a30e-4f9d8fa817a0">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{control}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="175" y="0" width="60" height="15" uuid="a8437b03-8861-478f-a3ad-5fa10a64a900">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numeronotadebito}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="235" y="0" width="60" height="15" uuid="2f016f92-75d9-4d55-b4fa-d49104a43e0e">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isItalic="false"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numeronotacredito}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="295" y="0" width="35" height="15" uuid="e99d8856-2f83-464b-be7e-c3e3a0b4636b">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isItalic="false"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipodocumento}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="330" y="0" width="60" height="15" uuid="f57799ca-6440-4432-8611-547a4675c5d6">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isItalic="false"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{documentoafectado}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="390" y="0" width="79" height="15" uuid="292ee2be-1673-4b31-9355-24a4c4ea2a42">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isItalic="false"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{montodocumento}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="469" y="0" width="75" height="15" uuid="784b40fa-fff4-44b8-8db5-0ccb987432ef">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isItalic="false"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{exento}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="544" y="0" width="75" height="15" uuid="29eeb9ec-c694-4f4d-995a-a647eb04c3f5">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isItalic="false"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{baseimponible}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="645" y="0" width="70" height="15" uuid="4c5c8fde-f9ce-4fc6-8ac5-5e7268dd443d">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isItalic="false"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{montodocumento}.subtract( $F{baseimponible})]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.0" isBlankWhenNull="true">
+				<reportElement x="619" y="0" width="25" height="15" uuid="04c9434a-7c89-4822-b810-f9fa5da581d2">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isItalic="false"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{alic}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="715" y="0" width="85" height="15" uuid="4817dfcf-d3e7-4775-b03c-59baa26693ca">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isItalic="false"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{montoiva}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="50" height="15" uuid="64677848-762b-48ca-94e7-65ca02928e33">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" ) || $F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechadocumento}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="49" y="0" width="103" height="15" uuid="5a9a56e2-18e8-4361-8deb-e0b4b0134209">
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numerodocumento}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="145" y="0" width="60" height="15" uuid="b62ee7d1-420b-405f-951d-a0a0c053d161">
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{control}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="50" y="0" width="35" height="15" uuid="889bcca8-5472-4a07-bfbd-47fc79f2d412">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipodocumento}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="205" y="0" width="70" height="15" uuid="ba1f90f2-0aa0-4f17-a939-a1866c73e2a7">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{montodocumento}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="345" y="0" width="60" height="15" uuid="4964d6ca-9bb5-4ea5-ab4d-2a5457c1903c">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{exento}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="640" y="0" width="75" height="15" uuid="8596bbd8-e48a-42c2-b4d4-1fe510a4d316">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{baseimponible}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="405" y="0" width="150" height="15" uuid="67bfa7e9-d5e3-4f91-8cc5-174f27fcd940">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="1">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{concepto}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.0" isBlankWhenNull="true">
+				<reportElement x="555" y="0" width="35" height="15" uuid="0947901d-0e17-4521-ae85-68df5ca3c365">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{alic}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="715" y="0" width="85" height="15" uuid="4d14c939-5181-4878-9644-f9452d60a880">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{montoiva}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="275" y="0" width="70" height="15" uuid="5d17c86f-2b3f-44b1-b73d-046ee010a080">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{montodocumento}.subtract($F{montoiva})]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="346" y="0" width="134" height="15" uuid="6ab21b8f-23b1-4bef-8ccc-b499d5170677">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{baseimponible}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="480" y="0" width="125" height="15" uuid="f531883c-a141-4d01-b8d6-691766cf69fc">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{lco_isic_n}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,#00.00" isBlankWhenNull="true">
+				<reportElement x="605" y="0" width="55" height="15" uuid="932a4bb8-f4f8-40f5-a267-c32a10d92280">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{alic}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="660" y="0" width="140" height="15" uuid="717bc01d-08a1-4460-a75d-8912344e93f4">
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{montoiva}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="151" y="0" width="65" height="15" uuid="2531d2c6-7179-4583-be9d-df07b2c8c11c">
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{control}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="217" y="0" width="129" height="15" uuid="89b5c968-444d-4cd3-8dc8-85b34f731880">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{montodocumento}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="85" y="0" width="60" height="15" uuid="52bfac51-023b-40c0-94a0-6d245e58f55a">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numerodocumento}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="590" y="0" width="50" height="15" uuid="9128b076-ef28-4582-9aed-459ff7f1c946">
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Monospaced" size="6"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{code}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="141" splitType="Stretch">
+			<line>
+				<reportElement x="35" y="61" width="230" height="1" uuid="ee8b1bbc-19c3-49a0-be0f-c39da5839949"/>
+			</line>
+			<line>
+				<reportElement x="490" y="61" width="225" height="1" uuid="0adf7c5d-72d1-4c1a-a30b-82d6183c29ae"/>
+			</line>
+			<textField>
+				<reportElement x="35" y="62" width="230" height="54" uuid="04e67cfc-afd5-4f0c-a8d4-a06648b991de">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["AGENTE DE RETENCIÓN \n"+
+$F{empresa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="489" y="59" width="230" height="54" uuid="47314649-6a4d-484e-a021-cee077c8fb59">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["     Firma y Sello del Agente Retenido \n"+
+"FIRMA: \n"+
+"NOMBRE: \n"+
+"C.I.:                                FECHA: "]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="390" y="1" width="79" height="20" uuid="29beb834-5f78-4df2-9858-4784b17d668d">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="6" isBold="true"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Total_GrandTotal}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="469" y="1" width="75" height="20" uuid="fff84459-853f-41b6-90a6-dc6981722ccc">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="6" isBold="true"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Total_Exent}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="544" y="1" width="75" height="20" uuid="919e894c-2b57-41c9-ab10-1eb553022346">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="6" isBold="true"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Total_TaxBaseAmt}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="645" y="1" width="70" height="20" uuid="f01c122b-46fc-4b8a-b4b8-c2f7b43bea97">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="6" isBold="true"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Total_TaxAmt}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="715" y="1" width="85" height="20" uuid="6fb4d102-927d-412c-a290-85ca735f7ddd">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="6" isBold="true"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Total_WithholdingAmt}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="640" y="1" width="75" height="20" uuid="5750018c-7d8f-4605-a870-fd23c74ab5ce">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="6" isBold="true"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Total_TaxBaseAmt}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="715" y="1" width="85" height="20" uuid="f5683bf1-6a10-4b94-8441-a24b1657587a">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "ISLR" )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="6" isBold="true"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Total_WithholdingAmt}]]></textFieldExpression>
+			</textField>
+			<image hAlign="Center" vAlign="Middle">
+				<reportElement mode="Transparent" x="40" y="20" width="240" height="96" uuid="2c941d3a-3dbd-476c-9238-0b362f075584"/>
+				<imageExpression><![CDATA[$P{RESOURCE_DIR}+($F{ad_org_id}.equals( "1000000" ) ? "firma.png" : "firma.png")]]></imageExpression>
+			</image>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="217" y="1" width="129" height="15" uuid="8c3050b7-6ee5-4229-901e-7d415474ebfe">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="6" isBold="true"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Total_GrandTotal}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="346" y="1" width="133" height="15" uuid="ada9c45b-e2f0-4b61-9bba-76887e4b0c99">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="6" isBold="true"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Total_TaxBaseAmt}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="660" y="1" width="140" height="15" uuid="3a7fc869-80ed-4d29-b340-c0f76d105563">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IAE" )]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="6" isBold="true"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{Total_WithholdingAmt}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="106" y="1" width="185" height="15" uuid="6f46d1f5-35aa-4822-a9bc-d8aa596182ec">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Totales:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="116" width="800" height="20" uuid="396de0cf-2cc7-44f2-8578-43513bf9a49d">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[$F{withholdingtype}.equals( "IVA" )]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Este Comprobante se emite según lo establecido en el articulo Nº 16 de la providencia administrativa SNAT/2015/0049 de fecha 14-07-2015 publicado en la gaceta oficial Nº 40.720 de fecha 10-08-2015]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>
