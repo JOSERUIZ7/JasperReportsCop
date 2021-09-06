@@ -1,0 +1,633 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="EntryTicketPOS" pageWidth="226" pageHeight="441" columnWidth="222" leftMargin="2" rightMargin="2" topMargin="2" bottomMargin="2" uuid="6ba88af6-8af0-482e-b081-8c721d86852a">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="282"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="711"/>
+	<parameter name="RECORD_ID" class="java.lang.Integer"/>
+	<parameter name="RESOURCE_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[$P{RESOURCE_DIR}]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT    et.ftu_entryticket_id ,
+        et.documentno ,
+        et.datedoc ,
+        CASE
+            WHEN et.operationtype = 'DBM' THEN 'Despacho Producto a Granel'
+            WHEN et.operationtype = 'DFP' THEN 'Despacho Producto Terminado'
+            WHEN et.operationtype = 'MOM' THEN 'Movimiento de Salida de Material'
+            WHEN et.operationtype = 'ORW' THEN 'Otras Pesadas'
+            WHEN et.operationtype = 'RMR' THEN 'Recepción de Materia Prima'
+            WHEN et.operationtype = 'PBR' THEN 'Recepción de Producto a Granel'
+            WHEN et.operationtype = 'RMP' THEN 'Recepción Varios Productos'
+        END AS operationName,
+        et.operationtype,
+        et.description,
+        COALESCE(et.trailerplate,'NO APLICA') AS trailerplate ,
+        TO_CHAR(et.created,'DD-mm-YY HH12:MIPM') created,
+        TO_CHAR(cl.Updated,'DD-mm-YY HH12:MIPM') dateArrival,
+        TO_CHAR(NOW(),'DD-mm-YY HH12:MIPM') FIMPRE,
+        dt."name" AS docType ,
+        dt.printname ,
+        dt.documentnote ,
+        COALESCE(s."name",'NO APLICA') AS shipper ,
+        d.value AS driverTaxID ,
+        d."name" AS driverName ,
+        d.phone ,
+        v.vehicleplate ,
+        o.documentno AS "order" ,
+        ol.qtyordered ,
+        p."name" AS product ,
+        COALESCE(bp."name",'NO APLICA') AS bpartner ,
+        COALESCE(bp.sunagrocode,'') AS sunagrocode,
+        COALESCE (lo.documentno,'') AS loadorder ,
+        u."name" AS "user" ,
+        c."name" AS client ,
+        oi.taxid,
+       COALESCE (ddo.documentno,'') AS DistributionOrder,
+       coalesce(o.issotrx,ddo.issotrx,'N') as issotrx,
+       loc.address
+FROM ftu_entryticket et
+JOIN c_doctype dt ON et.c_doctype_id = dt.c_doctype_id
+JOIN ftu_driver d ON et.ftu_driver_id = d.ftu_driver_id
+JOIN ftu_vehicle v ON et.ftu_vehicle_id = v.ftu_vehicle_id
+JOIN ad_user u ON et.createdby = u.ad_user_id
+JOIN ad_client c ON et.ad_client_id = c.ad_client_id
+JOIN ad_orginfo oi ON oi.ad_org_id = et.ad_org_id
+--Linea agregada para obtener la fecha de llegada del conductor, sera reemplazada cuando se soporte a nivel de proceso.
+LEFT JOIN ad_changelog cl ON et.ftu_entryticket_id = cl.record_id AND cl.ad_column_id = 1001045
+LEFT JOIN m_shipper s ON et.m_shipper_id = s.m_shipper_id
+LEFT JOIN c_order o ON et.c_order_id = o.c_order_id
+LEFT JOIN c_orderline ol ON o.c_order_id = ol.c_order_id AND ol.m_product_id = et.m_product_id
+LEFT JOIN m_product p ON et.m_product_id = p.m_product_id
+LEFT JOIN c_bpartner bp ON et.c_bpartner_id = bp.c_bpartner_id 
+left join c_bpartner_location bpl on o.c_bpartner_location_id = bpl.c_bpartner_location_id 
+left join lve_rv_location loc on bpl.c_location_id = loc.c_location_id 
+LEFT JOIN ftu_loadorder lo ON et.ftu_entryticket_id = lo.ftu_entryticket_id AND lo.docstatus IN ('CO', 'CL')
+LEFT JOIN dd_order ddo ON et.dd_order_id = ddo.dd_order_id 
+LEFT JOIN dd_orderline ddl ON ddo.dd_order_id = ddl.dd_order_id AND ddl.m_product_id = et.m_product_id
+WHERE et.ftu_entryticket_id=$P{RECORD_ID}
+LIMIT 1]]>
+	</queryString>
+	<field name="ftu_entryticket_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ftu_entryticket_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="ftu_entryticket_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ftu_entryticket"/>
+	</field>
+	<field name="documentno" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="documentno"/>
+		<property name="com.jaspersoft.studio.field.label" value="documentno"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ftu_entryticket"/>
+	</field>
+	<field name="datedoc" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="datedoc"/>
+		<property name="com.jaspersoft.studio.field.label" value="datedoc"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ftu_entryticket"/>
+	</field>
+	<field name="operationname" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="operationname"/>
+		<property name="com.jaspersoft.studio.field.label" value="operationname"/>
+	</field>
+	<field name="operationtype" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="operationtype"/>
+		<property name="com.jaspersoft.studio.field.label" value="operationtype"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ftu_entryticket"/>
+	</field>
+	<field name="description" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="description"/>
+		<property name="com.jaspersoft.studio.field.label" value="description"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ftu_entryticket"/>
+	</field>
+	<field name="trailerplate" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="trailerplate"/>
+		<property name="com.jaspersoft.studio.field.label" value="trailerplate"/>
+	</field>
+	<field name="created" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="created"/>
+		<property name="com.jaspersoft.studio.field.label" value="created"/>
+	</field>
+	<field name="datearrival" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="datearrival"/>
+		<property name="com.jaspersoft.studio.field.label" value="datearrival"/>
+	</field>
+	<field name="fimpre" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="fimpre"/>
+		<property name="com.jaspersoft.studio.field.label" value="fimpre"/>
+	</field>
+	<field name="doctype" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="doctype"/>
+		<property name="com.jaspersoft.studio.field.label" value="doctype"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_doctype"/>
+	</field>
+	<field name="printname" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="printname"/>
+		<property name="com.jaspersoft.studio.field.label" value="printname"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_doctype"/>
+	</field>
+	<field name="documentnote" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="documentnote"/>
+		<property name="com.jaspersoft.studio.field.label" value="documentnote"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_doctype"/>
+	</field>
+	<field name="shipper" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="shipper"/>
+		<property name="com.jaspersoft.studio.field.label" value="shipper"/>
+	</field>
+	<field name="drivertaxid" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="drivertaxid"/>
+		<property name="com.jaspersoft.studio.field.label" value="drivertaxid"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ftu_driver"/>
+	</field>
+	<field name="drivername" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="drivername"/>
+		<property name="com.jaspersoft.studio.field.label" value="drivername"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ftu_driver"/>
+	</field>
+	<field name="phone" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="phone"/>
+		<property name="com.jaspersoft.studio.field.label" value="phone"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ftu_driver"/>
+	</field>
+	<field name="vehicleplate" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="vehicleplate"/>
+		<property name="com.jaspersoft.studio.field.label" value="vehicleplate"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ftu_vehicle"/>
+	</field>
+	<field name="order" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="order"/>
+		<property name="com.jaspersoft.studio.field.label" value="order"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_order"/>
+	</field>
+	<field name="qtyordered" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="qtyordered"/>
+		<property name="com.jaspersoft.studio.field.label" value="qtyordered"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_orderline"/>
+	</field>
+	<field name="product" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="product"/>
+		<property name="com.jaspersoft.studio.field.label" value="product"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_product"/>
+	</field>
+	<field name="bpartner" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="bpartner"/>
+		<property name="com.jaspersoft.studio.field.label" value="bpartner"/>
+	</field>
+	<field name="sunagrocode" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="sunagrocode"/>
+		<property name="com.jaspersoft.studio.field.label" value="sunagrocode"/>
+	</field>
+	<field name="loadorder" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="loadorder"/>
+		<property name="com.jaspersoft.studio.field.label" value="loadorder"/>
+	</field>
+	<field name="user" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="user"/>
+		<property name="com.jaspersoft.studio.field.label" value="user"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_user"/>
+	</field>
+	<field name="client" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="client"/>
+		<property name="com.jaspersoft.studio.field.label" value="client"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_client"/>
+	</field>
+	<field name="taxid" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="taxid"/>
+		<property name="com.jaspersoft.studio.field.label" value="taxid"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_orginfo"/>
+	</field>
+	<field name="distributionorder" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="distributionorder"/>
+		<property name="com.jaspersoft.studio.field.label" value="distributionorder"/>
+	</field>
+	<field name="issotrx" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="issotrx"/>
+		<property name="com.jaspersoft.studio.field.label" value="issotrx"/>
+	</field>
+	<field name="address" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="address"/>
+		<property name="com.jaspersoft.studio.field.label" value="address"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lve_rv_location"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="309" splitType="Stretch">
+			<textField>
+				<reportElement x="84" y="1" width="128" height="19" uuid="2746cf17-c9b0-4ca1-984e-429968c180d5">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="1" width="104" height="19" uuid="10e7e1d2-eeab-4571-a06f-99ebfd4b1ea9">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Fecha de Impresión:	]]></text>
+			</staticText>
+			<image hAlign="Center">
+				<reportElement x="0" y="20" width="211" height="40" uuid="828d7bfc-7663-4021-af3f-21f7e1a44778"/>
+				<imageExpression><![CDATA[$P{RESOURCE_DIR} + "coposa.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="0" y="100" width="212" height="12" uuid="fd629efd-9e59-4560-8a78-d9d86888085c">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA["Si Requiere Registro de Peso"]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="80" width="212" height="19" uuid="69c47d8b-a21d-41f8-8985-9ed10aac41df"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{operationname}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="60" width="212" height="21" uuid="b3e696a4-49c0-4734-a7db-b0ab10976dd2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{printname}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="124" width="80" height="12" uuid="77caabb9-225e-4872-a67d-8ad02ce2460f">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nro. Orden:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="136" width="119" height="12" uuid="c16458ae-4473-46c5-b7c9-0488ac4e901a">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Hora LLegada:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="160" width="80" height="12" uuid="47bb3973-2942-4851-b82e-d5eba4fa5caa">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Transporte:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="172" width="70" height="12" uuid="54f24495-3971-4265-86d8-0bf9470cd7b8">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Conductor:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="208" width="90" height="12" uuid="8046265a-eb8a-4381-95b4-6c0f6714e0ad">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Código SICA:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="60" y="148" width="152" height="12" isPrintWhenDetailOverflows="true" uuid="14c812d3-4887-4cb9-a31b-b7dc7171031c">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bpartner}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="104" y="136" width="108" height="12" uuid="daf28891-fcc2-47aa-8ff7-b81b90fccb8f"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{datearrival}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="184" width="50" height="12" uuid="1178f6fd-2cd4-4d51-ab3e-c90e4b42bab4">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cédula:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="196" width="80" height="12" uuid="ac1d8f4f-03c2-44ec-a5cf-a94409173697">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Remolque:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="60" y="160" width="152" height="12" isPrintWhenDetailOverflows="true" uuid="28e17368-00ee-49f1-9abf-d344d7f94875">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{shipper}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="60" y="124" width="152" height="12" uuid="a87a9e2e-6fa6-4997-bb07-0e0210384053">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[$F{operationtype}.equals("RMR")&& $F{order}!= null && !$F{order}.isEmpty() || $F{operationtype}.equals ("PBR")|| $F{operationtype}.equals("RMP")|| $F{operationtype}.equals("DBM")]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{order}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="60" y="124" width="152" height="12" uuid="78adad31-290a-4937-b112-2b2d55c4ef00">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<printWhenExpression><![CDATA[$F{operationtype}.equals("RMR")&& $F{distributionorder} !=null && !$F{distributionorder}.isEmpty()]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{distributionorder}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="60" y="124" width="152" height="12" uuid="0af38a69-852e-45c3-8e1d-b1063f5371ef">
+					<printWhenExpression><![CDATA[$F{operationtype}.equals("DBM") || $F{operationtype}.equals ("DFP")|| $F{operationtype}.equals("MOM")]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{loadorder}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="112" y="112" width="100" height="12" uuid="ef64c36a-573e-47a2-a46e-cf6b72afdedd"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{documentno}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="112" width="129" height="12" uuid="df124f1b-d25d-424e-9848-7e4bbfab1909"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nro. Pase de Entrada:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="40" y="184" width="72" height="12" uuid="505ba065-c275-4a45-a499-a2623f3d30bf"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{drivertaxid}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="60" y="172" width="152" height="12" uuid="8e590dfe-a9ad-4a3d-8ee8-6da1cca55700"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{drivername}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="60" y="196" width="152" height="12" uuid="26575ac0-c396-44bf-94ca-7f6c7ffda3d9"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{trailerplate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="102" y="184" width="47" height="12" uuid="edf838fc-8940-4fa7-bb6c-5387c66f7862">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Placa:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="134" y="184" width="78" height="12" uuid="6f27d930-a52c-4f5a-a457-e32493c283e3"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{vehicleplate}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="70" y="208" width="142" height="12" uuid="44d1a06e-12c3-4eae-89aa-35ac3192ffbd"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sunagrocode}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="40" y="296" width="172" height="13" uuid="82d05aab-fced-4b09-a5dd-8b5696117e0f">
+					<printWhenExpression><![CDATA[$F{operationtype}.equals("PBR") || $F{operationtype}.equals ("RMR") || $F{operationtype}.equals ("DBM")]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.9" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Producto]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="148" width="80" height="12" uuid="b525dc7b-9765-4fe1-ae7d-58d607865e1b"/>
+				<textElement verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{issotrx}.equals( "Y" ) ? "Cliente:" : "Proveedor:")]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="220" width="90" height="12" uuid="57104b52-21b3-4189-8ddd-d059eb172590">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{operationtype}.equals ("DBM")]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Observación:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="232" width="212" height="12" uuid="853d06bc-4ada-4579-b0eb-07889c894681">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<printWhenExpression><![CDATA[$F{operationtype}.equals ("DBM")]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dirección de Envío:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="244" width="212" height="52" uuid="72e597de-4225-4ce0-b42f-6b6f13ded462">
+					<printWhenExpression><![CDATA[$F{operationtype}.equals ("DBM")]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{address}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="70" y="220" width="142" height="12" isPrintWhenDetailOverflows="true" uuid="2903f781-d055-4ad6-a2a5-a1ff706bd074">
+					<printWhenExpression><![CDATA[$F{operationtype}.equals ("DBM")]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="296" width="40" height="13" uuid="25f7ef9e-f086-498e-8ef2-899d6bf50076">
+					<printWhenExpression><![CDATA[$F{operationtype}.equals("PBR") || $F{operationtype}.equals ("RMR") || $F{operationtype}.equals ("DBM")]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.9" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Cant.]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="40" y="0" width="172" height="20" uuid="8d58f9cb-9dd9-4387-a409-843426939414">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7388b9c4-2981-490c-97a5-7be449e44cb8"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<printWhenExpression><![CDATA[$F{operationtype}.equals("PBR") || $F{operationtype}.equals ("RMR") || $F{operationtype}.equals ("DBM")]]></printWhenExpression>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{product}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="40" height="20" uuid="cdb18897-1871-44ac-af34-11c09b0b6071">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7388b9c4-2981-490c-97a5-7be449e44cb8"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<printWhenExpression><![CDATA[$F{operationtype}.equals("PBR") || $F{operationtype}.equals ("RMR") || $F{operationtype}.equals ("DBM")]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{qtyordered}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="108" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<staticText>
+				<reportElement x="3" y="27" width="84" height="16" uuid="71fc7784-a24a-4fd1-ad64-c0e0b044951e">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Creado Por:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="3" y="43" width="101" height="22" uuid="ca1baa35-79cc-448c-bb92-bf9c11294172">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Creación:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="102" y="44" width="110" height="22" uuid="1fc7fc24-8574-48e7-bab3-095942ed74a6"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{created}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="84" y="27" width="128" height="16" uuid="130fda27-928a-44d6-b2a7-4d8c49171815"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{user}]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement x="0" y="74" width="212" height="30" uuid="a561b646-f39d-4c58-90f1-b278faeb0c6e"/>
+				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="Code128" drawText="false" checksumRequired="false">
+					<jr:codeExpression><![CDATA[$F{documentno}]]></jr:codeExpression>
+				</jr:barbecue>
+			</componentElement>
+			<textField isBlankWhenNull="true">
+				<reportElement x="5" y="1" width="206" height="26" uuid="22cd6e0e-76b6-49ba-8d88-dc0688304c1a"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnFooter>
+</jasperReport>

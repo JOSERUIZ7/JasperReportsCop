@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.11.0.final using JasperReports Library version 5.0.1  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="LIBRO MAYOR (Detallado)" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="bc6356ae-947e-4537-8168-82e9364f17e0">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="BVIDEMPIERECOPOSA"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="206"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="787"/>
+	<parameter name="C_Period_ID1" class="java.lang.Integer"/>
+	<parameter name="C_Period_ID2" class="java.lang.Integer"/>
+	<parameter name="AD_Org_ID" class="java.lang.Integer"/>
+	<parameter name="AD_Client_ID" class="java.lang.Integer"/>
+	<parameter name="AccountNo1" class="java.lang.String"/>
+	<parameter name="AccountNo2" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[Select FA.Fact_Acct_ID,(Select StartDate From C_Period Where C_Period_ID=$P{C_Period_ID1}) As StartDate,
+	   (Select EndDate From C_Period Where C_Period_ID=$P{C_Period_ID2}) As EndDate,
+	   AO.Name AS Organizacion,
+	   AO.TaxID AS Rif_Organizacion,
+	   FA.DateAcct,
+	   FA.RECORD_ID As DocumentNo,
+	   T.Name As Tipo,
+	   FA.DESCRIPTION,EV.Value As Cuenta,
+	   lTrim(rTrim(EV.Name)) As Nombre_Cuenta,
+	   Case When (FA.DateAcct Between (Select StartDate From C_Period Where C_Period_ID=$P{C_Period_ID1}) And (Select EndDate From C_Period Where C_Period_ID=$P{C_Period_ID2})) Then FA.AmtAcctDR Else 0 End As Debe,
+	   Case When (FA.DateAcct Between (Select StartDate From C_Period Where C_Period_ID=$P{C_Period_ID1}) And (Select EndDate From C_Period Where C_Period_ID=$P{C_Period_ID2})) Then FA.AmtAcctCR Else 0 End As Haber,
+   	   Case When (FA.DateAcct Between (Select StartDate From C_Period Where C_Period_ID=$P{C_Period_ID1}) And (Select EndDate From C_Period Where C_Period_ID=$P{C_Period_ID2})) Then FA.AmtAcctDR-FA.AmtAcctCR Else 0 End As Saldo,
+	   Case When (FA.DateAcct < (Select StartDate From C_Period Where C_Period_ID=$P{C_Period_ID1})) Then FA.AmtAcctDR  Else 0 End As Debe_Acumulado,
+	   Case When (FA.DateAcct < (Select StartDate From C_Period Where C_Period_ID=$P{C_Period_ID1})) Then FA.AmtAcctCR  Else 0 End As Haber_Acumulado,
+	   Case When (FA.DateAcct < (Select StartDate From C_Period Where C_Period_ID=$P{C_Period_ID1})) Then FA.AmtAcctDR-FA.AmtAcctCR  Else 0 End As Saldo_Acumulado 
+From C_ElementValue EV Left Join Fact_Acct FA On FA.Account_ID = EV.C_ElementValue_Id
+Inner Join AD_Client AC ON FA.AD_Client_ID = AC.AD_Client_ID 
+Inner Join AD_Org_V AO On AO.AD_Org_ID = FA.AD_Org_ID 
+Left Join AD_Table_Trl T On FA.AD_Table_ID = T.AD_Table_ID AND T.AD_Language = AC.AD_Language 
+Where ((CASE WHEN $P{AD_Org_ID}<>0 THEN AO.AD_Org_ID IN (SELECT DISTINCT Node_ID FROM getnodes(0,(SELECT MIN(AD_Tree_ID) FROM AD_Tree WHERE TreeType = 'OO' AND (AD_Table_ID = 155 OR AD_Table_ID IS NULL) AND AD_Client_ID = $P{AD_Client_ID}),$P{AD_Client_ID}) AS N(Parent_ID numeric,Node_ID numeric) WHERE Parent_ID = $P{AD_Org_ID}) ELSE TRUE END) And EV.AD_CLIENT_ID=$P{AD_Client_ID} And EV.ISACTIVE='Y'  And (EV.Value Between $P{AccountNo1} And $P{AccountNo2}) And FA.IsActive='Y'
+And FA.DateAcct <= (Select EndDate From C_Period Where C_Period_ID=$P{C_Period_ID2}))
+Group By AO.Name,AO.TaxID,EV.C_ElementValue_Id,EV.Value,EV.Name,FA.DateAcct,FA.RECORD_ID ,FA.Description,FA.AmtSourceDR,FA.AmtSourceCR,T.Name,FA.Fact_Acct_ID
+Order By EV.Value,FA.DateAcct,FA.RECORD_ID,FA.Fact_Acct_ID]]>
+	</queryString>
+	<field name="fact_acct_id" class="java.math.BigDecimal"/>
+	<field name="startdate" class="java.sql.Timestamp"/>
+	<field name="enddate" class="java.sql.Timestamp"/>
+	<field name="organizacion" class="java.lang.String"/>
+	<field name="rif_organizacion" class="java.lang.String"/>
+	<field name="dateacct" class="java.sql.Timestamp"/>
+	<field name="documentno" class="java.math.BigDecimal"/>
+	<field name="tipo" class="java.lang.String"/>
+	<field name="description" class="java.lang.String"/>
+	<field name="cuenta" class="java.lang.String"/>
+	<field name="nombre_cuenta" class="java.lang.String"/>
+	<field name="debe" class="java.math.BigDecimal"/>
+	<field name="haber" class="java.math.BigDecimal"/>
+	<field name="saldo" class="java.math.BigDecimal"/>
+	<field name="debe_acumulado" class="java.math.BigDecimal"/>
+	<field name="haber_acumulado" class="java.math.BigDecimal"/>
+	<field name="saldo_acumulado" class="java.math.BigDecimal"/>
+	<variable name="sumtotaldebe" class="java.lang.Double" resetType="Group" resetGroup="Group Cuenta" calculation="Sum">
+		<variableExpression><![CDATA[$F{debe}]]></variableExpression>
+	</variable>
+	<variable name="sumtotalhaber" class="java.lang.Double" resetType="Group" resetGroup="Group Cuenta" calculation="Sum">
+		<variableExpression><![CDATA[$F{haber}]]></variableExpression>
+	</variable>
+	<variable name="saldomesorganizacion" class="java.lang.Double" resetType="Group" resetGroup="Group total organizacion">
+		<variableExpression><![CDATA[$V{sumtotaldebe}.doubleValue()-$V{sumtotalhaber}.doubleValue()]]></variableExpression>
+	</variable>
+	<variable name="totaldebeacumuladoorganizacion" class="java.lang.Double" resetType="Group" resetGroup="Group total organizacion" calculation="Sum">
+		<variableExpression><![CDATA[$F{debe_acumulado}]]></variableExpression>
+	</variable>
+	<variable name="totalhaberacumuladoorganizacion" class="java.lang.Double" resetType="Group" resetGroup="Group total organizacion" calculation="Sum">
+		<variableExpression><![CDATA[$F{haber_acumulado}]]></variableExpression>
+	</variable>
+	<variable name="sumtotalsaldoacumuladoorganizacion" class="java.lang.Double" resetType="Group" resetGroup="Group total organizacion">
+		<variableExpression><![CDATA[$V{totaldebeacumuladoorganizacion}.doubleValue()-$V{totalhaberacumuladoorganizacion}.doubleValue()]]></variableExpression>
+	</variable>
+	<variable name="sumsaldototalorganizacion" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{saldomesorganizacion}.doubleValue()+$V{sumtotalsaldoacumuladoorganizacion}.doubleValue()]]></variableExpression>
+	</variable>
+	<variable name="sumtotaldebegeneral" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{debe}]]></variableExpression>
+	</variable>
+	<variable name="sumtotalhabergeneral" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{haber}]]></variableExpression>
+	</variable>
+	<variable name="sumtotalsaldomesgeneral" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{sumtotaldebegeneral}.doubleValue()-$V{sumtotalhabergeneral}.doubleValue()]]></variableExpression>
+	</variable>
+	<variable name="sumtotaldebeacumuladogeneral" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{debe_acumulado}]]></variableExpression>
+	</variable>
+	<variable name="sumtotalsaldomesgeneral2" class="java.lang.Double" resetType="Group" resetGroup="Group Cuenta" calculation="Sum">
+		<variableExpression><![CDATA[$V{sumtotalsaldomesgeneral}]]></variableExpression>
+	</variable>
+	<variable name="suntotalhabercumuladogeneral" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{haber_acumulado}]]></variableExpression>
+	</variable>
+	<variable name="restdebeyhabergeneral" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{totaldebeacumuladoorganizacion2}.doubleValue()-$V{totalhaberacumuladoorganizacion2}.doubleValue()]]></variableExpression>
+	</variable>
+	<variable name="sumresdebeyhabergeneral" class="java.lang.Double" resetType="Group" resetGroup="Group Cuenta" calculation="Sum">
+		<variableExpression><![CDATA[$V{restdebeyhabergeneral}]]></variableExpression>
+	</variable>
+	<variable name="sumtotalsaldogeneral" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{sumtotalsaldomesgeneral}+$V{restdebeyhabergeneral}]]></variableExpression>
+	</variable>
+	<variable name="totaldebeacumuladoorganizacion2" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{debe_acumulado}]]></variableExpression>
+	</variable>
+	<variable name="totalhaberacumuladoorganizacion2" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{haber_acumulado}]]></variableExpression>
+	</variable>
+	<variable name="totalacumuladoxcuenta" class="java.math.BigDecimal" resetType="Group" resetGroup="Group Cuenta" calculation="Sum">
+		<variableExpression><![CDATA[$F{saldo_acumulado}]]></variableExpression>
+	</variable>
+	<variable name="sumtotalsaldo" class="java.math.BigDecimal" resetType="Group" resetGroup="Group Cuenta" calculation="Sum">
+		<variableExpression><![CDATA[$F{saldo}]]></variableExpression>
+	</variable>
+	<group name="Group Total General"/>
+	<group name="Group total organizacion">
+		<groupExpression><![CDATA[$F{cuenta}]]></groupExpression>
+		<groupFooter>
+			<band height="19">
+				<staticText>
+					<reportElement x="108" y="3" width="99" height="12" uuid="365aa392-9e33-4303-afa7-8714570be1a9">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="true" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Total:]]></text>
+				</staticText>
+				<textField pattern="#,##0.00#">
+					<reportElement x="279" y="3" width="91" height="12" uuid="de8216fb-5edc-466d-b4f9-88922b5fafaa">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="5" isBold="true" isItalic="false"/>
+						<paragraph rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{sumtotaldebe}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00#">
+					<reportElement x="369" y="3" width="98" height="12" uuid="0d606861-e818-4494-ade4-a1e632b928e1">
+						<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="5" isBold="true" isItalic="false"/>
+						<paragraph rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{sumtotalhaber}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="0" y="17" width="554" height="1" uuid="c6d4cd78-a42d-451e-9d65-840721cca850"/>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="Group Cuenta">
+		<groupExpression><![CDATA[$F{cuenta}]]></groupExpression>
+		<groupHeader>
+			<band height="13">
+				<textField>
+					<reportElement x="4" y="0" width="456" height="13" uuid="f6a75a2d-d07e-4df6-b4ae-e1703c1c3aaa"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cuenta} + " -"  +  $F{nombre_cuenta}]]></textFieldExpression>
+				</textField>
+				<textField evaluationTime="Auto" pattern="#,##0.00#">
+					<reportElement x="459" y="0" width="95" height="13" uuid="80a03581-bf52-4e22-9264-2d24acb1c3da">
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="5" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{totalacumuladoxcuenta}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="74">
+			<staticText>
+				<reportElement x="154" y="0" width="226" height="26" uuid="c5779e30-3768-44b7-8f7f-d60b91bc6851"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[LIBRO MAYOR DETALLADO]]></text>
+			</staticText>
+			<textField evaluationTime="Report">
+				<reportElement x="520" y="0" width="32" height="13" uuid="c21942cd-73ac-4c36-b91c-4277b8148e5d"/>
+				<textElement>
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="427" y="12" width="49" height="14" uuid="63610a33-45e8-419b-91c9-724b1e967416"/>
+				<textElement textAlignment="Left">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="427" y="0" width="49" height="13" uuid="9cd5fa1a-ef8c-4fd5-b691-0e9817567c4f"/>
+				<textElement textAlignment="Left">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Página:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="427" y="26" width="49" height="13" uuid="a8df1749-8041-4b0a-9ef2-ecb131357f1b"/>
+				<textElement textAlignment="Left">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora:]]></text>
+			</staticText>
+			<textField pattern="HH:mm aa">
+				<reportElement x="469" y="26" width="83" height="13" uuid="a67036d0-8da5-4da8-8cd4-6c07f058f938"/>
+				<textElement>
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("h:mm a").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="469" y="0" width="24" height="13" uuid="750306b1-2aa3-499b-9faa-c9d01bccf6d0"/>
+				<textElement>
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="493" y="0" width="27" height="13" uuid="3e297e98-746e-4959-bda8-1bb7aabad589"/>
+				<textElement>
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[de:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="154" y="43" width="62" height="14" uuid="b72b1c5d-c08e-4cf2-82f2-d931913288f0"/>
+				<textElement>
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Periodo:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="273" y="43" width="40" height="14" uuid="8895d5de-915b-4da7-8437-70667798af0c"/>
+				<textElement>
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hasta:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="279" y="62" width="91" height="12" uuid="cd99698a-b629-4f75-a014-70027637f9bb">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Debe]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="369" y="62" width="98" height="12" uuid="cdee07ea-0a80-4e48-9d12-ac5203c32b89">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Haber]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="4" y="62" width="50" height="12" uuid="b6957337-978c-4f23-91db-eec81bfca929">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Fecha]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="203" y="43" width="74" height="14" uuid="436f2870-e6c9-47a0-b1f6-20d753b60975"/>
+				<textElement>
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{startdate}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="313" y="43" width="70" height="14" uuid="939e492c-db6e-4215-bc9f-5217732f35c3"/>
+				<textFieldExpression><![CDATA[$F{enddate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="54" y="62" width="72" height="12" uuid="1d473f35-4f49-48dd-ae4d-5d5e860cad85"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Número]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="126" y="62" width="62" height="12" uuid="c6789668-cf0b-4a0f-9d15-74bb149d08f3"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Tipo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="188" y="62" width="92" height="12" uuid="5933783e-9abb-4526-b64c-e268707523d8"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Descripción]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="468" y="62" width="87" height="12" uuid="9f0130b1-377f-47e2-ac5f-4869d0cfc008">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Saldo]]></text>
+			</staticText>
+			<textField pattern="MMMMM dd, yyyy">
+				<reportElement x="0" y="0" width="154" height="13" uuid="09a03ebb-0843-4e81-88b0-6e14dd5ded1a"/>
+				<textElement>
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{organizacion}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MMMMM dd, yyyy">
+				<reportElement x="0" y="13" width="154" height="13" uuid="b02fdd06-fe78-4fa4-8438-bc22ea961ad7"/>
+				<textElement>
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rif_organizacion}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="469" y="13" width="83" height="13" uuid="91ed2a50-e685-4f52-874f-874bc25f1798"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="13" splitType="Stretch">
+			<printWhenExpression><![CDATA[($F{debe}.doubleValue() != 0.00 || $F{haber}.doubleValue() !=0.00)]]></printWhenExpression>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="4" y="0" width="50" height="12" uuid="c6a17410-9f13-4175-acf6-808e7437cdbc">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dateacct}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="54" y="0" width="72" height="12" uuid="abeb383c-0d57-4851-9780-1bc3f6e32b99"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{documentno}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="126" y="0" width="62" height="12" uuid="f3a81c7d-c985-4181-b05a-e5233ee7cce4"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="188" y="0" width="92" height="12" uuid="9574ed65-b6f0-408c-a41a-bef17eaa012e">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="279" y="0" width="91" height="12" uuid="7d2fb78a-3416-4d9f-99f3-379c0e1b580c">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{debe}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="369" y="0" width="99" height="13" uuid="70f9cfcd-87b9-46f6-ba15-b2aa15074582">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{haber}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Band" pattern="#,##0.00#">
+				<reportElement x="467" y="0" width="88" height="12" uuid="45d9ca6d-3365-4784-81f5-d617795e0e24">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5" isBold="false"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalacumuladoxcuenta}.add( $V{sumtotalsaldo} )]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="12" width="554" height="1" uuid="5bebfca2-e3a1-4624-bb95-493465fcc689"/>
+			</line>
+		</band>
+	</detail>
+</jasperReport>
