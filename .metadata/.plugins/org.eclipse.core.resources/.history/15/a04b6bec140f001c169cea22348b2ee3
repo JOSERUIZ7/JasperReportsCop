@@ -248,16 +248,6 @@ Order By EV.Value,FA.DateAcct,FA.RECORD_ID,FA.Fact_Acct_ID]]>
 					</textElement>
 					<textFieldExpression><![CDATA[$V{totalacumuladoxcuenta}]]></textFieldExpression>
 				</textField>
-				<textField>
-					<reportElement x="4" y="0" width="126" height="11" uuid="cdd500df-2f30-4f4f-aa67-1cf516b202a2">
-						<property name="com.jaspersoft.studio.unit.y" value="px"/>
-						<printWhenExpression><![CDATA[$P{ShowHeader}.equals( "N" )]]></printWhenExpression>
-					</reportElement>
-					<textElement verticalAlignment="Middle">
-						<font fontName="ARIAL" size="4" isBold="true" isItalic="false"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$F{cuenta}]]></textFieldExpression>
-				</textField>
 			</band>
 		</groupHeader>
 	</group>

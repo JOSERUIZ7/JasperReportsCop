@@ -230,10 +230,9 @@ Order By EV.Value,FA.DateAcct,FA.RECORD_ID,FA.Fact_Acct_ID]]>
 		<groupExpression><![CDATA[$F{cuenta}]]></groupExpression>
 		<groupHeader>
 			<band height="13">
+				<printWhenExpression><![CDATA[$P{ShowHeader}.equals( "Y" )]]></printWhenExpression>
 				<textField>
-					<reportElement x="4" y="0" width="456" height="13" uuid="f6a75a2d-d07e-4df6-b4ae-e1703c1c3aaa">
-						<printWhenExpression><![CDATA[$P{ShowHeader}.equals( "Y" )]]></printWhenExpression>
-					</reportElement>
+					<reportElement x="4" y="0" width="456" height="13" uuid="f6a75a2d-d07e-4df6-b4ae-e1703c1c3aaa"/>
 					<textElement verticalAlignment="Middle">
 						<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
 					</textElement>
@@ -242,21 +241,12 @@ Order By EV.Value,FA.DateAcct,FA.RECORD_ID,FA.Fact_Acct_ID]]>
 				<textField evaluationTime="Auto" pattern="#,##0.00#">
 					<reportElement x="459" y="0" width="95" height="13" uuid="80a03581-bf52-4e22-9264-2d24acb1c3da">
 						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<printWhenExpression><![CDATA[$P{ShowHeader}.equals( "Y" )]]></printWhenExpression>
 					</reportElement>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
 						<font fontName="SansSerif" size="5" isBold="true"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$V{totalacumuladoxcuenta}]]></textFieldExpression>
-				</textField>
-				<textField>
-					<reportElement x="4" y="0" width="126" height="11" uuid="cdd500df-2f30-4f4f-aa67-1cf516b202a2">
-						<property name="com.jaspersoft.studio.unit.y" value="px"/>
-						<printWhenExpression><![CDATA[$P{ShowHeader}.equals( "N" )]]></printWhenExpression>
-					</reportElement>
-					<textElement verticalAlignment="Middle">
-						<font fontName="ARIAL" size="4" isBold="true" isItalic="false"/>
-					</textElement>
-					<textFieldExpression><![CDATA[$F{cuenta}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>
@@ -428,12 +418,11 @@ Order By EV.Value,FA.DateAcct,FA.RECORD_ID,FA.Fact_Acct_ID]]>
 		</band>
 	</pageHeader>
 	<detail>
-		<band height="13" splitType="Stretch">
+		<band height="46" splitType="Stretch">
 			<printWhenExpression><![CDATA[($F{debe}.doubleValue() != 0.00 || $F{haber}.doubleValue() !=0.00)]]></printWhenExpression>
 			<textField pattern="dd/MM/yyyy">
 				<reportElement x="4" y="0" width="50" height="12" uuid="c6a17410-9f13-4175-acf6-808e7437cdbc">
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<printWhenExpression><![CDATA[$P{ShowHeader}.equals( "Y" )]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -472,6 +461,7 @@ Order By EV.Value,FA.DateAcct,FA.RECORD_ID,FA.Fact_Acct_ID]]>
 			<textField pattern="#,##0.00#">
 				<reportElement x="279" y="0" width="91" height="12" uuid="7d2fb78a-3416-4d9f-99f3-379c0e1b580c">
 					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
 					<printWhenExpression><![CDATA[$P{ShowHeader}.equals( "Y" )]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -507,18 +497,15 @@ Order By EV.Value,FA.DateAcct,FA.RECORD_ID,FA.Fact_Acct_ID]]>
 				<textFieldExpression><![CDATA[$V{totalacumuladoxcuenta}.add( $V{sumtotalsaldo} )]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="0" y="12" width="554" height="1" uuid="5bebfca2-e3a1-4624-bb95-493465fcc689">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<reportElement x="0" y="33" width="554" height="1" uuid="5bebfca2-e3a1-4624-bb95-493465fcc689">
 					<printWhenExpression><![CDATA[$P{ShowHeader}.equals( "Y" )]]></printWhenExpression>
 				</reportElement>
 			</line>
 			<textField pattern="#,##0.00#">
-				<reportElement x="444" y="0" width="55" height="11" uuid="86b72d26-10e4-49ce-938c-afbf3121c47e">
+				<reportElement x="370" y="16" width="99" height="13" uuid="86b72d26-10e4-49ce-938c-afbf3121c47e">
 					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<printWhenExpression><![CDATA[$P{ShowHeader}.equals( "N" )]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -528,10 +515,8 @@ Order By EV.Value,FA.DateAcct,FA.RECORD_ID,FA.Fact_Acct_ID]]>
 				<textFieldExpression><![CDATA[$F{haber}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement x="130" y="0" width="34" height="11" uuid="a7c23bfb-0d24-4ef0-bdb0-9b6d238fe258">
+				<reportElement x="5" y="16" width="34" height="12" uuid="a7c23bfb-0d24-4ef0-bdb0-9b6d238fe258">
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<printWhenExpression><![CDATA[$P{ShowHeader}.equals( "N" )]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -540,8 +525,7 @@ Order By EV.Value,FA.DateAcct,FA.RECORD_ID,FA.Fact_Acct_ID]]>
 				<textFieldExpression><![CDATA[$F{dateacct}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="164" y="0" width="24" height="11" uuid="4b54fa1e-02a1-4f53-8cb0-2d66315dda2a">
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<reportElement x="55" y="16" width="34" height="12" uuid="4b54fa1e-02a1-4f53-8cb0-2d66315dda2a">
 					<printWhenExpression><![CDATA[$P{ShowHeader}.equals( "N" )]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -550,8 +534,7 @@ Order By EV.Value,FA.DateAcct,FA.RECORD_ID,FA.Fact_Acct_ID]]>
 				<textFieldExpression><![CDATA[$F{documentno}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="188" y="0" width="52" height="11" uuid="6da7b0d1-2688-47a6-9620-3d62f4c24118">
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<reportElement x="89" y="16" width="62" height="12" uuid="6da7b0d1-2688-47a6-9620-3d62f4c24118">
 					<printWhenExpression><![CDATA[$P{ShowHeader}.equals( "N" )]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Middle">
@@ -560,10 +543,9 @@ Order By EV.Value,FA.DateAcct,FA.RECORD_ID,FA.Fact_Acct_ID]]>
 				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00#">
-				<reportElement x="388" y="0" width="55" height="11" uuid="9947d80a-55a5-49ab-a1f7-88abb8617616">
+				<reportElement x="280" y="16" width="91" height="12" uuid="9947d80a-55a5-49ab-a1f7-88abb8617616">
 					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
 					<printWhenExpression><![CDATA[$P{ShowHeader}.equals( "N" )]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -573,10 +555,10 @@ Order By EV.Value,FA.DateAcct,FA.RECORD_ID,FA.Fact_Acct_ID]]>
 				<textFieldExpression><![CDATA[$F{debe}]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Band" pattern="#,##0.00#">
-				<reportElement x="499" y="0" width="55" height="11" uuid="00dd29fa-ae3d-49ef-927c-38ca8b18e5fb">
+				<reportElement x="468" y="16" width="88" height="12" uuid="00dd29fa-ae3d-49ef-927c-38ca8b18e5fb">
 					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<printWhenExpression><![CDATA[$P{ShowHeader}.equals( "N" )]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -586,24 +568,13 @@ Order By EV.Value,FA.DateAcct,FA.RECORD_ID,FA.Fact_Acct_ID]]>
 				<textFieldExpression><![CDATA[$V{totalacumuladoxcuenta}.add( $V{sumtotalsaldo} )]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="240" y="0" width="148" height="11" uuid="d044a362-f631-471a-96f3-ea04ea581b45">
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				<reportElement x="151" y="16" width="108" height="12" uuid="d044a362-f631-471a-96f3-ea04ea581b45">
 					<printWhenExpression><![CDATA[$P{ShowHeader}.equals( "N" )]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font fontName="Arial" size="4"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="4" y="0" width="126" height="11" uuid="1f89e372-6bf6-400c-9850-cc843c1d8e5b">
-					<property name="com.jaspersoft.studio.unit.y" value="px"/>
-					<printWhenExpression><![CDATA[$P{ShowHeader}.equals( "N" )]]></printWhenExpression>
-				</reportElement>
-				<textElement verticalAlignment="Middle">
-					<font fontName="ARIAL" size="4" isBold="true" isItalic="false"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{cuenta}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

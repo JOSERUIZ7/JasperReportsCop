@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ASCII"?>
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_oJLFUfq1EeuI1-M_HkGmtw" elementId="org.eclipse.e4.legacy.ide.application" contributorURI="platform:/plugin/org.eclipse.ui.workbench" selectedElement="_oJLFUvq1EeuI1-M_HkGmtw" bindingContexts="_oJLFW_q1EeuI1-M_HkGmtw">
-  <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;workbench>&#xD;&#xA;&lt;mruList>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;RPT_Account_Status_Report_new.jrxml&quot; tooltip=&quot;MyReports/RPT_Account_Status_Report_new.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/RPT_Account_Status_Report_new.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;EntryTicketPOS.jrxml&quot; tooltip=&quot;MyReports/EntryTicketPOS.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/EntryTicketPOS.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;Letter_Blank.jrxml&quot; tooltip=&quot;MyReports/Letter_Blank.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/Letter_Blank.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;RPT_ISLR_Withholdingsold.jrxml&quot; tooltip=&quot;MyReports/RPT_ISLR_Withholdingsold.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/RPT_ISLR_Withholdingsold.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;RPT_Production_Trace.jrxml&quot; tooltip=&quot;MyReports/RPT_Production_Trace.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/RPT_Production_Trace.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;RPT_ISLR_Withholdings-V1.jrxml&quot; tooltip=&quot;MyReports/RPT_ISLR_Withholdings-V1.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/RPT_ISLR_Withholdings-V1.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;RPT_Cop_RV_Payment.jrxml&quot; tooltip=&quot;MyReports/RPT_Cop_RV_Payment.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/RPT_Cop_RV_Payment.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;FTUAging_v1.jrxml&quot; tooltip=&quot;MyReports/FTUAging_v1.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/FTUAging_v1.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;RPT_ISLR_Withholdings.jrxml&quot; tooltip=&quot;MyReports/RPT_ISLR_Withholdings.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/RPT_ISLR_Withholdings.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;RV_Cop_M_Transaction_List_V2.jrxml&quot; tooltip=&quot;MyReports/RV_Cop_M_Transaction_List_V2.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/RV_Cop_M_Transaction_List_V2.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;FTUAging_v1_region.jrxml&quot; tooltip=&quot;MyReports/FTUAging_v1_region.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/FTUAging_v1_region.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;Voucher_Withholdingcoposa.jrxml&quot; tooltip=&quot;MyReports/Voucher_Withholdingcoposa.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/Voucher_Withholdingcoposa.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;RPT_ARCV_Withholdings.jrxml&quot; tooltip=&quot;MyReports/RPT_ARCV_Withholdings.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/RPT_ARCV_Withholdings.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;RPT_Record_Weight_Status.jrxml&quot; tooltip=&quot;MyReports/RPT_Record_Weight_Status.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/RPT_Record_Weight_Status.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;/mruList>&#xD;&#xA;&lt;/workbench>"/>
+  <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;workbench>&#xD;&#xA;&lt;mruList>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;RV_Cop_M_Transaction_List_V2.jrxml&quot; tooltip=&quot;MyReports/RV_Cop_M_Transaction_List_V2.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/RV_Cop_M_Transaction_List_V2.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;LedgerDetailed.jrxml&quot; tooltip=&quot;MyReports/LedgerDetailed.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/LedgerDetailed.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;RPT_Account_Status_Report_new.jrxml&quot; tooltip=&quot;MyReports/RPT_Account_Status_Report_new.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/RPT_Account_Status_Report_new.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;EntryTicketPOS.jrxml&quot; tooltip=&quot;MyReports/EntryTicketPOS.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/EntryTicketPOS.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;Letter_Blank.jrxml&quot; tooltip=&quot;MyReports/Letter_Blank.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/Letter_Blank.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;RPT_ISLR_Withholdingsold.jrxml&quot; tooltip=&quot;MyReports/RPT_ISLR_Withholdingsold.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/RPT_ISLR_Withholdingsold.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;RPT_Production_Trace.jrxml&quot; tooltip=&quot;MyReports/RPT_Production_Trace.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/RPT_Production_Trace.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;RPT_ISLR_Withholdings-V1.jrxml&quot; tooltip=&quot;MyReports/RPT_ISLR_Withholdings-V1.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/RPT_ISLR_Withholdings-V1.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;RPT_Cop_RV_Payment.jrxml&quot; tooltip=&quot;MyReports/RPT_Cop_RV_Payment.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/RPT_Cop_RV_Payment.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;FTUAging_v1.jrxml&quot; tooltip=&quot;MyReports/FTUAging_v1.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/FTUAging_v1.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;RPT_ISLR_Withholdings.jrxml&quot; tooltip=&quot;MyReports/RPT_ISLR_Withholdings.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/RPT_ISLR_Withholdings.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;FTUAging_v1_region.jrxml&quot; tooltip=&quot;MyReports/FTUAging_v1_region.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/FTUAging_v1_region.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;Voucher_Withholdingcoposa.jrxml&quot; tooltip=&quot;MyReports/Voucher_Withholdingcoposa.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/Voucher_Withholdingcoposa.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;RPT_ARCV_Withholdings.jrxml&quot; tooltip=&quot;MyReports/RPT_ARCV_Withholdings.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/RPT_ARCV_Withholdings.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;RPT_Record_Weight_Status.jrxml&quot; tooltip=&quot;MyReports/RPT_Record_Weight_Status.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/RPT_Record_Weight_Status.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;/mruList>&#xD;&#xA;&lt;/workbench>"/>
   <tags>activeSchemeId:org.eclipse.ui.defaultAcceleratorConfiguration</tags>
   <children xsi:type="basic:TrimmedWindow" xmi:id="_oJLFUvq1EeuI1-M_HkGmtw" elementId="IDEWindow" contributorURI="platform:/plugin/org.eclipse.ui.workbench" selectedElement="_pKyTWPq1EeuI1-M_HkGmtw" x="0" y="0" width="1391" height="768">
     <persistedState key="coolBarVisible" value="true"/>
@@ -10,6 +10,7 @@
     <persistedState key="workingSets" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;workingSets/>"/>
     <persistedState key="aggregateWorkingSetId" value="Aggregate for window 1628695506674"/>
     <tags>topLevel</tags>
+    <tags>shellMaximized</tags>
     <children xsi:type="basic:PartSashContainer" xmi:id="_pKyTWPq1EeuI1-M_HkGmtw" selectedElement="_pKyTWfq1EeuI1-M_HkGmtw" horizontal="true">
       <children xsi:type="advanced:PerspectiveStack" xmi:id="_pKyTWfq1EeuI1-M_HkGmtw" elementId="org.eclipse.ui.ide.perspectivestack" containerData="7500" selectedElement="_pQ47V_q1EeuI1-M_HkGmtw">
         <children xsi:type="advanced:Perspective" xmi:id="_pQ47V_q1EeuI1-M_HkGmtw" elementId="com.jaspersoft.studio.ReportDesignPerspective" selectedElement="_pQ47WPq1EeuI1-M_HkGmtw" label="Report Design" iconURI="platform:/plugin/com.jaspersoft.studio/icons/jr_icon.png">
@@ -22,7 +23,7 @@
           <tags>persp.actionSet:org.eclipse.ui.externaltools.ExternalToolsSet</tags>
           <tags>persp.actionSet:org.eclipse.search.searchActionSet</tags>
           <children xsi:type="basic:PartSashContainer" xmi:id="_pQ47WPq1EeuI1-M_HkGmtw" selectedElement="_pQ47X_q1EeuI1-M_HkGmtw" horizontal="true">
-            <children xsi:type="basic:PartSashContainer" xmi:id="_pQ47Wfq1EeuI1-M_HkGmtw" containerData="2907" selectedElement="_pQ47Wvq1EeuI1-M_HkGmtw">
+            <children xsi:type="basic:PartSashContainer" xmi:id="_pQ47Wfq1EeuI1-M_HkGmtw" containerData="1333" selectedElement="_pQ47Xfq1EeuI1-M_HkGmtw">
               <children xsi:type="basic:PartStack" xmi:id="_pQ47Wvq1EeuI1-M_HkGmtw" elementId="com.jaspersoft.studio.RepositoryMStack" containerData="5000" selectedElement="_pQ47XPq1EeuI1-M_HkGmtw">
                 <children xsi:type="advanced:Placeholder" xmi:id="_pQ47W_q1EeuI1-M_HkGmtw" elementId="com.jaspersoft.studio.Repository" ref="_pQ47UPq1EeuI1-M_HkGmtw" closeable="true">
                   <tags>View</tags>
@@ -40,18 +41,17 @@
                 </children>
               </children>
             </children>
-            <children xsi:type="basic:PartSashContainer" xmi:id="_pQ47X_q1EeuI1-M_HkGmtw" containerData="7093" selectedElement="_pQ47ZPq1EeuI1-M_HkGmtw" horizontal="true">
-              <children xsi:type="basic:PartSashContainer" xmi:id="_pQ47YPq1EeuI1-M_HkGmtw" containerData="6348" selectedElement="_pQ47Yvq1EeuI1-M_HkGmtw">
+            <children xsi:type="basic:PartSashContainer" xmi:id="_pQ47X_q1EeuI1-M_HkGmtw" containerData="8667" selectedElement="_pQ47YPq1EeuI1-M_HkGmtw" horizontal="true">
+              <children xsi:type="basic:PartSashContainer" xmi:id="_pQ47YPq1EeuI1-M_HkGmtw" containerData="7181" selectedElement="_pQ47Yfq1EeuI1-M_HkGmtw">
                 <children xsi:type="advanced:Placeholder" xmi:id="_pQ47Yfq1EeuI1-M_HkGmtw" elementId="org.eclipse.ui.editorss" containerData="8182" ref="_pQvKUPq1EeuI1-M_HkGmtw"/>
                 <children xsi:type="basic:PartStack" xmi:id="_pQ47Yvq1EeuI1-M_HkGmtw" elementId="com.jaspersoft.studio.editor.preview.reportstateMStack" containerData="1818" selectedElement="_pQ47Y_q1EeuI1-M_HkGmtw">
-                  <tags>noFocus</tags>
                   <children xsi:type="advanced:Placeholder" xmi:id="_pQ47Y_q1EeuI1-M_HkGmtw" elementId="com.jaspersoft.studio.editor.preview.reportstate" ref="_pQ47Vvq1EeuI1-M_HkGmtw" closeable="true">
                     <tags>View</tags>
                     <tags>categoryTag:Jaspersoft Studio</tags>
                   </children>
                 </children>
               </children>
-              <children xsi:type="basic:PartSashContainer" xmi:id="_pQ47ZPq1EeuI1-M_HkGmtw" containerData="3652" selectedElement="_pQ47Z_q1EeuI1-M_HkGmtw">
+              <children xsi:type="basic:PartSashContainer" xmi:id="_pQ47ZPq1EeuI1-M_HkGmtw" containerData="2819" selectedElement="_pQ47Z_q1EeuI1-M_HkGmtw">
                 <children xsi:type="basic:PartStack" xmi:id="_pQ47Zfq1EeuI1-M_HkGmtw" elementId="org.eclipse.gef.ui.palette_viewMStack" containerData="4000" selectedElement="_pQ47Zvq1EeuI1-M_HkGmtw">
                   <children xsi:type="advanced:Placeholder" xmi:id="_pQ47Zvq1EeuI1-M_HkGmtw" elementId="org.eclipse.gef.ui.palette_view" ref="_pQ47U_q1EeuI1-M_HkGmtw" closeable="true">
                     <tags>View</tags>
@@ -59,7 +59,6 @@
                   </children>
                 </children>
                 <children xsi:type="basic:PartStack" xmi:id="_pQ47Z_q1EeuI1-M_HkGmtw" elementId="org.eclipse.ui.views.PropertySheetMStack" containerData="6000" selectedElement="_pQ47aPq1EeuI1-M_HkGmtw">
-                  <tags>active</tags>
                   <children xsi:type="advanced:Placeholder" xmi:id="_pQ47aPq1EeuI1-M_HkGmtw" elementId="org.eclipse.ui.views.PropertySheet" ref="_pQ47VPq1EeuI1-M_HkGmtw" closeable="true">
                     <tags>View</tags>
                     <tags>categoryTag:General</tags>
@@ -114,9 +113,18 @@
       <tags>categoryTag:Help</tags>
     </sharedElements>
     <sharedElements xsi:type="advanced:Area" xmi:id="_pQvKUPq1EeuI1-M_HkGmtw" elementId="org.eclipse.ui.editorss" selectedElement="_pQvKUfq1EeuI1-M_HkGmtw">
-      <children xsi:type="basic:PartStack" xmi:id="_pQvKUfq1EeuI1-M_HkGmtw" elementId="org.eclipse.e4.primaryDataStack">
+      <children xsi:type="basic:PartStack" xmi:id="_pQvKUfq1EeuI1-M_HkGmtw" elementId="org.eclipse.e4.primaryDataStack" selectedElement="_0xYewA8IEeyBf4UsLOEQng">
         <tags>org.eclipse.e4.primaryDataStack</tags>
         <tags>EditorStack</tags>
+        <tags>active</tags>
+        <children xsi:type="basic:Part" xmi:id="_0xYewA8IEeyBf4UsLOEQng" elementId="org.eclipse.e4.ui.compatibility.editor" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor" label="LedgerDetailed.jrxml" iconURI="platform:/plugin/com.jaspersoft.studio/icons/jrxml_icon.png" closeable="true">
+          <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;editor id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;LedgerDetailed.jrxml&quot; partName=&quot;LedgerDetailed.jrxml&quot; title=&quot;LedgerDetailed.jrxml&quot; tooltip=&quot;MyReports/LedgerDetailed.jrxml&quot;>&#xD;&#xA;&lt;input factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; path=&quot;/MyReports/LedgerDetailed.jrxml&quot;/>&#xD;&#xA;&lt;/editor>"/>
+          <tags>Editor</tags>
+          <tags>removeOnHide</tags>
+          <tags>com.jaspersoft.studio.editor.JrxmlEditor</tags>
+          <tags>active</tags>
+          <tags>activeOnClose</tags>
+        </children>
       </children>
     </sharedElements>
     <sharedElements xsi:type="basic:Part" xmi:id="_pQ47UPq1EeuI1-M_HkGmtw" elementId="com.jaspersoft.studio.Repository" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView" label="Repository Explorer" iconURI="platform:/plugin/com.jaspersoft.studio/icons/jr_icon.png" tooltip="" closeable="true">
@@ -173,8 +181,6 @@
       <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;view/>"/>
       <tags>View</tags>
       <tags>categoryTag:General</tags>
-      <tags>active</tags>
-      <tags>activeOnClose</tags>
       <menus xmi:id="_pXSeQPq1EeuI1-M_HkGmtw" elementId="org.eclipse.ui.views.PropertySheet">
         <tags>ViewMenu</tags>
         <tags>menuContribution:menu</tags>
@@ -212,7 +218,7 @@
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_pMuNAvq1EeuI1-M_HkGmtw" elementId="org.eclipse.ui.workbench.file">
         <tags>Draggable</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_KZpT0AvsEeyKCuoIAEW6mg" elementId="print" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/print_edit.png" tooltip="Print" command="_oJw7mPq1EeuI1-M_HkGmtw"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_iZ6_QA8IEeyBf4UsLOEQng" elementId="print" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/print_edit.png" tooltip="Print" command="_oJw7mPq1EeuI1-M_HkGmtw"/>
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_pMuNA_q1EeuI1-M_HkGmtw" elementId="additions" toBeRendered="false">
         <tags>toolbarSeparator</tags>
@@ -230,12 +236,12 @@
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_pMuNB_q1EeuI1-M_HkGmtw" elementId="org.eclipse.ui.workbench.navigate">
         <tags>Draggable</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_KZsXIAvsEeyKCuoIAEW6mg" elementId="org.eclipse.ui.window.pinEditor" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/pin_editor.png" tooltip="Pin Editor" enabled="false" type="Check" command="_oJnLsPq1EeuI1-M_HkGmtw"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_iZ6_Sw8IEeyBf4UsLOEQng" elementId="org.eclipse.ui.window.pinEditor" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/pin_editor.png" tooltip="Pin Editor" type="Check" command="_oJnLsPq1EeuI1-M_HkGmtw"/>
       </children>
-      <children xsi:type="menu:ToolBar" xmi:id="_WFqqUPq6EeuI1-M_HkGmtw" elementId="com.jaspersoft.studio.graphic.text" visible="false">
+      <children xsi:type="menu:ToolBar" xmi:id="_WFqqUPq6EeuI1-M_HkGmtw" elementId="com.jaspersoft.studio.graphic.text">
         <tags>Draggable</tags>
       </children>
-      <children xsi:type="menu:ToolBar" xmi:id="_WPVjsPq6EeuI1-M_HkGmtw" elementId="com.jaspersoft.studio.graphic.size" visible="false">
+      <children xsi:type="menu:ToolBar" xmi:id="_WPVjsPq6EeuI1-M_HkGmtw" elementId="com.jaspersoft.studio.graphic.size">
         <tags>Draggable</tags>
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_TAVCUPrAEeuI1-M_HkGmtw" elementId="com.jaspersoft.studio.graphic.image" visible="false">
@@ -2027,7 +2033,7 @@
   <addons xmi:id="_oJLFZ_q1EeuI1-M_HkGmtw" elementId="MinMax Addon" contributorURI="platform:/plugin/org.eclipse.ui.workbench" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.MinMaxAddon"/>
   <addons xmi:id="_oJLFaPq1EeuI1-M_HkGmtw" elementId="org.eclipse.ui.workbench.addon.0" contributorURI="platform:/plugin/org.eclipse.ui.workbench" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
   <addons xmi:id="_oJUPQPq1EeuI1-M_HkGmtw" elementId="SplitterAddon" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.splitteraddon.SplitterAddon"/>
-  <addons xmi:id="_IYS0IKimEeS11vbz3f9ezw" elementId="org.eclipse.ui.ide.addon.0" contributorURI="platform:/plugin/org.eclipse.ui.ide" contributionURI="bundleclass://org.eclipse.ui.ide/org.eclipse.ui.internal.ide.addons.SaveAllDirtyPartsAddon"/>
+  <addons xmi:id="_cwqQsQ8IEeyBf4UsLOEQng" elementId="org.eclipse.ui.ide.addon.0" contributionURI="bundleclass://org.eclipse.ui.ide/org.eclipse.ui.internal.ide.addons.SaveAllDirtyPartsAddon"/>
   <categories xmi:id="_oJnKMPq1EeuI1-M_HkGmtw" elementId="org.eclipse.ui.category.views" name="Views" description="Commands for opening views"/>
   <categories xmi:id="_oJnKMfq1EeuI1-M_HkGmtw" elementId="org.eclipse.team.ui.category.team" name="Version control (Team)" description="Actions that apply when working with a version control system"/>
   <categories xmi:id="_oJnKMvq1EeuI1-M_HkGmtw" elementId="org.eclipse.ui.category.edit" name="Edit"/>
