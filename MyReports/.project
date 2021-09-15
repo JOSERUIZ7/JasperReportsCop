@@ -20,4 +20,11 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>net.sf.jasperreports.nature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>Bill_of_Lading_CrossTab_origen.jrxml</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/Bill_of_Lading_CrossTab_origen.jrxml</location>
+		</link>
+	</linkedResources>
 </projectDescription>
