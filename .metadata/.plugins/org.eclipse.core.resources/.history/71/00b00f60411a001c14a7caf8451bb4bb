@@ -45,13 +45,12 @@ cb.name partner,et.documentno ticket,
 
 	case when $P{OperationType} is not null then 'Solo operacion Tipo:' || $P{OperationType} || CHR(13) else '' end ||
 	' DESDE: '|| substring($P{DateFrom},9,2) || '/'|| substring($P{DateFrom},6,2) ||'/'|| substring($P{DateFrom},1,4)
-|| ' - HASTA:'||  substring($P{DateTo},9,2) || '/'|| substring($P{DateTo},6,2) ||'/'|| substring($P{DateTo},1,4) 
-|| case when $P{DocStatus} is not null THEN ' Estado documento:' ||   $P{DocStatus} else '' end 
+|| ' - HASTA:'||  substring($P{DateTo},9,2) || '/'|| substring($P{DateTo},6,2) ||'/'|| substring($P{DateTo},1,4) || CHR(13)
+|| case when $P{DocStatus} is not null THEN ' Estado documento:' ||   $P{DocStatus} || 
 
-|| CASE WHEN $P{IsVin} = 'Y' then ' - Solo Ventas Industriales' 
-when $P{IsVin} = 'N' then '  - Sin Ventas Industriales' 
+CASE WHEN $P{IsVin} = 'Y' then 'Solo Ventas Industriales' 
+when $P{IsVin} = 'N' then 'Sin Ventas Industriales' end 
 else '' END  doc_info,
-
    CASE WHEN e1.m_warehouse_id = 1010397::numeric THEN 'Y'::text
             ELSE 'N'::text
         END AS isvin
@@ -360,14 +359,14 @@ order by
 				<textFieldExpression><![CDATA[new SimpleDateFormat("h:mm a").format(new java.util.Date())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="110" y="17" width="364" height="68" uuid="ce801d77-9b36-4437-b1f3-8edfac7a8538">
+				<reportElement x="110" y="17" width="364" height="53" uuid="ce801d77-9b36-4437-b1f3-8edfac7a8538">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center">
-					<font size="6" isBold="true"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{doc_info}]]></textFieldExpression>
 			</textField>

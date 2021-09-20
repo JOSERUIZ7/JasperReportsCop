@@ -23,7 +23,7 @@
           <tags>persp.actionSet:org.eclipse.ui.externaltools.ExternalToolsSet</tags>
           <tags>persp.actionSet:org.eclipse.search.searchActionSet</tags>
           <children xsi:type="basic:PartSashContainer" xmi:id="_DOzVFBchEeyGMYY9kfWGrQ" selectedElement="_DOzVGxchEeyGMYY9kfWGrQ" horizontal="true">
-            <children xsi:type="basic:PartSashContainer" xmi:id="_DOzVFRchEeyGMYY9kfWGrQ" containerData="2306" selectedElement="_DOzVFhchEeyGMYY9kfWGrQ">
+            <children xsi:type="basic:PartSashContainer" xmi:id="_DOzVFRchEeyGMYY9kfWGrQ" containerData="2306" selectedElement="_DOzVGRchEeyGMYY9kfWGrQ">
               <children xsi:type="basic:PartStack" xmi:id="_DOzVFhchEeyGMYY9kfWGrQ" elementId="com.jaspersoft.studio.RepositoryMStack" containerData="5000" selectedElement="_DOzVGBchEeyGMYY9kfWGrQ">
                 <children xsi:type="advanced:Placeholder" xmi:id="_DOzVFxchEeyGMYY9kfWGrQ" elementId="com.jaspersoft.studio.Repository" ref="_DOzWPRchEeyGMYY9kfWGrQ" closeable="true">
                   <tags>View</tags>
@@ -118,13 +118,13 @@
         <tags>org.eclipse.e4.primaryDataStack</tags>
         <tags>EditorStack</tags>
         <tags>active</tags>
-        <tags>noFocus</tags>
         <children xsi:type="basic:Part" xmi:id="_DOzWORchEeyGMYY9kfWGrQ" elementId="org.eclipse.e4.ui.compatibility.editor" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor" label="RPT_Record_Weight_Status.jrxml" iconURI="platform:/plugin/com.jaspersoft.studio/icons/jrxml_icon.png" closeable="true">
           <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;editor id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;RPT_Record_Weight_Status.jrxml&quot; partName=&quot;RPT_Record_Weight_Status.jrxml&quot; title=&quot;RPT_Record_Weight_Status.jrxml&quot; tooltip=&quot;MyReports/RPT_Record_Weight_Status.jrxml&quot;>&#xD;&#xA;&lt;input factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; path=&quot;/MyReports/RPT_Record_Weight_Status.jrxml&quot;/>&#xD;&#xA;&lt;/editor>"/>
           <tags>Editor</tags>
           <tags>removeOnHide</tags>
           <tags>com.jaspersoft.studio.editor.JrxmlEditor</tags>
           <tags>active</tags>
+          <tags>activeOnClose</tags>
         </children>
       </children>
     </sharedElements>
@@ -219,7 +219,7 @@
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_DOz8ghchEeyGMYY9kfWGrQ" elementId="org.eclipse.ui.workbench.file">
         <tags>Draggable</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_DOz8ihchEeyGMYY9kfWGrQ" elementId="print" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/print_edit.png" tooltip="Print" command="_DO2ZyhchEeyGMYY9kfWGrQ"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_c0AFABo_Eey-os7VJS0m2Q" elementId="print" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/print_edit.png" tooltip="Print" command="_DO2ZyhchEeyGMYY9kfWGrQ"/>
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_DOz8kBchEeyGMYY9kfWGrQ" elementId="additions" toBeRendered="false">
         <tags>toolbarSeparator</tags>
@@ -237,7 +237,7 @@
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_DOz8sBchEeyGMYY9kfWGrQ" elementId="org.eclipse.ui.workbench.navigate">
         <tags>Draggable</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_DOz8thchEeyGMYY9kfWGrQ" elementId="org.eclipse.ui.window.pinEditor" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/pin_editor.png" tooltip="Pin Editor" type="Check" command="_DO2ZSRchEeyGMYY9kfWGrQ"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_c0AFCxo_Eey-os7VJS0m2Q" elementId="org.eclipse.ui.window.pinEditor" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/pin_editor.png" tooltip="Pin Editor" type="Check" command="_DO2ZSRchEeyGMYY9kfWGrQ"/>
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_DOz8uxchEeyGMYY9kfWGrQ" elementId="com.jaspersoft.studio.graphic.text" visible="false">
         <tags>Draggable</tags>
@@ -249,9 +249,6 @@
         <tags>Draggable</tags>
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_DOz8vhchEeyGMYY9kfWGrQ" elementId="com.jaspersoft.studio.graphic.create" visible="false">
-        <tags>Draggable</tags>
-      </children>
-      <children xsi:type="menu:ToolBar" xmi:id="_DOz8vxchEeyGMYY9kfWGrQ" elementId="com.jaspersoft.studio.editor.JrxmlEditor">
         <tags>Draggable</tags>
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_DOz8xhchEeyGMYY9kfWGrQ" elementId="group.editor" toBeRendered="false">

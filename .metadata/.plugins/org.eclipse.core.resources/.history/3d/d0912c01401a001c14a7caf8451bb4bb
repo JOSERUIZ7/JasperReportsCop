@@ -15,7 +15,6 @@
 	</parameter>
 	<parameter name="DocStatus" class="java.lang.String"/>
 	<parameter name="OperationType" class="java.lang.String"/>
-	<parameter name="IsVin" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[select distinct a.datedoc,
 a.documentno pesada,ds1.name as RP_status,
@@ -45,16 +44,8 @@ cb.name partner,et.documentno ticket,
 
 	case when $P{OperationType} is not null then 'Solo operacion Tipo:' || $P{OperationType} || CHR(13) else '' end ||
 	' DESDE: '|| substring($P{DateFrom},9,2) || '/'|| substring($P{DateFrom},6,2) ||'/'|| substring($P{DateFrom},1,4)
-|| ' - HASTA:'||  substring($P{DateTo},9,2) || '/'|| substring($P{DateTo},6,2) ||'/'|| substring($P{DateTo},1,4) 
-|| case when $P{DocStatus} is not null THEN ' Estado documento:' ||   $P{DocStatus} else '' end 
-
-|| CASE WHEN $P{IsVin} = 'Y' then ' - Solo Ventas Industriales' 
-when $P{IsVin} = 'N' then '  - Sin Ventas Industriales' 
-else '' END  doc_info,
-
-   CASE WHEN e1.m_warehouse_id = 1010397::numeric THEN 'Y'::text
-            ELSE 'N'::text
-        END AS isvin
+|| ' - HASTA:'||  substring($P{DateTo},9,2) || '/'|| substring($P{DateTo},6,2) ||'/'|| substring($P{DateTo},1,4) || CHR(13)
+|| case when $P{DocStatus} is not null THEN ' Estado documento:' ||   $P{DocStatus} else '' END  doc_info
 from
 	ftu_recordweight a
 left join ftu_entryticket as et on
@@ -104,93 +95,69 @@ where
 	a.datedoc between $P{DateFrom} and $P{DateTo} 
 	   and (a.docstatus = $P{DocStatus} or  $P{DocStatus} is null) 
 	   and (a.OperationType = $P{OperationType} or  $P{OperationType} is null) 
-	   and (CASE WHEN e1.m_warehouse_id = 1010397::numeric THEN 'Y'::text
-            ELSE 'N'::text
-        END = $P{IsVin} or $P{IsVin} is null)
 order by
 	a.datedoc ,a.documentno,documento]]>
 	</queryString>
 	<field name="datedoc" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="datedoc"/>
 		<property name="com.jaspersoft.studio.field.label" value="datedoc"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="ftu_recordweight"/>
 	</field>
 	<field name="pesada" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="pesada"/>
 		<property name="com.jaspersoft.studio.field.label" value="pesada"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="ftu_recordweight"/>
 	</field>
 	<field name="rp_status" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="rp_status"/>
 		<property name="com.jaspersoft.studio.field.label" value="rp_status"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="ad_ref_list_trl"/>
 	</field>
 	<field name="t_operacion" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="t_operacion"/>
 		<property name="com.jaspersoft.studio.field.label" value="t_operacion"/>
 	</field>
 	<field name="ocarga" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ocarga"/>
 		<property name="com.jaspersoft.studio.field.label" value="ocarga"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="ftu_loadorder"/>
 	</field>
 	<field name="documento" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="documento"/>
 		<property name="com.jaspersoft.studio.field.label" value="documento"/>
 	</field>
 	<field name="doc_status" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="doc_status"/>
 		<property name="com.jaspersoft.studio.field.label" value="doc_status"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="ad_ref_list_trl"/>
 	</field>
 	<field name="tipo" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="tipo"/>
 		<property name="com.jaspersoft.studio.field.label" value="tipo"/>
 	</field>
 	<field name="producto" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="producto"/>
 		<property name="com.jaspersoft.studio.field.label" value="producto"/>
 	</field>
 	<field name="cant" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.name" value="cant"/>
 		<property name="com.jaspersoft.studio.field.label" value="cant"/>
 	</field>
 	<field name="uom" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="uom"/>
 		<property name="com.jaspersoft.studio.field.label" value="uom"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="c_uom"/>
 	</field>
 	<field name="c_orderline_id" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.name" value="c_orderline_id"/>
 		<property name="com.jaspersoft.studio.field.label" value="c_orderline_id"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="ftu_entryticket"/>
 	</field>
 	<field name="c_order_id" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.name" value="c_order_id"/>
 		<property name="com.jaspersoft.studio.field.label" value="c_order_id"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="ftu_entryticket"/>
 	</field>
 	<field name="partner" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="partner"/>
 		<property name="com.jaspersoft.studio.field.label" value="partner"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="c_bpartner"/>
 	</field>
 	<field name="ticket" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="ticket"/>
 		<property name="com.jaspersoft.studio.field.label" value="ticket"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="ftu_entryticket"/>
 	</field>
 	<field name="reponame" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="reponame"/>
 		<property name="com.jaspersoft.studio.field.label" value="reponame"/>
 	</field>
 	<field name="doc_info" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="doc_info"/>
 		<property name="com.jaspersoft.studio.field.label" value="doc_info"/>
-	</field>
-	<field name="isvin" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="isvin"/>
-		<property name="com.jaspersoft.studio.field.label" value="isvin"/>
 	</field>
 	<group name="fecha">
 		<groupExpression><![CDATA[$F{datedoc}]]></groupExpression>
@@ -360,14 +327,14 @@ order by
 				<textFieldExpression><![CDATA[new SimpleDateFormat("h:mm a").format(new java.util.Date())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="110" y="17" width="364" height="68" uuid="ce801d77-9b36-4437-b1f3-8edfac7a8538">
+				<reportElement x="110" y="17" width="364" height="53" uuid="ce801d77-9b36-4437-b1f3-8edfac7a8538">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center">
-					<font size="6" isBold="true"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{doc_info}]]></textFieldExpression>
 			</textField>
