@@ -26,15 +26,5 @@
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/Bill_of_Lading_CrossTab_origen.jrxml</location>
 		</link>
-		<link>
-			<name>FTUAging_v1_1.jrxml</name>
-			<type>1</type>
-			<location>C:/Users/pc08.inf/Desktop/FTUAging_v1.jrxml</location>
-		</link>
-		<link>
-			<name>FTUAging_v1_old.jrxml</name>
-			<type>1</type>
-			<location>C:/Users/pc08.inf/Desktop/FTUAging_v1_old.jrxml</location>
-		</link>
 	</linkedResources>
 </projectDescription>
