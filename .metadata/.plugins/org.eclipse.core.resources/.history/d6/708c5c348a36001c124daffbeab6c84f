@@ -359,11 +359,6 @@ order by
 		<property name="com.jaspersoft.studio.field.label" value="cop_vessel_id"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
 	</field>
-	<field name="cop_vessel_n" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="cop_vessel_n"/>
-		<property name="com.jaspersoft.studio.field.label" value="cop_vessel_n"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
-	</field>
 	<field name="reponame" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="reponame"/>
 		<property name="com.jaspersoft.studio.field.label" value="reponame"/>
@@ -569,7 +564,7 @@ order by
 				<textFieldExpression><![CDATA["Transporte"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="536" y="0" width="45" height="19" uuid="843a3b48-1b6f-4756-8d7a-5e07210897ac">
+				<reportElement x="536" y="0" width="22" height="19" uuid="843a3b48-1b6f-4756-8d7a-5e07210897ac">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -668,7 +663,7 @@ order by
 				<textFieldExpression><![CDATA["Nro Doc"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="581" y="0" width="84" height="19" uuid="522529f9-47a0-4be1-a137-325554fa7646">
+				<reportElement x="558" y="0" width="96" height="19" uuid="522529f9-47a0-4be1-a137-325554fa7646">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -786,7 +781,7 @@ order by
 				<textFieldExpression><![CDATA["Peso Coposa"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="665" y="0" width="87" height="19" uuid="4df2c751-0d33-4a13-b627-18ec24786949">
+				<reportElement x="654" y="0" width="96" height="19" uuid="4df2c751-0d33-4a13-b627-18ec24786949">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -904,7 +899,7 @@ order by
 				<textFieldExpression><![CDATA[$F{origintareweight}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0;#,##0-" isBlankWhenNull="true">
-				<reportElement x="536" y="0" width="45" height="8" isRemoveLineWhenBlank="true" uuid="bf9dd216-ccdb-4ff0-a559-e19820aabe3f">
+				<reportElement x="536" y="0" width="22" height="8" isRemoveLineWhenBlank="true" uuid="bf9dd216-ccdb-4ff0-a559-e19820aabe3f">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Center">
@@ -913,7 +908,7 @@ order by
 				<textFieldExpression><![CDATA[$F{order_doc}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="581" y="0" width="84" height="8" isRemoveLineWhenBlank="true" uuid="c80013fc-4271-4490-892b-d9eac1cdc112"/>
+				<reportElement x="558" y="0" width="96" height="8" isRemoveLineWhenBlank="true" uuid="c80013fc-4271-4490-892b-d9eac1cdc112"/>
 				<textElement textAlignment="Left">
 					<font fontName="Serif" size="5"/>
 				</textElement>
@@ -942,10 +937,10 @@ order by
 				<textElement>
 					<font fontName="Serif" size="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{cop_vessel_n}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{cop_vessel_id}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="665" y="0" width="87" height="8" isRemoveLineWhenBlank="true" uuid="650f16b4-ee93-41da-ae97-2952336418dc"/>
+				<reportElement x="654" y="0" width="96" height="8" isRemoveLineWhenBlank="true" uuid="650f16b4-ee93-41da-ae97-2952336418dc"/>
 				<textElement textAlignment="Left">
 					<font fontName="Serif" size="5"/>
 				</textElement>

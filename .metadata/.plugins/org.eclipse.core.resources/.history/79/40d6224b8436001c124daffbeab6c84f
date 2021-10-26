@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ControlSalidaMateriales" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="99c24662-fda7-4632-972a-9e50945c3950">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="QA"/>
 	<parameter name="RESOURCE_DIR" class="java.lang.String"/>
 	<parameter name="RECORD_ID" class="java.lang.Integer"/>
 	<queryString language="plsql">
@@ -431,7 +431,7 @@ where m.cop_inoutmaterial_id = $P{RECORD_ID}
 				<textFieldExpression><![CDATA[$F{referencedocno}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="57" y="68" width="273" height="13" uuid="91a2b73e-abf4-4e8a-991c-12f8c29b6417">
+				<reportElement x="57" y="68" width="74" height="13" uuid="91a2b73e-abf4-4e8a-991c-12f8c29b6417">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
@@ -450,7 +450,7 @@ where m.cop_inoutmaterial_id = $P{RECORD_ID}
 				<textFieldExpression><![CDATA["Requisicion: "]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="57" y="53" width="273" height="13" uuid="5658b9d5-105b-4717-bf58-17dfa7d2e8f5">
+				<reportElement x="57" y="53" width="74" height="13" uuid="5658b9d5-105b-4717-bf58-17dfa7d2e8f5">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
@@ -468,7 +468,7 @@ where m.cop_inoutmaterial_id = $P{RECORD_ID}
 				<text><![CDATA[Razon:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="57" y="80" width="273" height="14" uuid="eeecc710-31c4-4a9f-995d-e8973cd1bfc2">
+				<reportElement x="57" y="80" width="74" height="14" uuid="eeecc710-31c4-4a9f-995d-e8973cd1bfc2">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
