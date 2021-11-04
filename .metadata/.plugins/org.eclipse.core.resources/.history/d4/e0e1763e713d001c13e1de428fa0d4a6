@@ -7,15 +7,13 @@
 	<parameter name="RESOURCE_DIR" class="java.lang.String">
 		<defaultValueExpression><![CDATA["/"]]></defaultValueExpression>
 	</parameter>
-	<parameter name="DateTo" class="java.sql.Date">
-		<defaultValueExpression><![CDATA[NOW( )]]></defaultValueExpression>
-	</parameter>
+	<parameter name="DateTo" class="java.sql.Date"/>
 	<parameter name="DateFrom" class="java.sql.Date"/>
 	<parameter name="DocStatus" class="java.lang.String"/>
 	<parameter name="OperationType" class="java.lang.String"/>
 	<parameter name="IsVin" class="java.lang.String"/>
 	<parameter name="M_Product_ID" class="java.lang.Integer"/>
-	<queryString language="plsql">
+	<queryString>
 		<![CDATA[select 
 distinct a.datedoc,
 a.documentno pesada,ds1.name as RP_status,
@@ -50,9 +48,7 @@ cb.name partner,et.documentno ticket,
 
 || CASE WHEN $P{IsVin} = 'Y' then ' - Solo Ventas Industriales' 
 when $P{IsVin} = 'N' then '  - Sin Ventas Industriales' 
-else '' END  
-|| case when $P{M_Product_ID} is not null then '  - Solo producto: ' || mp.value || ' - ' || mp.name  else '' end 
-doc_info,
+else '' END  doc_info,
 
    CASE WHEN e1.m_warehouse_id = 1010397::numeric THEN 'Y'::text
             ELSE 'N'::text
@@ -73,11 +69,11 @@ left join M_InOutLine e on
 left join M_Movement d1 on
 	d1.M_Movement_ID = d.M_Movement_ID
 left join M_InOut e1 on
-	e1.M_InOut_ID = e.M_InOut_ID and e1.DocStatus  = 'CO'
+	e1.M_InOut_ID = e.M_InOut_ID
 
 
 left join M_InOut f1 on
-f1.FTU_RecordWeight_ID = a.FTU_RecordWeight_ID 
+	f1.FTU_RecordWeight_ID = a.FTU_RecordWeight_ID
 	
 left join m_inoutline  f on
 f.M_InOut_ID = f1.M_InOut_ID
@@ -103,13 +99,8 @@ where
 
 	left join c_uom cu on CU.C_UOM_ID = MP.C_UOM_ID
 where
-	   a.datedoc between $P{DateFrom} and $P{DateTo}
-	   and (a.docstatus = $P{DocStatus} or  $P{DocStatus} is null) 
-	   and (a.OperationType = $P{OperationType} or  $P{OperationType} is null) 
-	   and (CASE WHEN e1.m_warehouse_id = 1010397::numeric THEN 'Y'::text
-            ELSE 'N'::text
-            END = $P{IsVin} or $P{IsVin} is null)
-        and (mp.m_product_id = $P{M_Product_ID} or $P{M_Product_ID} is null)
+	a.datedoc between $P{DateFrom} and $P{DateTo}
+
 order by
 	a.datedoc ,a.documentno,documento]]>
 	</queryString>
@@ -363,7 +354,7 @@ order by
 				<textFieldExpression><![CDATA[new SimpleDateFormat("h:mm a").format(new java.util.Date())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="110" y="17" width="364" height="45" uuid="ce801d77-9b36-4437-b1f3-8edfac7a8538">
+				<reportElement x="110" y="17" width="364" height="68" uuid="ce801d77-9b36-4437-b1f3-8edfac7a8538">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -427,6 +418,10 @@ order by
 				</textElement>
 				<textFieldExpression><![CDATA["O.Compra"]]></textFieldExpression>
 			</textField>
+			<textField>
+				<reportElement x="220" y="23" width="184" height="30" uuid="6d6c9859-26c9-4e5a-8841-b2773c444f82"/>
+				<textFieldExpression><![CDATA[$P{M_Product_ID}]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageHeader>
 	<columnHeader>
@@ -440,7 +435,7 @@ order by
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement>
-					<font fontName="SansSerif" size="5"/>
+					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{producto}]]></textFieldExpression>
 			</textField>
@@ -450,7 +445,7 @@ order by
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Right">
-					<font fontName="SansSerif" size="5"/>
+					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cant}]]></textFieldExpression>
 			</textField>
@@ -459,7 +454,7 @@ order by
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement>
-					<font fontName="SansSerif" size="5"/>
+					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{doc_status}]]></textFieldExpression>
 			</textField>
@@ -468,7 +463,7 @@ order by
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement>
-					<font fontName="SansSerif" size="5"/>
+					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
 			</textField>
@@ -477,7 +472,7 @@ order by
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement>
-					<font fontName="SansSerif" size="5"/>
+					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{documento}]]></textFieldExpression>
 			</textField>
@@ -487,7 +482,7 @@ order by
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Right">
-					<font fontName="SansSerif" size="5"/>
+					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{uom}]]></textFieldExpression>
 			</textField>

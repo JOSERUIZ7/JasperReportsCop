@@ -10,7 +10,9 @@
 	<parameter name="DateTo" class="java.sql.Date">
 		<defaultValueExpression><![CDATA[NOW( )]]></defaultValueExpression>
 	</parameter>
-	<parameter name="DateFrom" class="java.sql.Date"/>
+	<parameter name="DateFrom" class="java.sql.Date">
+		<defaultValueExpression><![CDATA['2021-07-01']]></defaultValueExpression>
+	</parameter>
 	<parameter name="DocStatus" class="java.lang.String"/>
 	<parameter name="OperationType" class="java.lang.String"/>
 	<parameter name="IsVin" class="java.lang.String"/>
@@ -50,9 +52,7 @@ cb.name partner,et.documentno ticket,
 
 || CASE WHEN $P{IsVin} = 'Y' then ' - Solo Ventas Industriales' 
 when $P{IsVin} = 'N' then '  - Sin Ventas Industriales' 
-else '' END  
-|| case when $P{M_Product_ID} is not null then '  - Solo producto: ' || mp.value || ' - ' || mp.name  else '' end 
-doc_info,
+else '' END  doc_info,
 
    CASE WHEN e1.m_warehouse_id = 1010397::numeric THEN 'Y'::text
             ELSE 'N'::text
@@ -363,7 +363,7 @@ order by
 				<textFieldExpression><![CDATA[new SimpleDateFormat("h:mm a").format(new java.util.Date())]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="110" y="17" width="364" height="45" uuid="ce801d77-9b36-4437-b1f3-8edfac7a8538">
+				<reportElement x="110" y="17" width="364" height="68" uuid="ce801d77-9b36-4437-b1f3-8edfac7a8538">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -427,6 +427,10 @@ order by
 				</textElement>
 				<textFieldExpression><![CDATA["O.Compra"]]></textFieldExpression>
 			</textField>
+			<textField>
+				<reportElement x="220" y="23" width="184" height="30" uuid="6d6c9859-26c9-4e5a-8841-b2773c444f82"/>
+				<textFieldExpression><![CDATA[$P{M_Product_ID}]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageHeader>
 	<columnHeader>
@@ -440,7 +444,7 @@ order by
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement>
-					<font fontName="SansSerif" size="5"/>
+					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{producto}]]></textFieldExpression>
 			</textField>
@@ -450,7 +454,7 @@ order by
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Right">
-					<font fontName="SansSerif" size="5"/>
+					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cant}]]></textFieldExpression>
 			</textField>
@@ -459,7 +463,7 @@ order by
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement>
-					<font fontName="SansSerif" size="5"/>
+					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{doc_status}]]></textFieldExpression>
 			</textField>
@@ -468,7 +472,7 @@ order by
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement>
-					<font fontName="SansSerif" size="5"/>
+					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
 			</textField>
@@ -477,7 +481,7 @@ order by
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement>
-					<font fontName="SansSerif" size="5"/>
+					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{documento}]]></textFieldExpression>
 			</textField>
@@ -487,7 +491,7 @@ order by
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Right">
-					<font fontName="SansSerif" size="5"/>
+					<font size="6"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{uom}]]></textFieldExpression>
 			</textField>
