@@ -26,5 +26,35 @@
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/Bill_of_Lading_CrossTab_origen.jrxml</location>
 		</link>
+		<link>
+			<name>COP_RV_RecordWeight_V1 (1).jrxml</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/COP_RV_RecordWeight_V1 (1).jrxml</location>
+		</link>
+		<link>
+			<name>COP_RV_RecordWeight_V1 (1)_1.jrxml</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/COP_RV_RecordWeight_V1 (1).jrxml</location>
+		</link>
+		<link>
+			<name>Checking_Balance.jrxml</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/Checking_Balance.jrxml</location>
+		</link>
+		<link>
+			<name>LedgerDetailed (1).jrxml</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/LedgerDetailed (1).jrxml</location>
+		</link>
+		<link>
+			<name>LedgerDetailedold.jrxml</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/LedgerDetailedold.jrxml</location>
+		</link>
+		<link>
+			<name>Rpt_Inventory_General_Distributor_N_Suit.jrxml</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/Rpt_Inventory_General_Distributor_N_Suit.jrxml</location>
+		</link>
 	</linkedResources>
 </projectDescription>

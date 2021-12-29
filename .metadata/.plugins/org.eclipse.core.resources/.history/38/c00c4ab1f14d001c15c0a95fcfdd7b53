@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="test0001" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b3f40a76-d259-44d3-8aa9-ae61685e1af0">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="RESOURCE_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="C_Order_ID" class="java.lang.Integer"/>
+	<parameter name="OutDate1" class="java.sql.Timestamp"/>
+	<parameter name="OutDate2" class="java.sql.Timestamp"/>
+	<parameter name="ShowHeader" class="java.lang.String">
+		<defaultValueExpression><![CDATA["Y"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select
+	*,
+	'Reporte Control de Materia Prima N° Orden: ' || a.order_doc as  reponame
+	
+	 ,'DESDE: '|| substring($P{OutDate1}::text,9,2) || '/'|| substring($P{OutDate1}::text,6,2) ||'/'|| substring($P{OutDate1}::text,1,4)
+|| ' - HASTA:'||  substring($P{OutDate2}::text,9,2) || '/'|| substring($P{OutDate2}::text,6,2) ||'/'|| substring($P{OutDate2}::text,1,4) || CHR(13) doc_info
+from
+	COP_RV_RecordWeight a
+where
+	(a.c_order_id = $P{C_Order_ID} or $P{C_Order_ID} is null)	
+	and a.OperationType in ('RMR','PBR','ORW','RMP')
+ 	and a.docstatus = 'CO' 
+ 	and ((a.OutDate::date between $P{OutDate1} and $P{OutDate2}) or $P{OutDate1}::date is null )
+order by
+	a.order_doc, a.outdate , a.documentno]]>
+	</queryString>
+	<field name="ad_client_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ad_client_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="ad_client_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="ad_org_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ad_org_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="ad_org_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="isactive" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="isactive"/>
+		<property name="com.jaspersoft.studio.field.label" value="isactive"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="created" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="created"/>
+		<property name="com.jaspersoft.studio.field.label" value="created"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="createdby" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="createdby"/>
+		<property name="com.jaspersoft.studio.field.label" value="createdby"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="updated" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="updated"/>
+		<property name="com.jaspersoft.studio.field.label" value="updated"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="updatedby" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="updatedby"/>
+		<property name="com.jaspersoft.studio.field.label" value="updatedby"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="ftu_recordweight_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ftu_recordweight_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="ftu_recordweight_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="ftu_entryticket_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ftu_entryticket_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="ftu_entryticket_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="documentno_ticket" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="documentno_ticket"/>
+		<property name="com.jaspersoft.studio.field.label" value="documentno_ticket"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="ftu_driver_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ftu_driver_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="ftu_driver_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="ftu_vehicle_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ftu_vehicle_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="ftu_vehicle_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="m_product_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="m_product_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_product_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="m_shipper_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="m_shipper_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_shipper_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="referenceno" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="referenceno"/>
+		<property name="com.jaspersoft.studio.field.label" value="referenceno"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="trailerplate" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="trailerplate"/>
+		<property name="com.jaspersoft.studio.field.label" value="trailerplate"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="horometer" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="horometer"/>
+		<property name="com.jaspersoft.studio.field.label" value="horometer"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="odometer" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="odometer"/>
+		<property name="com.jaspersoft.studio.field.label" value="odometer"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="container_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="container_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="container_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="ftu_mobilizationguide_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ftu_mobilizationguide_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="ftu_mobilizationguide_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="ftu_loadorder_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ftu_loadorder_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="ftu_loadorder_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="documentno_load_order" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="documentno_load_order"/>
+		<property name="com.jaspersoft.studio.field.label" value="documentno_load_order"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="documentno" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="documentno"/>
+		<property name="com.jaspersoft.studio.field.label" value="documentno"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="grossweight" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="grossweight"/>
+		<property name="com.jaspersoft.studio.field.label" value="grossweight"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="netweight" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="netweight"/>
+		<property name="com.jaspersoft.studio.field.label" value="netweight"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="payweight" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="payweight"/>
+		<property name="com.jaspersoft.studio.field.label" value="payweight"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="tareweight" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="tareweight"/>
+		<property name="com.jaspersoft.studio.field.label" value="tareweight"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="weightstatus" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="weightstatus"/>
+		<property name="com.jaspersoft.studio.field.label" value="weightstatus"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="ftu_weightscale_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ftu_weightscale_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="ftu_weightscale_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="minweight" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="minweight"/>
+		<property name="com.jaspersoft.studio.field.label" value="minweight"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="maxweight" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="maxweight"/>
+		<property name="com.jaspersoft.studio.field.label" value="maxweight"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="m_warehouse_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="m_warehouse_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_warehouse_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="ftu_rw_approvalmotive_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ftu_rw_approvalmotive_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="ftu_rw_approvalmotive_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="ftu_chute_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ftu_chute_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="ftu_chute_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="hrs_analysis_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="hrs_analysis_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="hrs_analysis_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="driver_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="driver_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="driver_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="driver_phone" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="driver_phone"/>
+		<property name="com.jaspersoft.studio.field.label" value="driver_phone"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="vehicleplate" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="vehicleplate"/>
+		<property name="com.jaspersoft.studio.field.label" value="vehicleplate"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="shipper_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="shipper_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="shipper_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="code_driver" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="code_driver"/>
+		<property name="com.jaspersoft.studio.field.label" value="code_driver"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="datedoc" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="datedoc"/>
+		<property name="com.jaspersoft.studio.field.label" value="datedoc"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="indate" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="indate"/>
+		<property name="com.jaspersoft.studio.field.label" value="indate"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="outdate" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="outdate"/>
+		<property name="com.jaspersoft.studio.field.label" value="outdate"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="operationtype" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="operationtype"/>
+		<property name="com.jaspersoft.studio.field.label" value="operationtype"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="docstatus" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="docstatus"/>
+		<property name="com.jaspersoft.studio.field.label" value="docstatus"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="desc_load" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="desc_load"/>
+		<property name="com.jaspersoft.studio.field.label" value="desc_load"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="m_inout_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="m_inout_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_inout_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="m_movement_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="m_movement_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_movement_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="origintareweight" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="origintareweight"/>
+		<property name="com.jaspersoft.studio.field.label" value="origintareweight"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="origingrossweight" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="origingrossweight"/>
+		<property name="com.jaspersoft.studio.field.label" value="origingrossweight"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="originnetweight" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="originnetweight"/>
+		<property name="com.jaspersoft.studio.field.label" value="originnetweight"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="plates" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="plates"/>
+		<property name="com.jaspersoft.studio.field.label" value="plates"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="isvin" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="isvin"/>
+		<property name="com.jaspersoft.studio.field.label" value="isvin"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="guidesurvey" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="guidesurvey"/>
+		<property name="com.jaspersoft.studio.field.label" value="guidesurvey"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="dif_neto" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="dif_neto"/>
+		<property name="com.jaspersoft.studio.field.label" value="dif_neto"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="dif_tare" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="dif_tare"/>
+		<property name="com.jaspersoft.studio.field.label" value="dif_tare"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="tanknumber" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="tanknumber"/>
+		<property name="com.jaspersoft.studio.field.label" value="tanknumber"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="description" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="description"/>
+		<property name="com.jaspersoft.studio.field.label" value="description"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="c_bpartner_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="c_bpartner_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_bpartner_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="value" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="value"/>
+		<property name="com.jaspersoft.studio.field.label" value="value"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="c_bpartner_seller" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="c_bpartner_seller"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_bpartner_seller"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="c_order_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="c_order_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_order_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="order_doc" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="order_doc"/>
+		<property name="com.jaspersoft.studio.field.label" value="order_doc"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="m_product_nsell" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="m_product_nsell"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_product_nsell"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="guidesada" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="guidesada"/>
+		<property name="com.jaspersoft.studio.field.label" value="guidesada"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="cop_vessel_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="cop_vessel_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="cop_vessel_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="cop_vessel_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="cop_vessel_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="cop_vessel_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="guideorigen" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="guideorigen"/>
+		<property name="com.jaspersoft.studio.field.label" value="guideorigen"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="m_product_v" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="m_product_v"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_product_v"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_recordweight"/>
+	</field>
+	<field name="reponame" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="reponame"/>
+		<property name="com.jaspersoft.studio.field.label" value="reponame"/>
+	</field>
+	<field name="doc_info" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="doc_info"/>
+		<property name="com.jaspersoft.studio.field.label" value="doc_info"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
