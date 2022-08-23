@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT_Voting_Result" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5692675d-9539-4a34-8c74-2f648e259cbb">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="QA"/>
+	<parameter name="COP_AssemblyQuestions_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1000010]]></defaultValueExpression>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[select 
+SUM(x.ry1) * 100 / x.t_accion  RY1 ,SUM(x.rn1) * 100 / x.t_accion  RN1 ,
+SUM(x.ry2) * 100 / x.t_accion  RY2 ,SUM(x.rn2) * 100 / x.t_accion  RN2 ,
+SUM(x.ry3) * 100 / x.t_accion  RY3 ,SUM(x.rn3) * 100 / x.t_accion  RN3 ,
+SUM(x.ry4) * 100 / x.t_accion  RY4 ,SUM(x.rn4) * 100 / x.t_accion  RN4 ,
+SUM(x.ry5) * 100 / x.t_accion  RY5 ,SUM(x.rn5) * 100 / x.t_accion  RN5 ,
+SUM(x.ry6) * 100 / x.t_accion  RY6 ,SUM(x.rn6) * 100 / x.t_accion  RN6 ,
+SUM(x.ry7) * 100 / x.t_accion  RY7 ,SUM(x.rn7) * 100 / x.t_accion  RN7 ,
+SUM(x.ry8) * 100 / x.t_accion  RY8 ,SUM(x.rn8) * 100 / x.t_accion  RN8 ,
+x.t_accion from 
+(select 
+' Asamblea: '||F.Value||' Fecha: '||F.DateDoc::date||' Libro: '||D.Name||' Folio: '||F.ValueNumber AS "Acta_Asamblea",
+								a.COP_AssemblyRecord_Id,a.name,E.NAME C_BPARTNER_N ,c.description
+--								,d.Qty								
+	, case when split_part(c.description,'_',1 ::int) = 'SI' then E.Qty else 0 end ry1
+	, case when split_part(c.description,'_',1 ::int) = 'NO' then E.Qty else 0 end rn1
+	, case when split_part(c.description,'_',2 ::int) = 'SI' then E.Qty else 0 end ry2
+	, case when split_part(c.description,'_',2 ::int) = 'NO' then E.Qty else 0 end rn2
+	, case when split_part(c.description,'_',3 ::int) = 'SI' then E.Qty else 0 end ry3
+	, case when split_part(c.description,'_',3 ::int) = 'NO' then E.Qty else 0 end rn3
+	, case when split_part(c.description,'_',4 ::int) = 'SI' then E.Qty else 0 end ry4
+	, case when split_part(c.description,'_',4 ::int) = 'NO' then E.Qty else 0 end rn4
+	, case when split_part(c.description,'_',5 ::int) = 'SI' then E.Qty else 0 end ry5
+	, case when split_part(c.description,'_',5 ::int) = 'NO' then E.Qty else 0 end rn5
+	, case when split_part(c.description,'_',6 ::int) = 'SI' then E.Qty else 0 end ry6		
+	, case when split_part(c.description,'_',6 ::int) = 'NO' then E.Qty else 0 end rn6		
+	, case when split_part(c.description,'_',7 ::int) = 'SI' then E.Qty else 0 end ry7
+	, case when split_part(c.description,'_',7 ::int) = 'NO' then E.Qty else 0 end rn7
+	, case when split_part(c.description,'_',8 ::int) = 'SI' then E.Qty else 0 end ry8
+	, case when split_part(c.description,'_',8 ::int) = 'NO' then E.Qty else 0 end rn8
+	
+,	(select sum(g.Qty) from C_BPartner g where g.isactive='Y' and g.IsShareHolder='Y') as t_accion							
+FROM
+                COP_AssemblyQuestions A
+                left join COP_ShareholderVotes b on b.cop_assemblyquestions_id = a.COP_AssemblyQuestions_id
+                left join M_AttributeSetInstance c on c.M_AttributeSetInstance_ID = b.M_AttributeSetInstance_ID 
+                left join C_BPartner E on E.C_BPartner_ID = b.C_BPartner_ID
+                INNER JOIN COP_Book D ON D.COP_Book_ID = E.COP_Book_ID 
+                left join COP_AssemblyRecord F on F.COP_AssemblyRecord_ID = A.COP_AssemblyRecord_ID 
+ WHERE
+                a.isactive='Y'
+					and a.COP_AssemblyQuestions_ID= $P{COP_AssemblyQuestions_ID} 
+order by 4)  as X  group by x.t_accion]]>
+	</queryString>
+	<field name="ry1" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ry1"/>
+		<property name="com.jaspersoft.studio.field.label" value="ry1"/>
+	</field>
+	<field name="rn1" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="rn1"/>
+		<property name="com.jaspersoft.studio.field.label" value="rn1"/>
+	</field>
+	<field name="ry2" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ry2"/>
+		<property name="com.jaspersoft.studio.field.label" value="ry2"/>
+	</field>
+	<field name="rn2" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="rn2"/>
+		<property name="com.jaspersoft.studio.field.label" value="rn2"/>
+	</field>
+	<field name="ry3" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ry3"/>
+		<property name="com.jaspersoft.studio.field.label" value="ry3"/>
+	</field>
+	<field name="rn3" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="rn3"/>
+		<property name="com.jaspersoft.studio.field.label" value="rn3"/>
+	</field>
+	<field name="ry4" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ry4"/>
+		<property name="com.jaspersoft.studio.field.label" value="ry4"/>
+	</field>
+	<field name="rn4" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="rn4"/>
+		<property name="com.jaspersoft.studio.field.label" value="rn4"/>
+	</field>
+	<field name="ry5" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ry5"/>
+		<property name="com.jaspersoft.studio.field.label" value="ry5"/>
+	</field>
+	<field name="rn5" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="rn5"/>
+		<property name="com.jaspersoft.studio.field.label" value="rn5"/>
+	</field>
+	<field name="ry6" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ry6"/>
+		<property name="com.jaspersoft.studio.field.label" value="ry6"/>
+	</field>
+	<field name="rn6" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="rn6"/>
+		<property name="com.jaspersoft.studio.field.label" value="rn6"/>
+	</field>
+	<field name="ry7" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ry7"/>
+		<property name="com.jaspersoft.studio.field.label" value="ry7"/>
+	</field>
+	<field name="rn7" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="rn7"/>
+		<property name="com.jaspersoft.studio.field.label" value="rn7"/>
+	</field>
+	<field name="ry8" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ry8"/>
+		<property name="com.jaspersoft.studio.field.label" value="ry8"/>
+	</field>
+	<field name="rn8" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="rn8"/>
+		<property name="com.jaspersoft.studio.field.label" value="rn8"/>
+	</field>
+	<field name="t_accion" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="t_accion"/>
+		<property name="com.jaspersoft.studio.field.label" value="t_accion"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="229" splitType="Stretch">
+			<bar3DChart>
+				<chart evaluationTime="Report">
+					<reportElement x="40" y="29" width="590" height="200" uuid="408bcafe-fe0a-4a71-a5d4-dc679c436aff"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset resetType="Report"/>
+					<categorySeries>
+						<seriesExpression><![CDATA["SERIES 1"]]></seriesExpression>
+						<categoryExpression><![CDATA[0]]></categoryExpression>
+						<valueExpression><![CDATA[$F{ry1}$F{rn1}]]></valueExpression>
+						<labelExpression><![CDATA["Pregunta 1"]]></labelExpression>
+					</categorySeries>
+				</categoryDataset>
+				<bar3DPlot>
+					<plot/>
+					<itemLabel/>
+					<categoryAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</valueAxisFormat>
+				</bar3DPlot>
+			</bar3DChart>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

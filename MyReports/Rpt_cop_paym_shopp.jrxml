@@ -28,124 +28,160 @@
 	<parameter name="ShowHeader" class="java.lang.String">
 		<defaultValueExpression><![CDATA["Y"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="C_Currency_ID" class="java.lang.Integer"/>
 	<queryString language="plsql">
-		<![CDATA[select
+		<![CDATA[select * from (
+(select
 a.*,
     'DESDE: '|| substring($P{DateTrx1},9,2) || '/'|| substring($P{DateTrx1},6,2) ||'/'|| substring($P{DateTrx1},1,4)
 || ' - HASTA:'||  substring($P{DateTrx2},9,2) || '/'|| substring($P{DateTrx2},6,2) ||'/'|| substring($P{DateTrx2},1,4) || CHR(13) ||
 	case when $P{C_BPartner_ID} is null then '' else ' Solo Tercero: ' || a.C_BPartner_n || ' ' end || ' '  ||
 	case when $P{C_Payment_ID} is null then '' else ' Solo Recibo: ' || a.c_payment_n || ' ' end || ' '  ||
-	case when $P{COP_PayGroup_ID} is null then '' else ' Solo Grupo de Pagos: ' || a.COP_PayGroup_n || ' ' end 	 as doc_info
+	case when $P{COP_PayGroup_ID} is null then '' else ' Solo Grupo de Pagos: ' || a.COP_PayGroup_n || ' ' end || 	
+	case when $P{C_Currency_ID} is null then 'Todas las Monedas' else ' Solo Moneda: ' || b.iso_code || ' ' end 	
+	as doc_info
 ,		'Reporte de Pagos a Proveedores' reponame 
 
 from
-	cop_paym_shopp a
+	cop_paym_shopp a join C_Currency b on b.C_Currency_ID = a.C_Currency_ID
 where
 	 (a.date_c_payment between $P{DateTrx1} and  $P{DateTrx2}) and 
 	 (a.C_BPartner_ID = $P{C_BPartner_ID} or  $P{C_BPartner_ID} is null) and 
 	 (a.C_Payment_ID = $P{C_Payment_ID} or $P{C_Payment_ID} is null) and
-	 (a.COP_PayGroup_ID = $P{COP_PayGroup_ID} or $P{COP_PayGroup_ID} is null) 
-	 order by c_bpartner_n, date_c_payment ,c_payment_n,date_c_invoice,c_invoice_n]]>
+	 (a.COP_PayGroup_ID = $P{COP_PayGroup_ID} or $P{COP_PayGroup_ID} is null) and 
+	 (a.C_Currency_ID = $P{C_Currency_ID} or $P{C_Currency_ID} is null)	 
+	 order by c_bpartner_n, date_c_payment ,c_payment_n,date_c_invoice,c_invoice_n
+)	 
+union
+(
+select  null c_bpartner_id, null c_bpartner_n,null  cop_paygroup_id, null cop_paygroup_n,null  cop_bpartnertype_id, 
+null cop_bpartnertype_n, null taxid, null c_payment_id, null c_payment_n, null date_c_payment, null dateacct, null c_doctype_id, 
+null c_doctype_n,null  c_bankaccount_id,null  c_bankaccount_n,null c_invoice_id,null c_invoice_n,null date_c_invoice,
+null grandtotal_c_invoice,null currency_invoice,null mount_payment,null currency_payment,null mount_usd_payment,
+null c_conversion_rate_n,null  mount_ved_payment,null c_currency_id,null tendertype,null c_charge_id,null c_charge_n,
+'DESDE: '|| substring($P{DateTrx1},9,2) || '/'|| substring($P{DateTrx1},6,2) ||'/'|| substring($P{DateTrx1},1,4)
+|| ' - HASTA:'||  substring($P{DateTrx2},9,2) || '/'|| substring($P{DateTrx2},6,2) ||'/'|| substring($P{DateTrx2},1,4) || CHR(13) ||
+case when $P{C_BPartner_ID} is null then '' else ' Solo Tercero: ' || '' || ' ' end || ' '  ||
+case when $P{C_Payment_ID} is null then '' else ' Solo Recibo: ' || ''  || ' ' end || ' '  ||
+case when $P{COP_PayGroup_ID} is null then '' else ' Solo Grupo de Pagos: ' || '' || ' ' end 	 as doc_info
+,'Reporte de Pagos a Proveedores' reponame)) x
+ order by c_bpartner_n, date_c_payment ,c_payment_n,date_c_invoice,c_invoice_n]]>
 	</queryString>
 	<field name="c_bpartner_id" class="java.math.BigDecimal">
 		<property name="com.jaspersoft.studio.field.name" value="c_bpartner_id"/>
 		<property name="com.jaspersoft.studio.field.label" value="c_bpartner_id"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp"/>
-	</field>
-	<field name="cop_paygroup_n" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="cop_paygroup_n"/>
-		<property name="com.jaspersoft.studio.field.label" value="cop_paygroup_n"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp"/>
-	</field>
-	<field name="cop_paygroup_id" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.name" value="cop_paygroup_id"/>
-		<property name="com.jaspersoft.studio.field.label" value="cop_paygroup_id"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp"/>
 	</field>
 	<field name="c_bpartner_n" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="c_bpartner_n"/>
 		<property name="com.jaspersoft.studio.field.label" value="c_bpartner_n"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp"/>
+	</field>
+	<field name="cop_paygroup_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="cop_paygroup_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="cop_paygroup_id"/>
+	</field>
+	<field name="cop_paygroup_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="cop_paygroup_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="cop_paygroup_n"/>
+	</field>
+	<field name="cop_bpartnertype_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="cop_bpartnertype_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="cop_bpartnertype_id"/>
+	</field>
+	<field name="cop_bpartnertype_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="cop_bpartnertype_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="cop_bpartnertype_n"/>
 	</field>
 	<field name="taxid" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="taxid"/>
 		<property name="com.jaspersoft.studio.field.label" value="taxid"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp"/>
 	</field>
 	<field name="c_payment_id" class="java.math.BigDecimal">
 		<property name="com.jaspersoft.studio.field.name" value="c_payment_id"/>
 		<property name="com.jaspersoft.studio.field.label" value="c_payment_id"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp"/>
 	</field>
 	<field name="c_payment_n" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="c_payment_n"/>
 		<property name="com.jaspersoft.studio.field.label" value="c_payment_n"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp"/>
 	</field>
 	<field name="date_c_payment" class="java.sql.Date">
 		<property name="com.jaspersoft.studio.field.name" value="date_c_payment"/>
 		<property name="com.jaspersoft.studio.field.label" value="date_c_payment"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp"/>
+	</field>
+	<field name="dateacct" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="dateacct"/>
+		<property name="com.jaspersoft.studio.field.label" value="dateacct"/>
 	</field>
 	<field name="c_doctype_id" class="java.math.BigDecimal">
 		<property name="com.jaspersoft.studio.field.name" value="c_doctype_id"/>
 		<property name="com.jaspersoft.studio.field.label" value="c_doctype_id"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp"/>
 	</field>
 	<field name="c_doctype_n" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="c_doctype_n"/>
 		<property name="com.jaspersoft.studio.field.label" value="c_doctype_n"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp"/>
+	</field>
+	<field name="c_bankaccount_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="c_bankaccount_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_bankaccount_id"/>
 	</field>
 	<field name="c_bankaccount_n" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="c_bankaccount_n"/>
 		<property name="com.jaspersoft.studio.field.label" value="c_bankaccount_n"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp"/>
 	</field>
 	<field name="c_invoice_id" class="java.math.BigDecimal">
 		<property name="com.jaspersoft.studio.field.name" value="c_invoice_id"/>
 		<property name="com.jaspersoft.studio.field.label" value="c_invoice_id"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp"/>
 	</field>
 	<field name="c_invoice_n" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="c_invoice_n"/>
 		<property name="com.jaspersoft.studio.field.label" value="c_invoice_n"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp"/>
 	</field>
 	<field name="date_c_invoice" class="java.sql.Date">
 		<property name="com.jaspersoft.studio.field.name" value="date_c_invoice"/>
 		<property name="com.jaspersoft.studio.field.label" value="date_c_invoice"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp"/>
 	</field>
 	<field name="grandtotal_c_invoice" class="java.math.BigDecimal">
 		<property name="com.jaspersoft.studio.field.name" value="grandtotal_c_invoice"/>
 		<property name="com.jaspersoft.studio.field.label" value="grandtotal_c_invoice"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp"/>
 	</field>
 	<field name="currency_invoice" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="currency_invoice"/>
 		<property name="com.jaspersoft.studio.field.label" value="currency_invoice"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp"/>
 	</field>
 	<field name="mount_payment" class="java.math.BigDecimal">
 		<property name="com.jaspersoft.studio.field.name" value="mount_payment"/>
 		<property name="com.jaspersoft.studio.field.label" value="mount_payment"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp"/>
 	</field>
 	<field name="currency_payment" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="currency_payment"/>
 		<property name="com.jaspersoft.studio.field.label" value="currency_payment"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp"/>
 	</field>
 	<field name="mount_usd_payment" class="java.math.BigDecimal">
 		<property name="com.jaspersoft.studio.field.name" value="mount_usd_payment"/>
 		<property name="com.jaspersoft.studio.field.label" value="mount_usd_payment"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp"/>
 	</field>
 	<field name="c_conversion_rate_n" class="java.math.BigDecimal">
 		<property name="com.jaspersoft.studio.field.name" value="c_conversion_rate_n"/>
 		<property name="com.jaspersoft.studio.field.label" value="c_conversion_rate_n"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp"/>
+	</field>
+	<field name="mount_ved_payment" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="mount_ved_payment"/>
+		<property name="com.jaspersoft.studio.field.label" value="mount_ved_payment"/>
+	</field>
+	<field name="c_currency_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="c_currency_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_currency_id"/>
+	</field>
+	<field name="tendertype" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="tendertype"/>
+		<property name="com.jaspersoft.studio.field.label" value="tendertype"/>
+	</field>
+	<field name="c_charge_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="c_charge_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_charge_id"/>
+	</field>
+	<field name="c_charge_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="c_charge_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_charge_n"/>
 	</field>
 	<field name="doc_info" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="doc_info"/>
@@ -197,7 +233,7 @@ where
 		<band splitType="Stretch"/>
 	</background>
 	<pageHeader>
-		<band height="85" splitType="Stretch">
+		<band height="86" splitType="Stretch">
 			<printWhenExpression><![CDATA[$P{ShowHeader}.equals( "Y" )]]></printWhenExpression>
 			<staticText>
 				<reportElement x="736" y="5" width="10" height="11" uuid="1d879a53-9157-49c7-b484-ea357e38a917">
@@ -317,7 +353,7 @@ where
 					<font size="6" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA["DESDE: " + Integer.toString(DAY($P{DateTrx1})) + "/" + Integer.toString(MONTH($P{DateTrx1})) + "/" + Integer.toString(YEAR($P{DateTrx1})) 
-+ " HASTA:  " + Integer.toString(DAY($P{DateTrx2})) + "/" + Integer.toString(MONTH($P{DateTrx2})) + "/" + Integer.toString(YEAR($P{DateTrx2})) ]]></textFieldExpression>
++ " HASTA:  " + Integer.toString(DAY($P{DateTrx2})) + "/" + Integer.toString(MONTH($P{DateTrx2})) + "/" + Integer.toString(YEAR($P{DateTrx2}))]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -330,6 +366,7 @@ where
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<box>
+					<topPen lineWidth="0.5"/>
 					<bottomPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
@@ -374,6 +411,7 @@ where
 				</reportElement>
 				<box>
 					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
 					<bottomPen lineWidth="0.5"/>
 					<rightPen lineWidth="0.5"/>
 				</box>
@@ -403,6 +441,7 @@ where
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<box>
+					<topPen lineWidth="0.5"/>
 					<bottomPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
@@ -441,11 +480,12 @@ where
 				<textFieldExpression><![CDATA["Total"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="603" y="6" width="60" height="13" uuid="4df56c89-acdf-4f38-8ec0-5eaf017808e9">
+				<reportElement x="583" y="6" width="80" height="13" uuid="4df56c89-acdf-4f38-8ec0-5eaf017808e9">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<box>
+					<topPen lineWidth="0.5"/>
 					<bottomPen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -459,6 +499,7 @@ where
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<box>
+					<topPen lineWidth="0.5"/>
 					<bottomPen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -472,7 +513,9 @@ where
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 				</reportElement>
 				<box>
+					<topPen lineWidth="0.5"/>
 					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font size="8" isBold="true"/>
@@ -483,7 +526,7 @@ where
 	</columnHeader>
 	<detail>
 		<band height="9" splitType="Stretch">
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="95" y="0" width="160" height="9" uuid="5296ac5b-e58c-48b1-bd68-ab5f81973675">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -492,7 +535,7 @@ where
 				</textElement>
 				<textFieldExpression><![CDATA[$F{c_bpartner_n}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="255" y="0" width="59" height="9" uuid="78bb8d67-548f-4285-852c-0f6d782eb515">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -501,7 +544,7 @@ where
 				</textElement>
 				<textFieldExpression><![CDATA[$F{c_payment_n}]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd/MM/yy">
+			<textField pattern="dd/MM/yy" isBlankWhenNull="true">
 				<reportElement x="314" y="0" width="34" height="9" uuid="de3c5831-8dd5-482e-8acf-e9d0ef9f595c">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -519,7 +562,7 @@ where
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cop_paygroup_n}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="348" y="0" width="91" height="9" uuid="077c7604-e62b-4000-97e6-f1ce28dff73f">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -566,7 +609,7 @@ where
 				</textElement>
 				<textFieldExpression><![CDATA[$F{currency_invoice}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.##">
+			<textField pattern="#,##0.##" isBlankWhenNull="true">
 				<reportElement x="603" y="0" width="60" height="9" uuid="57aacc60-08ba-401b-a989-b55e2df44951">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -576,7 +619,7 @@ where
 				</textElement>
 				<textFieldExpression><![CDATA[$F{mount_payment}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="663" y="0" width="20" height="9" uuid="c3421705-c740-48e6-b49b-d8e37c1c7e1b">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -586,7 +629,7 @@ where
 				</textElement>
 				<textFieldExpression><![CDATA[$F{currency_payment}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.##">
+			<textField pattern="#,##0.##" isBlankWhenNull="true">
 				<reportElement x="683" y="0" width="62" height="9" uuid="b2bfc1c0-e326-47fc-9832-53ec501b5474">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -596,7 +639,7 @@ where
 				</textElement>
 				<textFieldExpression><![CDATA[$F{mount_usd_payment}]]></textFieldExpression>
 			</textField>
-			<textField pattern="#,##0.##">
+			<textField pattern="#,##0.##" isBlankWhenNull="true">
 				<reportElement x="745" y="0" width="58" height="9" uuid="f4dedcb9-1e7d-4bdf-ad54-0691623b02e7">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>

@@ -448,7 +448,7 @@ left join c_order oo on et.c_order_id = oo.c_order_id
 				<text><![CDATA[Estado Documento:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="334" y="65" width="104" height="14" uuid="917541b7-8d53-4c85-bd55-2fa63229c301">
+				<reportElement x="319" y="65" width="104" height="14" uuid="917541b7-8d53-4c85-bd55-2fa63229c301">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 				</reportElement>
@@ -462,9 +462,9 @@ left join c_order oo on et.c_order_id = oo.c_order_id
 				<text><![CDATA[N° DOCUMENTO:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="437" y="67" width="71" height="14" uuid="41d235f2-106b-44bb-9ad5-363f233e6c19">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<reportElement x="422" y="67" width="118" height="14" uuid="41d235f2-106b-44bb-9ad5-363f233e6c19">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
 					<font fontName="Courier 10 Pitch" size="10" isBold="true"/>
@@ -798,7 +798,7 @@ left join c_order oo on et.c_order_id = oo.c_order_id
 				<textFieldExpression><![CDATA[$F{tercero}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="334" y="3" width="104" height="14" uuid="1dc7d05d-ddf3-4475-8945-d47a7364a693">
+				<reportElement x="319" y="3" width="104" height="14" uuid="1dc7d05d-ddf3-4475-8945-d47a7364a693">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<printWhenExpression><![CDATA[$F{ordencarga} != null]]></printWhenExpression>
 				</reportElement>
@@ -812,7 +812,7 @@ left join c_order oo on et.c_order_id = oo.c_order_id
 				<text><![CDATA[ORDEN DE CARGA:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="437" y="17" width="71" height="14" uuid="5432d8a2-d8a8-43f8-aba5-89fa3806b821">
+				<reportElement x="422" y="17" width="118" height="14" uuid="5432d8a2-d8a8-43f8-aba5-89fa3806b821">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
@@ -823,9 +823,9 @@ left join c_order oo on et.c_order_id = oo.c_order_id
 				<textFieldExpression><![CDATA[$F{ticket}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="437" y="3" width="71" height="14" uuid="b0a49caf-701c-4357-af28-9690b6e0270e">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<reportElement x="422" y="3" width="118" height="14" uuid="b0a49caf-701c-4357-af28-9690b6e0270e">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<printWhenExpression><![CDATA[$F{ordencarga} != null]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
@@ -834,7 +834,7 @@ left join c_order oo on et.c_order_id = oo.c_order_id
 				<textFieldExpression><![CDATA[$F{ordencarga}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="336" y="16" width="102" height="14" uuid="48cbd513-e373-4674-910b-1c4cf17144bc">
+				<reportElement x="321" y="16" width="102" height="14" uuid="48cbd513-e373-4674-910b-1c4cf17144bc">
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
@@ -846,7 +846,7 @@ left join c_order oo on et.c_order_id = oo.c_order_id
 				<text><![CDATA[N° TICKET:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="343" y="-10" width="95" height="14" uuid="ba0f6c41-b658-45a7-ba93-5e003d1ccc29">
+				<reportElement x="328" y="-10" width="95" height="14" uuid="ba0f6c41-b658-45a7-ba93-5e003d1ccc29">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<printWhenExpression><![CDATA[$F{order} != null]]></printWhenExpression>
 				</reportElement>
@@ -860,10 +860,10 @@ left join c_order oo on et.c_order_id = oo.c_order_id
 				<text><![CDATA[ORDEN:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="437" y="-10" width="71" height="12" uuid="55953112-e4bb-4c7c-b9d4-a914a8d0f42a">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<reportElement x="422" y="-10" width="118" height="12" uuid="55953112-e4bb-4c7c-b9d4-a914a8d0f42a">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<printWhenExpression><![CDATA[$F{order} != null]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Middle">

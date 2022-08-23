@@ -11,7 +11,9 @@
 	</parameter>
 	<parameter name="RECORD_ID" class="java.lang.Integer"/>
 	<parameter name="AD_Org_ID" class="java.lang.Integer"/>
-	<parameter name="C_BPartner_ID" class="java.lang.Integer"/>
+	<parameter name="C_BPartner_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1012959]]></defaultValueExpression>
+	</parameter>
 	<parameter name="DateAcct1" class="java.sql.Date"/>
 	<parameter name="DateAcct2" class="java.sql.Date"/>
 	<queryString>

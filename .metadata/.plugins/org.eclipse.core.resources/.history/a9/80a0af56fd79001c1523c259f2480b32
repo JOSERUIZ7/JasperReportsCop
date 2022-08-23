@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT_ Municipal_Withholdings" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="395c976b-92d1-4bd2-ba0b-d9b4e8511661">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="AD_Client_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1000000]]></defaultValueExpression>
+	</parameter>
+	<parameter name="AD_Org_ID" class="java.lang.Integer"/>
+	<parameter name="C_BPartner_ID" class="java.lang.Integer"/>
+	<parameter name="DateFrom" class="java.sql.Timestamp"/>
+	<parameter name="DateTo" class="java.sql.Timestamp"/>
+	<parameter name="RESOURCE_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="C_Currency_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1000001]]></defaultValueExpression>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[select
+	numerocomprobante,
+	fechareten,
+	tercero,
+	b_partner_a_license_no,
+	riftercero,
+	SUM(baseimponible) as baseimponible,
+	alic,
+	lco_isic_n,
+	lco_isic_n,
+	SUM(montoiva) montoiva,
+	EMPRESA,REPONAME,RIFEMPRESA,DIRECCION_EMPRESA,
+	PHONE,
+	PHONE2,
+	ad_org_a_license_no	,ANIO_PERIODO,ISO_CODE,MES_PERIODO
+	
+from
+	(
+	select
+		ci.dateinvoiced,
+		ci.ad_org_id::char(7) as AD_Org_ID,
+		vw.lve_voucherwithholding_ID,
+		wt.type as withholdingtype,
+		Upper(wt."name") as withholding_name,
+		Upper(wt.description) as withholding_description,
+		replace(ao.taxid::text, '-'::text, ''::text) as rifempresa,
+		ao2.name as empresa,
+		ao2.description as direccion_empresa,
+		btrim(to_char(date_part('year'::text, iw.dateacct), '0000'::text)) as anio_periodo,
+		btrim(to_char(date_part('month'::text, iw.dateacct), '00'::text)) as mes_periodo,
+		TO_CHAR(iw.dateacct, 'DD/MM/YYYY') as fechareten,
+		vw.withholdingno as numerocomprobante,
+		coalesce(tid.name, '')|| replace(bp.taxid::text, '-'::text, ''::text) as riftercero_old,
+		replace(bp.taxid::text, '-'::text, ''::text) as riftercero,
+		bp.name as tercero,
+		bp.A_License_No b_partner_A_License_No,
+		lbp.address as direccion_tercero,
+		TO_CHAR(ci.dateinvoiced, 'DD/MM/YYYY') as fechadocumento,
+		case
+			when dt.docbasetype = any (array['ARI'::bpchar,
+			'API'::bpchar]) then coalesce(ci.lve_poinvoiceno, ci.documentno)
+			else ''
+		end as numerodocumento,
+		ci.lve_controlnumber as control,
+		case
+			when dt.docbasetype = any (array['ARD'::bpchar,
+			'APD'::bpchar]) then coalesce(ci.lve_poinvoiceno, ci.documentno)
+			else ''
+		end as numeronotadebito,
+		case
+			when dt.docbasetype = any (array['ARC'::bpchar,
+			'APC'::bpchar]) then coalesce(ci.lve_poinvoiceno, ci.documentno)
+			else ''
+		end as numeronotacredito,
+		case
+			when dt.docbasetype = any (array['API'::bpchar,
+			'ARI'::bpchar]) then
+			case
+				when wt.type = 'ISLR' then 'FACT'::text
+				else '01-reg'::text
+			end
+			when dt.docbasetype = any (array['APD'::bpchar,
+			'ARD'::bpchar]) then
+			case
+				when wt.type = 'ISLR' then 'N.DEB'::text
+				else '02-reg'::text
+			end
+			when dt.docbasetype = any (array['APC'::bpchar,
+			'ARC'::bpchar]) then
+			case
+				when wt.type = 'ISLR' then 'N.CRE'::text
+				else '03-reg'::text
+			end
+			else ''::text
+		end as tipodocumento,
+		(
+		select
+			coalesce(ci2.lve_poinvoiceno, ci2.documentno) as documentoafectado
+		from
+			c_invoice ci2
+		where
+			ci2.c_invoice_id = ci.lve_invoiceaffected_id
+			and ci2.DocStatus = 'CO') as documentoafectado,
+		currencyconvert(ci.GrandTotal,
+		ci.C_Currency_ID,
+		b.C_Currency_ID,
+		ci.dateinvoiced,
+		ci.C_ConversionType_ID,
+		ci.AD_CLIENT_ID,
+		ci.AD_ORG_ID) as montodocumento,
+		currencyconvert(lve_calcexento(ci.c_invoice_id),
+		ci.C_Currency_ID,
+		b.C_Currency_ID,
+		ci.dateinvoiced,
+		ci.C_ConversionType_ID,
+		ci.AD_CLIENT_ID,
+		ci.AD_ORG_ID) as exento,
+		currencyconvert(lve_impbase('bf'::bpchar,
+		ci.c_invoice_id,
+		it.rate),
+		ci.C_Currency_ID,
+		b.C_Currency_ID,
+		ci.dateinvoiced,
+		ci.C_ConversionType_ID,
+		ci.AD_CLIENT_ID,
+		ci.AD_ORG_ID) as baseimponible,
+		round(
+        case
+            when wt.type::text = 'IVA'::text then it.rate
+            else iw.percent
+        end, 2) as alic,
+		currencyconvert( abs(iw.taxamt),
+		vw.C_Currency_ID,
+		b.C_Currency_ID,
+		vw.datetrx,
+		vw.C_ConversionType_ID,
+		vw.AD_CLIENT_ID,
+		vw.AD_ORG_ID) as montoiva,
+		wct.name as concepto ,
+		lc.value as LCO_ISIC_n,
+		cbl.address_billto ,
+		wr.code ,
+		to_char(dmaxmin.d1 , 'DD/MM/YYYY') d1,
+		to_char(dmaxmin.d2 , 'DD/MM/YYYY') d2 ,
+		ao.a_license_no ad_org_a_license_no
+   ,
+		ao.phone,
+		ao.phone2,
+		ao.email,
+		'Relación Anual de Retenciones del Impuesto Sobre Actividades Económicas' REPONAME,
+		b.iso_code
+	from
+		c_invoice ci
+	join (
+		select
+			it.c_invoice_id,
+			t.rate
+		from
+			c_invoicetax it
+		join c_tax t on
+			it.c_tax_id = t.c_tax_id) it on
+		ci.c_invoice_id = it.c_invoice_id
+	join lco_invoicewithholding iw on
+		ci.c_invoice_id = iw.c_invoice_id
+	join lve_voucherwithholding vw on
+		vw.lve_voucherwithholding_id = iw.lve_voucherwithholding_id
+	join lco_withholdingtype wt on
+		iw.lco_withholdingtype_id = wt.lco_withholdingtype_id
+	join lco_withholdingrule wr on
+		iw.lco_withholdingrule_id = wr.lco_withholdingrule_id
+	join lco_withholdingcalc wc on
+		wc.lco_withholdingcalc_id = wr.lco_withholdingcalc_id
+	left join lco_withholdingcategory wct on
+		wr.lco_withholdingcategory_id = wct.lco_withholdingcategory_id
+	join c_doctype dt on
+		ci.c_doctype_id = dt.c_doctype_id
+		and (dt.docbasetype = any (array['API'::bpchar,
+		'APC'::bpchar,
+		'APD'::bpchar,
+		'ARI'::bpchar,
+		'ARD'::bpchar,
+		'ARC'::bpchar]))
+	join c_bpartner bp on
+		bp.c_bpartner_id = ci.c_bpartner_id
+	join c_bpartner_location bpl on
+		bp.c_bpartner_id = bpl.c_bpartner_id
+		and ci.c_bpartner_location_id = bpl.c_bpartner_location_id
+	join ad_org_v ao on
+		ao.ad_org_id = ci.ad_org_id
+	join ad_client ao2 on
+		ao2.ad_client_id = ci.ad_client_id
+	join lve_rv_location l on
+		ao.c_location_id = l.c_location_id
+	join lve_rv_location lbp on
+		bpl.c_location_id = lbp.c_location_id
+	left join lco_taxidtype tid on
+		bp.lco_taxidtype_id = tid.lco_taxidtype_id
+	left join LCO_ISIC lc on
+		bp.lco_isic_id = lc.lco_isic_id
+	left join cust_c_bpartner_location cbl on
+		cbl.c_bpartner_id = ci.c_bpartner_id
+	join (
+		select
+			vw.lve_voucherwithholding_ID,
+			min(ci.dateinvoiced) d1 ,
+			max(ci.dateinvoiced) d2
+		from
+			c_invoice ci
+		join lco_invoicewithholding iw on
+			ci.c_invoice_id = iw.c_invoice_id
+		join lve_voucherwithholding vw on
+			vw.lve_voucherwithholding_id = iw.lve_voucherwithholding_id
+			and vw.docstatus = 'CO'
+		group by
+			vw.lve_voucherwithholding_ID) as dmaxmin on
+		vw.lve_voucherwithholding_ID = dmaxmin.lve_voucherwithholding_ID
+      ,
+		(
+		select
+			distinct rc.c_currency_id,
+			c.iso_code
+		from
+			ftu_reportcurrency rc
+		join c_currency c on
+			rc.c_currency_id = c.c_currency_id) b
+	where
+		vw.AD_Client_ID = $P{AD_Client_ID}
+		and (vw.ad_org_id = $P{AD_Org_ID}
+			or $P{AD_Org_ID} is null)
+		and iw.dateacct between $P{DateFrom}::date and $P{DateTo}::date
+		and (vw.c_bpartner_id = $P{C_BPartner_ID}
+			or $P{C_BPartner_ID} is null)
+		and (b.c_currency_id = $P{C_Currency_ID})
+		and wt.TYPE = 'IAE'
+		and it.rate > 0
+
+     
+) X
+group by 
+	numerocomprobante,
+	fechareten,
+	tercero,
+	b_partner_a_license_no,
+	riftercero,
+	alic,
+	lco_isic_n,
+	lco_isic_n	,EMPRESA,REPONAME,RIFEMPRESA,DIRECCION_EMPRESA,PHONE,
+	PHONE2,
+	ad_org_a_license_no	,ANIO_PERIODO,ISO_CODE,MES_PERIODO
+	
+order by numerocomprobante
+]]>
+	</queryString>
+	<field name="numerocomprobante" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="numerocomprobante"/>
+		<property name="com.jaspersoft.studio.field.label" value="numerocomprobante"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lve_voucherwithholding"/>
+	</field>
+	<field name="fechareten" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="fechareten"/>
+		<property name="com.jaspersoft.studio.field.label" value="fechareten"/>
+	</field>
+	<field name="tercero" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="tercero"/>
+		<property name="com.jaspersoft.studio.field.label" value="tercero"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_bpartner"/>
+	</field>
+	<field name="b_partner_a_license_no" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="b_partner_a_license_no"/>
+		<property name="com.jaspersoft.studio.field.label" value="b_partner_a_license_no"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_bpartner"/>
+	</field>
+	<field name="riftercero" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="riftercero"/>
+		<property name="com.jaspersoft.studio.field.label" value="riftercero"/>
+	</field>
+	<field name="baseimponible" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="baseimponible"/>
+		<property name="com.jaspersoft.studio.field.label" value="baseimponible"/>
+	</field>
+	<field name="alic" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="alic"/>
+		<property name="com.jaspersoft.studio.field.label" value="alic"/>
+	</field>
+	<field name="lco_isic_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="lco_isic_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="lco_isic_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lco_isic"/>
+	</field>
+	<field name="COLUMN_9" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="lco_isic_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="lco_isic_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lco_isic"/>
+	</field>
+	<field name="montoiva" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="montoiva"/>
+		<property name="com.jaspersoft.studio.field.label" value="montoiva"/>
+	</field>
+	<field name="empresa" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="empresa"/>
+		<property name="com.jaspersoft.studio.field.label" value="empresa"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_client"/>
+	</field>
+	<field name="reponame" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="reponame"/>
+		<property name="com.jaspersoft.studio.field.label" value="reponame"/>
+	</field>
+	<field name="rifempresa" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="rifempresa"/>
+		<property name="com.jaspersoft.studio.field.label" value="rifempresa"/>
+	</field>
+	<field name="direccion_empresa" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="direccion_empresa"/>
+		<property name="com.jaspersoft.studio.field.label" value="direccion_empresa"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_client"/>
+	</field>
+	<field name="phone" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="phone"/>
+		<property name="com.jaspersoft.studio.field.label" value="phone"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="phone2" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="phone2"/>
+		<property name="com.jaspersoft.studio.field.label" value="phone2"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="ad_org_a_license_no" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ad_org_a_license_no"/>
+		<property name="com.jaspersoft.studio.field.label" value="ad_org_a_license_no"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="anio_periodo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="anio_periodo"/>
+		<property name="com.jaspersoft.studio.field.label" value="anio_periodo"/>
+	</field>
+	<field name="iso_code" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="iso_code"/>
+		<property name="com.jaspersoft.studio.field.label" value="iso_code"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_currency"/>
+	</field>
+	<field name="mes_periodo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="mes_periodo"/>
+		<property name="com.jaspersoft.studio.field.label" value="mes_periodo"/>
+	</field>
+	<variable name="BP_baseimponible" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{baseimponible}]]></variableExpression>
+	</variable>
+	<variable name="BP_montoiva" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{montoiva}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="1" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="141" splitType="Stretch">
+			<image>
+				<reportElement x="0" y="0" width="130" height="50" uuid="c23734e1-aecc-44f1-a726-531f51551609"/>
+				<imageExpression><![CDATA[$P{RESOURCE_DIR} + "logo.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="0" y="51" width="200" height="10" uuid="8ada9ecd-25c7-46e7-9963-9f74c8c54e59"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{empresa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="106" width="752" height="20" uuid="b7611adf-96ca-4bec-a835-f11182a8bbe3"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{reponame}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="62" width="100" height="10" uuid="1219a844-8cd2-41ff-804a-cf02226e0d5a"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rifempresa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="73" width="380" height="10" uuid="e3cf664e-344d-4464-b5f5-4d54615e7f1e"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{direccion_empresa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="83" width="140" height="10" uuid="abe99383-5cc0-4f7f-9f7c-a5e451aa6c56"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{phone} + " / "  +  $F{phone2}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="83" width="40" height="10" uuid="67841c01-d375-41c6-822c-30b9c5ad9b35"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Teléfono:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="707" y="0" width="10" height="11" uuid="2c8620aa-1f16-4136-8419-e86a2948bfea"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[de:]]></text>
+			</staticText>
+			<textField pattern="HH:mm" isBlankWhenNull="true">
+				<reportElement x="689" y="25" width="63" height="11" uuid="f84cb209-b48c-4a52-9316-2c29e3b0d8e1"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("h:mm a").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="640" y="25" width="49" height="11" uuid="ec792910-df2a-4838-9016-e75eadda3f5c"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="640" y="0" width="49" height="11" uuid="5a9a382c-70fe-4a73-b6b6-40209b5c48e4"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Página:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="640" y="14" width="49" height="11" uuid="959b5f36-56f1-4ae2-8e9c-26e1145c64ee"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="689" y="0" width="15" height="11" uuid="1ff744a5-2ab9-4ea5-b918-f76a17d5dfdf"/>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" isBlankWhenNull="true">
+				<reportElement x="721" y="0" width="30" height="11" uuid="119caa21-f930-4324-b734-518b00f84ba5"/>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="689" y="14" width="63" height="11" uuid="64ef9044-315b-47ee-b9af-633b0454ee63"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="70" y="93" width="106" height="10" uuid="fd26e2f7-d3b3-455a-a780-b93fd8aebbee"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ad_org_a_license_no}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="93" width="70" height="10" uuid="bd016628-3f77-4388-a2dd-123bd102a89d"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Nro de Licencia:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="640" y="36" width="49" height="11" uuid="dcaf96ba-3059-4a88-abf0-9b8a21b6a11b"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Periodo:]]></text>
+			</staticText>
+			<textField pattern="HH:mm" isBlankWhenNull="true">
+				<reportElement x="689" y="36" width="63" height="11" uuid="cd818e7d-8f49-4520-ac09-1e4dce98eb40"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{anio_periodo}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="623" y="128" width="123" height="13" uuid="e17ff0c3-93e2-4f78-a5d5-130dd38869a2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Moneda:   "+$F{iso_code}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="19" splitType="Stretch">
+			<textField>
+				<reportElement x="176" y="3" width="173" height="15" uuid="813e9ff8-877f-45cd-a94e-0c24b3ca78a3"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["NOMBRE O RAZON SOCIAL"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="89" y="3" width="49" height="15" uuid="6eeba20a-cb7a-41d5-afdc-c9d065ba0167"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FECHA"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="419" y="3" width="72" height="15" uuid="19c0dce8-b444-485c-a7b2-d8eff7130e02"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["NRO RIF."]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="3" width="89" height="15" uuid="0388019b-8ef6-4fd6-ac7a-7d078f1227df"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["NRO COMPROBANTE"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="491" y="3" width="90" height="15" uuid="335fc735-6074-44f4-af91-25bc635b6063"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["BASE IMPONIBLE"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="349" y="3" width="70" height="15" uuid="85d4c6c8-e0b5-4027-8c3e-0365a65a16bf"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["NRO.LIC"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="138" y="3" width="38" height="15" uuid="2be3ee1b-5597-433f-80fc-fa884ec5daf4"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["MES"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="655" y="3" width="96" height="15" uuid="f5e77f38-bd0e-499e-94c4-d6f64b95ef64"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["IMP. RET."]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="1" y="18" width="751" height="1" forecolor="#A39A99" uuid="a0998923-b85b-430f-a0e5-6c955c1b9a33"/>
+			</rectangle>
+			<textField>
+				<reportElement x="582" y="3" width="37" height="15" uuid="14735244-ab99-47e9-924d-107796374a51"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ALIC"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="619" y="3" width="36" height="15" uuid="91d87e0c-5566-4a68-865d-585953c53da5"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ACTIV"]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="89" y="0" width="49" height="20" uuid="0eaa1da9-86d3-414a-8f36-8b189054796d"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechareten}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="89" height="20" uuid="bb1b0bb6-fa05-4113-acee-4effd5d10a0e"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numerocomprobante}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="138" y="0" width="38" height="20" uuid="63b25892-0cdb-4a90-b830-aab2ae3c38da"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{mes_periodo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="176" y="0" width="173" height="20" isPrintWhenDetailOverflows="true" uuid="277f2ab3-f085-4137-a0a9-ecc45c6824f4"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" "+$F{tercero}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="349" y="0" width="70" height="20" uuid="82902af9-5936-4470-9bd3-3b938109edcc"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{b_partner_a_license_no}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="491" y="0" width="90" height="20" uuid="8c19df53-cb1d-40f7-960c-904823a8343b"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="7"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{baseimponible}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="419" y="0" width="72" height="20" uuid="8c817f16-5cf1-4c8b-a95a-5954c67feb49"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{riftercero}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement x="655" y="0" width="96" height="20" uuid="ac655b70-8be5-4827-ab08-56e30a607138"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="7"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{montoiva}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="582" y="0" width="37" height="20" uuid="f24187f1-d50e-4941-862e-765b63ec8318"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="7"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{alic}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="619" y="0" width="36" height="20" uuid="773fc8f0-53b5-4770-a0a5-add48ea4eec8"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="7"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{lco_isic_n}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="22" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="0" width="751" height="1" forecolor="#050505" uuid="f6aa1c8e-be7e-4a87-90cc-5cd5b2c552fc"/>
+			</rectangle>
+			<textField>
+				<reportElement x="280" y="7" width="206" height="15" uuid="c852d28e-dc14-4355-917e-64038f40f689"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["TOTAL RETENCIONES DEL PERIODO:"]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="655" y="7" width="96" height="15" uuid="d47e3c39-e6a6-4b0b-ab11-6baaa65e079e"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{BP_montoiva}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="490" y="7" width="92" height="15" uuid="31ad7ef5-12ff-462a-a10e-e2c4049434a5"/>
+				<textElement textAlignment="Right">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{BP_baseimponible}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

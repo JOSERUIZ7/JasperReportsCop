@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Rpt_Sales_Distributors" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6710f1b2-084e-48b2-8f72-2db6ab8d746a">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="DateInvoiced1" class="java.sql.Date"/>
+	<parameter name="DateInvoiced2" class="java.sql.Date"/>
+	<parameter name="RESOURCE_DIR" class="java.lang.String"/>
+	<parameter name="C_Currency_ID" class="java.lang.Integer"/>
+	<queryString language="SQL">
+		<![CDATA[
+select 
+x.ad_org_n || '   ' ||  substring(coalesce(round(x.linenetamt / (sum(x.linenetamt) over () ),4) * 100,0)::text,1,5) || ' %' as ad_org_n ,
+x.linenetamt ,
+sum(x.linenetamt) over () total, 
+coalesce(round(x.linenetamt / (sum(x.linenetamt) over () ),4) * 100,0)::text as porc
+
+from 
+(
+
+select b.name ad_org_n ,
+sum(currencyconvert(a.linenetamt,a.c_currency_id ,$P{C_Currency_ID},a.dateinvoiced ,a.C_ConversionType_ID , a.ad_client_id,a.ad_org_id)) linenetamt
+  
+from cop_rv_c_invoiceline a  join ad_org b on a.ad_org_id = b.ad_org_id 
+where
+	a.DateInvoiced between $P{DateInvoiced1} and $P{DateInvoiced2}
+	and a.issotrx = 'Y' and a.m_product_id is not null 
+	group by
+	b.name
+	order  by
+	b.name) x order by linenetamt desc]]>
+	</queryString>
+	<field name="ad_org_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ad_org_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="ad_org_n"/>
+	</field>
+	<field name="linenetamt" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="linenetamt"/>
+		<property name="com.jaspersoft.studio.field.label" value="linenetamt"/>
+	</field>
+	<field name="total" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="total"/>
+		<property name="com.jaspersoft.studio.field.label" value="total"/>
+	</field>
+	<field name="porc" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="porc"/>
+		<property name="com.jaspersoft.studio.field.label" value="porc"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="94" splitType="Stretch">
+			<staticText>
+				<reportElement x="180" y="62" width="500" height="30" uuid="0c4060ef-81ab-4c8e-b852-5d1ad853b809"/>
+				<textElement textAlignment="Center">
+					<font fontName="Times New Roman" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ventas Total por Distribuidora]]></text>
+			</staticText>
+			<image>
+				<reportElement x="0" y="1" width="180" height="59" uuid="768fffc3-c430-4220-884e-e6336629ddd1"/>
+				<imageExpression><![CDATA[$P{RESOURCE_DIR} + "logo.png"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<summary>
+		<band height="308" splitType="Stretch">
+			<bar3DChart>
+				<chart evaluationTime="Report">
+					<reportElement x="0" y="0" width="800" height="290" uuid="27d61cb6-94ed-4745-b1ad-97979c23ef24"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset resetType="Report"/>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{ad_org_n}]]></seriesExpression>
+						<categoryExpression><![CDATA[0]]></categoryExpression>
+						<valueExpression><![CDATA[$F{linenetamt}]]></valueExpression>
+						<labelExpression><![CDATA[$F{porc}]]></labelExpression>
+					</categorySeries>
+				</categoryDataset>
+				<bar3DPlot>
+					<plot/>
+					<itemLabel/>
+					<categoryAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</valueAxisFormat>
+				</bar3DPlot>
+			</bar3DChart>
+		</band>
+	</summary>
+</jasperReport>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT_Invoice_productV2_P2" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="c1dae355-d4a0-4413-905c-e559bd8d7a74">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<parameter name="C_Currency_ID" class="java.lang.String"/>
+	<parameter name="IsSOTrx" class="java.lang.String"/>
+	<parameter name="C_DocType_ID" class="java.lang.String"/>
+	<parameter name="DateInvoiced1" class="java.lang.String"/>
+	<parameter name="DateInvoiced2" class="java.lang.String"/>
+	<parameter name="DocStatus" class="java.lang.String"/>
+	<parameter name="C_BPartner_ID" class="java.lang.String"/>
+	<parameter name="AD_Org_ID" class="java.lang.String"/>
+	<parameter name="C_BP_Group_ID" class="java.lang.String"/>
+	<parameter name="M_Product_Category_ID" class="java.lang.String"/>
+	<parameter name="SalesRep_ID" class="java.lang.String"/>
+	<parameter name="M_Product_ID" class="java.lang.String"/>
+	<parameter name="RESOURCE_DIR" class="java.lang.String"/>
+	<parameter name="DocBaseType" class="java.lang.String"/>
+	<parameter name="IsMassiveConsume" class="java.lang.String"/>
+	<parameter name="IsIndustrialSales" class="java.lang.String"/>
+	<parameter name="issocialprogram" class="java.lang.String"/>
+	<parameter name="SkipDonationsEndowments" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

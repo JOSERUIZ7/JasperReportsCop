@@ -1,0 +1,1258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_Letter" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1d222bb4-62f0-4d3f-8ae0-1d09a380d051">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT x.t_ope,
+    x.name,
+    sum(x.amount1) AS sum_nov,
+    sum(x.amount2) AS sum_dic,
+    sum(x.amount3) AS sum_ene,
+    sum(x.amount4) AS sum_feb,
+    sum(x.amount5) AS sum_mar,
+    sum(x.amount6) AS sum_abr,
+    sum(x.amount7) AS sum_may,
+    sum(x.amount8) AS sum_jun,
+    sum(x.amount9) AS sum_jul,
+    sum(x.amount10) AS sum_ago,
+    sum(x.amount11) AS sum_sep,
+    sum(x.amount12) AS sum_oct
+   FROM ( SELECT 10 AS t_ope,
+            to_date('01/11/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('30/11/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AS datetrx2,
+            'Saldo Inicial'::character varying AS name,
+            sum(vci.amount) AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM v_cop_initialbalance vci
+          WHERE vci.datetrx < to_date('01/11/'::text || (2022 - 1), 'DD/MM/YYYY'::text)
+        UNION
+         SELECT 20 AS t_ope,
+            to_date('01/11/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('30/11/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AS datetrx2,
+            ar.name,
+            sum(a.amount) AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/11/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('30/11/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY a.datetrx, ar.name
+        UNION
+         SELECT 30 AS t_ope,
+            to_date('01/11/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('30/11/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AS datetrx2,
+            'INGRESOS'::character varying AS name,
+            sum(a.amount) AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/11/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('30/11/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY 30::integer
+        UNION
+         SELECT max(a1.t_ope) AS t_ope,
+            max(a1.datetrx1) AS datetrx1,
+            max(a1.datetrx2) AS datetrx2,
+            a1.name,
+            sum(a1.amount) AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM ( SELECT 40 AS t_ope,
+                    to_date('01/11/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AS datetrx1,
+                    to_date('30/11/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AS datetrx2,
+                    x1.dateacct,
+                    x1.c_currency_id,
+                    x1.group_parent AS name,
+                    x1.mount_payment,
+                    x1.mount_payment AS amount,
+                        CASE
+                            WHEN x1.c_charge_id = 500307::numeric THEN 'Y'::text
+                            ELSE 'N'::text
+                        END AS transferencia
+                   FROM cop_paym_shopp x1
+                     LEFT JOIN cop_bpartnertype a ON x1.cop_bpartnertype_id = a.cop_bpartnertype_id
+                  WHERE x1.dateacct >= to_date('01/11/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AND x1.dateacct <= to_date('30/11/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AND x1.c_currency_id = 1000001::numeric
+                  ORDER BY x1.group_parent, x1.dateacct) a1
+          WHERE a1.transferencia = 'N'::text
+          GROUP BY a1.datetrx1, a1.name
+        UNION
+         SELECT 10 AS t_ope,
+            to_date('01/12/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('31/12/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AS datetrx2,
+            'Saldo Inicial'::character varying AS name,
+            0 AS amount1,
+            sum(vci.amount) AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM v_cop_initialbalance vci
+          WHERE vci.datetrx < to_date('01/12/'::text || (2022 - 1), 'DD/MM/YYYY'::text)
+        UNION
+         SELECT 20 AS t_ope,
+            to_date('01/12/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('31/12/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AS datetrx2,
+            ar.name,
+            0 AS amount1,
+            sum(a.amount) AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/12/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('31/12/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY a.datetrx, ar.name
+        UNION
+         SELECT 30 AS t_ope,
+            to_date('01/12/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('31/12/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AS datetrx2,
+            'INGRESOS'::character varying AS name,
+            0 AS amount1,
+            sum(a.amount) AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/12/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('31/12/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY 30::integer
+        UNION
+         SELECT max(a1.t_ope) AS t_ope,
+            max(a1.datetrx1) AS datetrx1,
+            max(a1.datetrx2) AS datetrx2,
+            a1.name,
+            0 AS amount1,
+            sum(a1.amount) AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM ( SELECT 40 AS t_ope,
+                    to_date('01/12/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AS datetrx1,
+                    to_date('31/12/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AS datetrx2,
+                    x1.dateacct,
+                    x1.c_currency_id,
+                    x1.group_parent AS name,
+                    x1.mount_payment,
+                    x1.mount_payment AS amount,
+                        CASE
+                            WHEN x1.c_charge_id = 500307::numeric THEN 'Y'::text
+                            ELSE 'N'::text
+                        END AS transferencia
+                   FROM cop_paym_shopp x1
+                     LEFT JOIN cop_bpartnertype a ON x1.cop_bpartnertype_id = a.cop_bpartnertype_id
+                  WHERE x1.dateacct >= to_date('01/12/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AND x1.dateacct <= to_date('31/12/'::text || (2022 - 1), 'DD/MM/YYYY'::text) AND x1.c_currency_id = 1000001::numeric
+                  ORDER BY x1.group_parent, x1.dateacct) a1
+          WHERE a1.transferencia = 'N'::text
+          GROUP BY a1.datetrx1, a1.name
+        UNION
+         SELECT 10 AS t_ope,
+            to_date('01/01/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('31/01/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            'Saldo Inicial'::character varying AS name,
+            0 AS amount1,
+            0 AS amount2,
+            sum(vci.amount) AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM v_cop_initialbalance vci
+          WHERE vci.datetrx < to_date('01/01/'::text || 2022, 'DD/MM/YYYY'::text)
+        UNION
+         SELECT 20 AS t_ope,
+            to_date('01/01/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('31/01/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            ar.name,
+            0 AS amount1,
+            0 AS amount2,
+            sum(a.amount) AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/01/'::text || 2022, 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('31/01/'::text || 2022, 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY a.datetrx, ar.name
+        UNION
+         SELECT 30 AS t_ope,
+            to_date('01/01/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('31/01/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            'INGRESOS'::character varying AS name,
+            0 AS amount1,
+            0 AS amount2,
+            sum(a.amount) AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/01/'::text || 2022, 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('31/01/'::text || 2022, 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY 30::integer
+        UNION
+         SELECT max(a1.t_ope) AS t_ope,
+            max(a1.datetrx1) AS datetrx1,
+            max(a1.datetrx2) AS datetrx2,
+            a1.name,
+            0 AS amount1,
+            0 AS amount2,
+            sum(a1.amount) AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM ( SELECT 40 AS t_ope,
+                    to_date('01/01/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+                    to_date('31/01/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+                    x1.dateacct,
+                    x1.c_currency_id,
+                    x1.group_parent AS name,
+                    x1.mount_payment,
+                    x1.mount_payment AS amount,
+                        CASE
+                            WHEN x1.c_charge_id = 500307::numeric THEN 'Y'::text
+                            ELSE 'N'::text
+                        END AS transferencia
+                   FROM cop_paym_shopp x1
+                     LEFT JOIN cop_bpartnertype a ON x1.cop_bpartnertype_id = a.cop_bpartnertype_id
+                  WHERE x1.dateacct >= to_date('01/01/'::text || 2022, 'DD/MM/YYYY'::text) AND x1.dateacct <= to_date('31/01/'::text || 2022, 'DD/MM/YYYY'::text) AND x1.c_currency_id = 1000001::numeric
+                  ORDER BY x1.group_parent, x1.dateacct) a1
+          WHERE a1.transferencia = 'N'::text
+          GROUP BY a1.datetrx1, a1.name
+        UNION
+         SELECT 10 AS t_ope,
+            to_date('01/02/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            (to_date('01/03/'::text || 2022, 'DD/MM/YYYY'::text) - '1 day'::interval)::date AS datetrx2,
+            'Saldo Inicial'::character varying AS name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            sum(vci.amount) AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM v_cop_initialbalance vci
+          WHERE vci.datetrx < to_date('01/02/'::text || 2022, 'DD/MM/YYYY'::text)
+        UNION
+         SELECT 20 AS t_ope,
+            to_date('01/02/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            (to_date('01/03/'::text || 2022, 'DD/MM/YYYY'::text) - '1 day'::interval)::date AS datetrx2,
+            ar.name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            sum(a.amount) AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/02/'::text || 2022, 'DD/MM/YYYY'::text) AND a.datetrx <= (to_date('01/03/'::text || 2022, 'DD/MM/YYYY'::text) - '1 day'::interval)::date AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY a.datetrx, ar.name
+        UNION
+         SELECT 30 AS t_ope,
+            to_date('01/02/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            (to_date('01/03/'::text || 2022, 'DD/MM/YYYY'::text) - '1 day'::interval)::date AS datetrx2,
+            'INGRESOS'::character varying AS name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            sum(a.amount) AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/02/'::text || 2022, 'DD/MM/YYYY'::text) AND a.datetrx <= (to_date('01/03/'::text || 2022, 'DD/MM/YYYY'::text) - '1 day'::interval)::date AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY 30::integer
+        UNION
+         SELECT max(a1.t_ope) AS t_ope,
+            max(a1.datetrx1) AS datetrx1,
+            max(a1.datetrx2) AS datetrx2,
+            a1.name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            sum(a1.amount) AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM ( SELECT 40 AS t_ope,
+                    to_date('01/02/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+                    (to_date('01/03/'::text || 2022, 'DD/MM/YYYY'::text) - '1 day'::interval)::date AS datetrx2,
+                    x1.dateacct,
+                    x1.c_currency_id,
+                    x1.group_parent AS name,
+                    x1.mount_payment,
+                    x1.mount_payment AS amount,
+                        CASE
+                            WHEN x1.c_charge_id = 500307::numeric THEN 'Y'::text
+                            ELSE 'N'::text
+                        END AS transferencia
+                   FROM cop_paym_shopp x1
+                     LEFT JOIN cop_bpartnertype a ON x1.cop_bpartnertype_id = a.cop_bpartnertype_id
+                  WHERE x1.dateacct >= to_date('01/02/'::text || 2022, 'DD/MM/YYYY'::text) AND x1.dateacct <= (to_date('01/03/'::text || 2022, 'DD/MM/YYYY'::text) - '1 day'::interval)::date AND x1.c_currency_id = 1000001::numeric
+                  ORDER BY x1.group_parent, x1.dateacct) a1
+          WHERE a1.transferencia = 'N'::text
+          GROUP BY a1.datetrx1, a1.name
+        UNION
+         SELECT 10 AS t_ope,
+            to_date('01/03/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('31/03/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            'Saldo Inicial'::character varying AS name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            sum(vci.amount) AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM v_cop_initialbalance vci
+          WHERE vci.datetrx < to_date('01/03/'::text || 2022, 'DD/MM/YYYY'::text)
+        UNION
+         SELECT 20 AS t_ope,
+            to_date('01/03/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('31/03/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            ar.name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            sum(a.amount) AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/03/'::text || 2022, 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('31/03/'::text || 2022, 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY a.datetrx, ar.name
+        UNION
+         SELECT 30 AS t_ope,
+            to_date('01/03/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('31/03/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            'INGRESOS'::character varying AS name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            sum(a.amount) AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/03/'::text || 2022, 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('31/03/'::text || 2022, 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY 30::integer
+        UNION
+         SELECT max(a1.t_ope) AS t_ope,
+            max(a1.datetrx1) AS datetrx1,
+            max(a1.datetrx2) AS datetrx2,
+            a1.name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            sum(a1.amount) AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM ( SELECT 40 AS t_ope,
+                    to_date('01/03/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+                    to_date('31/03/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+                    x1.dateacct,
+                    x1.c_currency_id,
+                    x1.group_parent AS name,
+                    x1.mount_payment,
+                    x1.mount_payment AS amount,
+                        CASE
+                            WHEN x1.c_charge_id = 500307::numeric THEN 'Y'::text
+                            ELSE 'N'::text
+                        END AS transferencia
+                   FROM cop_paym_shopp x1
+                     LEFT JOIN cop_bpartnertype a ON x1.cop_bpartnertype_id = a.cop_bpartnertype_id
+                  WHERE x1.dateacct >= to_date('01/03/'::text || 2022, 'DD/MM/YYYY'::text) AND x1.dateacct <= to_date('31/03/'::text || 2022, 'DD/MM/YYYY'::text) AND x1.c_currency_id = 1000001::numeric
+                  ORDER BY x1.group_parent, x1.dateacct) a1
+          WHERE a1.transferencia = 'N'::text
+          GROUP BY a1.datetrx1, a1.name
+        UNION
+         SELECT 10 AS t_ope,
+            to_date('01/04/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('30/04/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            'Saldo Inicial'::character varying AS name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            sum(vci.amount) AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM v_cop_initialbalance vci
+          WHERE vci.datetrx < to_date('01/04/'::text || 2022, 'DD/MM/YYYY'::text)
+        UNION
+         SELECT 20 AS t_ope,
+            to_date('01/04/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('30/04/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            ar.name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            sum(a.amount) AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/04/'::text || 2022, 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('30/04/'::text || 2022, 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY a.datetrx, ar.name
+        UNION
+         SELECT 30 AS t_ope,
+            to_date('01/04/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('30/04/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            'INGRESOS'::character varying AS name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            sum(a.amount) AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/04/'::text || 2022, 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('30/04/'::text || 2022, 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY 30::integer
+        UNION
+         SELECT max(a1.t_ope) AS t_ope,
+            max(a1.datetrx1) AS datetrx1,
+            max(a1.datetrx2) AS datetrx2,
+            a1.name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            sum(a1.amount) AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM ( SELECT 40 AS t_ope,
+                    to_date('01/04/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+                    to_date('30/04/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+                    x1.dateacct,
+                    x1.c_currency_id,
+                    x1.group_parent AS name,
+                    x1.mount_payment,
+                    x1.mount_payment AS amount,
+                        CASE
+                            WHEN x1.c_charge_id = 500307::numeric THEN 'Y'::text
+                            ELSE 'N'::text
+                        END AS transferencia
+                   FROM cop_paym_shopp x1
+                     LEFT JOIN cop_bpartnertype a ON x1.cop_bpartnertype_id = a.cop_bpartnertype_id
+                  WHERE x1.dateacct >= to_date('01/04/'::text || 2022, 'DD/MM/YYYY'::text) AND x1.dateacct <= to_date('30/04/'::text || 2022, 'DD/MM/YYYY'::text) AND x1.c_currency_id = 1000001::numeric
+                  ORDER BY x1.group_parent, x1.dateacct) a1
+          WHERE a1.transferencia = 'N'::text
+          GROUP BY a1.datetrx1, a1.name
+        UNION
+         SELECT 10 AS t_ope,
+            to_date('01/05/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('31/05/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            'Saldo Inicial'::character varying AS name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            sum(vci.amount) AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM v_cop_initialbalance vci
+          WHERE vci.datetrx < to_date('01/05/'::text || 2022, 'DD/MM/YYYY'::text)
+        UNION
+         SELECT 20 AS t_ope,
+            to_date('01/05/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('31/05/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            ar.name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            sum(a.amount) AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/05/'::text || 2022, 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('31/05/'::text || 2022, 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY a.datetrx, ar.name
+        UNION
+         SELECT 30 AS t_ope,
+            to_date('01/05/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('31/05/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            'INGRESOS'::character varying AS name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            sum(a.amount) AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/05/'::text || 2022, 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('31/05/'::text || 2022, 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY 30::integer
+        UNION
+         SELECT max(a1.t_ope) AS t_ope,
+            max(a1.datetrx1) AS datetrx1,
+            max(a1.datetrx2) AS datetrx2,
+            a1.name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            sum(a1.amount) AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM ( SELECT 40 AS t_ope,
+                    to_date('01/05/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+                    to_date('31/05/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+                    x1.dateacct,
+                    x1.c_currency_id,
+                    x1.group_parent AS name,
+                    x1.mount_payment,
+                    x1.mount_payment AS amount,
+                        CASE
+                            WHEN x1.c_charge_id = 500307::numeric THEN 'Y'::text
+                            ELSE 'N'::text
+                        END AS transferencia
+                   FROM cop_paym_shopp x1
+                     LEFT JOIN cop_bpartnertype a ON x1.cop_bpartnertype_id = a.cop_bpartnertype_id
+                  WHERE x1.dateacct >= to_date('01/05/'::text || 2022, 'DD/MM/YYYY'::text) AND x1.dateacct <= to_date('31/05/'::text || 2022, 'DD/MM/YYYY'::text) AND x1.c_currency_id = 1000001::numeric
+                  ORDER BY x1.group_parent, x1.dateacct) a1
+          WHERE a1.transferencia = 'N'::text
+          GROUP BY a1.datetrx1, a1.name
+        UNION
+         SELECT 10 AS t_ope,
+            to_date('01/06/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('30/06/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            'Saldo Inicial'::character varying AS name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            sum(vci.amount) AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM v_cop_initialbalance vci
+          WHERE vci.datetrx < to_date('01/06/'::text || 2022, 'DD/MM/YYYY'::text)
+        UNION
+         SELECT 20 AS t_ope,
+            to_date('01/06/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('30/06/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            ar.name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            sum(a.amount) AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/06/'::text || 2022, 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('30/06/'::text || 2022, 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY a.datetrx, ar.name
+        UNION
+         SELECT 30 AS t_ope,
+            to_date('01/06/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('30/06/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            'INGRESOS'::character varying AS name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            sum(a.amount) AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/06/'::text || 2022, 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('30/06/'::text || 2022, 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY 30::integer
+        UNION
+         SELECT max(a1.t_ope) AS t_ope,
+            max(a1.datetrx1) AS datetrx1,
+            max(a1.datetrx2) AS datetrx2,
+            a1.name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            sum(a1.amount) AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM ( SELECT 40 AS t_ope,
+                    to_date('01/06/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+                    to_date('30/06/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+                    x1.dateacct,
+                    x1.c_currency_id,
+                    x1.group_parent AS name,
+                    x1.mount_payment,
+                    x1.mount_payment AS amount,
+                        CASE
+                            WHEN x1.c_charge_id = 500307::numeric THEN 'Y'::text
+                            ELSE 'N'::text
+                        END AS transferencia
+                   FROM cop_paym_shopp x1
+                     LEFT JOIN cop_bpartnertype a ON x1.cop_bpartnertype_id = a.cop_bpartnertype_id
+                  WHERE x1.dateacct >= to_date('01/06/'::text || 2022, 'DD/MM/YYYY'::text) AND x1.dateacct <= to_date('30/06/'::text || 2022, 'DD/MM/YYYY'::text) AND x1.c_currency_id = 1000001::numeric
+                  ORDER BY x1.group_parent, x1.dateacct) a1
+          WHERE a1.transferencia = 'N'::text
+          GROUP BY a1.datetrx1, a1.name
+        UNION
+         SELECT 10 AS t_ope,
+            to_date('01/07/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('31/07/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            'Saldo Inicial'::character varying AS name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            sum(vci.amount) AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM v_cop_initialbalance vci
+          WHERE vci.datetrx < to_date('01/07/'::text || 2022, 'DD/MM/YYYY'::text)
+        UNION
+         SELECT 20 AS t_ope,
+            to_date('01/07/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('31/07/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            ar.name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            sum(a.amount) AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/07/'::text || 2022, 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('31/07/'::text || 2022, 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY a.datetrx, ar.name
+        UNION
+         SELECT 30 AS t_ope,
+            to_date('01/07/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('31/07/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            'INGRESOS'::character varying AS name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            sum(a.amount) AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/07/'::text || 2022, 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('31/07/'::text || 2022, 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY 30::integer
+        UNION
+         SELECT max(a1.t_ope) AS t_ope,
+            max(a1.datetrx1) AS datetrx1,
+            max(a1.datetrx2) AS datetrx2,
+            a1.name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            sum(a1.amount) AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM ( SELECT 40 AS t_ope,
+                    to_date('01/07/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+                    to_date('31/07/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+                    x1.dateacct,
+                    x1.c_currency_id,
+                    x1.group_parent AS name,
+                    x1.mount_payment,
+                    x1.mount_payment AS amount,
+                        CASE
+                            WHEN x1.c_charge_id = 500307::numeric THEN 'Y'::text
+                            ELSE 'N'::text
+                        END AS transferencia
+                   FROM cop_paym_shopp x1
+                     LEFT JOIN cop_bpartnertype a ON x1.cop_bpartnertype_id = a.cop_bpartnertype_id
+                  WHERE x1.dateacct >= to_date('01/07/'::text || 2022, 'DD/MM/YYYY'::text) AND x1.dateacct <= to_date('31/07/'::text || 2022, 'DD/MM/YYYY'::text) AND x1.c_currency_id = 1000001::numeric
+                  ORDER BY x1.group_parent, x1.dateacct) a1
+          WHERE a1.transferencia = 'N'::text
+          GROUP BY a1.datetrx1, a1.name
+        UNION
+         SELECT 10 AS t_ope,
+            to_date('01/08/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('31/08/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            'Saldo Inicial'::character varying AS name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            sum(vci.amount) AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM v_cop_initialbalance vci
+          WHERE vci.datetrx < to_date('01/08/'::text || 2022, 'DD/MM/YYYY'::text)
+        UNION
+         SELECT 20 AS t_ope,
+            to_date('01/08/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('31/08/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            ar.name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            sum(a.amount) AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/08/'::text || 2022, 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('31/08/'::text || 2022, 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY a.datetrx, ar.name
+        UNION
+         SELECT 30 AS t_ope,
+            to_date('01/08/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('31/08/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            'INGRESOS'::character varying AS name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            sum(a.amount) AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/08/'::text || 2022, 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('31/08/'::text || 2022, 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY 30::integer
+        UNION
+         SELECT max(a1.t_ope) AS t_ope,
+            max(a1.datetrx1) AS datetrx1,
+            max(a1.datetrx2) AS datetrx2,
+            a1.name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            sum(a1.amount) AS amount10,
+            0 AS amount11,
+            0 AS amount12
+           FROM ( SELECT 40 AS t_ope,
+                    to_date('01/08/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+                    to_date('31/08/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+                    x1.dateacct,
+                    x1.c_currency_id,
+                    x1.group_parent AS name,
+                    x1.mount_payment,
+                    x1.mount_payment AS amount,
+                        CASE
+                            WHEN x1.c_charge_id = 500307::numeric THEN 'Y'::text
+                            ELSE 'N'::text
+                        END AS transferencia
+                   FROM cop_paym_shopp x1
+                     LEFT JOIN cop_bpartnertype a ON x1.cop_bpartnertype_id = a.cop_bpartnertype_id
+                  WHERE x1.dateacct >= to_date('01/08/'::text || 2022, 'DD/MM/YYYY'::text) AND x1.dateacct <= to_date('31/08/'::text || 2022, 'DD/MM/YYYY'::text) AND x1.c_currency_id = 1000001::numeric
+                  ORDER BY x1.group_parent, x1.dateacct) a1
+          WHERE a1.transferencia = 'N'::text
+          GROUP BY a1.datetrx1, a1.name
+        UNION
+         SELECT 10 AS t_ope,
+            to_date('01/09/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('30/09/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            'Saldo Inicial'::character varying AS name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            sum(vci.amount) AS amount11,
+            0 AS amount12
+           FROM v_cop_initialbalance vci
+          WHERE vci.datetrx < to_date('01/09/'::text || 2022, 'DD/MM/YYYY'::text)
+        UNION
+         SELECT 20 AS t_ope,
+            to_date('01/09/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('30/09/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            ar.name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            sum(a.amount) AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/09/'::text || 2022, 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('30/09/'::text || 2022, 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY a.datetrx, ar.name
+        UNION
+         SELECT 30 AS t_ope,
+            to_date('01/09/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('30/09/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            'INGRESOS'::character varying AS name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            sum(a.amount) AS amount11,
+            0 AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/09/'::text || 2022, 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('30/09/'::text || 2022, 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY 30::integer
+        UNION
+         SELECT max(a1.t_ope) AS t_ope,
+            max(a1.datetrx1) AS datetrx1,
+            max(a1.datetrx2) AS datetrx2,
+            a1.name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            sum(a1.amount) AS amount11,
+            0 AS amount12
+           FROM ( SELECT 40 AS t_ope,
+                    to_date('01/09/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+                    to_date('30/09/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+                    x1.dateacct,
+                    x1.c_currency_id,
+                    x1.group_parent AS name,
+                    x1.mount_payment,
+                    x1.mount_payment AS amount,
+                        CASE
+                            WHEN x1.c_charge_id = 500307::numeric THEN 'Y'::text
+                            ELSE 'N'::text
+                        END AS transferencia
+                   FROM cop_paym_shopp x1
+                     LEFT JOIN cop_bpartnertype a ON x1.cop_bpartnertype_id = a.cop_bpartnertype_id
+                  WHERE x1.dateacct >= to_date('01/09/'::text || 2022, 'DD/MM/YYYY'::text) AND x1.dateacct <= to_date('30/09/'::text || 2022, 'DD/MM/YYYY'::text) AND x1.c_currency_id = 1000001::numeric
+                  ORDER BY x1.group_parent, x1.dateacct) a1
+          WHERE a1.transferencia = 'N'::text
+          GROUP BY a1.datetrx1, a1.name
+        UNION
+         SELECT 10 AS t_ope,
+            to_date('01/10/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('31/10/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            'Saldo Inicial'::character varying AS name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            sum(vci.amount) AS amount12
+           FROM v_cop_initialbalance vci
+          WHERE vci.datetrx < to_date('01/10/'::text || 2022, 'DD/MM/YYYY'::text)
+        UNION
+         SELECT 20 AS t_ope,
+            to_date('01/10/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('31/10/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            ar.name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            sum(a.amount) AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/10/'::text || 2022, 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('31/10/'::text || 2022, 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY a.datetrx, ar.name
+        UNION
+         SELECT 30 AS t_ope,
+            to_date('01/10/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+            to_date('31/10/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+            'INGRESOS'::character varying AS name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            sum(a.amount) AS amount12
+           FROM cop_dailyopeningbalance a
+             JOIN ad_ref_list ar ON ar.ad_reference_id = 1000176::numeric AND a.incometype::text = ar.value::text
+          WHERE a.datetrx >= to_date('01/10/'::text || 2022, 'DD/MM/YYYY'::text) AND a.datetrx <= to_date('31/10/'::text || 2022, 'DD/MM/YYYY'::text) AND a.isactive = 'Y'::bpchar AND a.c_currency_id = 1000001::numeric
+          GROUP BY 30::integer
+        UNION
+         SELECT max(a1.t_ope) AS t_ope,
+            max(a1.datetrx1) AS datetrx1,
+            max(a1.datetrx2) AS datetrx2,
+            a1.name,
+            0 AS amount1,
+            0 AS amount2,
+            0 AS amount3,
+            0 AS amount4,
+            0 AS amount5,
+            0 AS amount6,
+            0 AS amount7,
+            0 AS amount8,
+            0 AS amount9,
+            0 AS amount10,
+            0 AS amount11,
+            sum(a1.amount) AS amount12
+           FROM ( SELECT 40 AS t_ope,
+                    to_date('01/10/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx1,
+                    to_date('31/10/'::text || 2022, 'DD/MM/YYYY'::text) AS datetrx2,
+                    x1.dateacct,
+                    x1.c_currency_id,
+                    x1.group_parent AS name,
+                    x1.mount_payment,
+                    x1.mount_payment AS amount,
+                        CASE
+                            WHEN x1.c_charge_id = 500307::numeric THEN 'Y'::text
+                            ELSE 'N'::text
+                        END AS transferencia
+                   FROM cop_paym_shopp x1
+                     LEFT JOIN cop_bpartnertype a ON x1.cop_bpartnertype_id = a.cop_bpartnertype_id
+                  WHERE x1.dateacct >= to_date('01/10/'::text || 2022, 'DD/MM/YYYY'::text) AND x1.dateacct <= to_date('31/10/'::text || 2022, 'DD/MM/YYYY'::text) AND x1.c_currency_id = 1000001::numeric
+                  ORDER BY x1.group_parent, x1.dateacct) a1
+          WHERE a1.transferencia = 'N'::text
+          GROUP BY a1.datetrx1, a1.name) x
+  GROUP BY x.t_ope, x.name
+  ORDER BY x.t_ope, x.name;
+
+
+]]>
+	</queryString>
+	<field name="t_ope" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="t_ope"/>
+		<property name="com.jaspersoft.studio.field.label" value="t_ope"/>
+	</field>
+	<field name="name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="name"/>
+	</field>
+	<field name="sum_nov" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_nov"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_nov"/>
+	</field>
+	<field name="sum_dic" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_dic"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_dic"/>
+	</field>
+	<field name="sum_ene" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_ene"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_ene"/>
+	</field>
+	<field name="sum_feb" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_feb"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_feb"/>
+	</field>
+	<field name="sum_mar" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_mar"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_mar"/>
+	</field>
+	<field name="sum_abr" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_abr"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_abr"/>
+	</field>
+	<field name="sum_may" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_may"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_may"/>
+	</field>
+	<field name="sum_jun" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_jun"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_jun"/>
+	</field>
+	<field name="sum_jul" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_jul"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_jul"/>
+	</field>
+	<field name="sum_ago" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_ago"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_ago"/>
+	</field>
+	<field name="sum_sep" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_sep"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_sep"/>
+	</field>
+	<field name="sum_oct" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_oct"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_oct"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

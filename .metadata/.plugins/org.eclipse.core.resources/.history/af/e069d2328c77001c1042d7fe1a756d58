@@ -1,0 +1,860 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT_ARCV_Withholdings" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="395c976b-92d1-4bd2-ba0b-d9b4e8511661">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="214"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="777"/>
+	<property name="com.jaspersoft.studio.report.description" value=""/>
+	<parameter name="AD_Client_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1000000]]></defaultValueExpression>
+	</parameter>
+	<parameter name="AD_Org_ID" class="java.lang.Integer"/>
+	<parameter name="C_BPartner_ID" class="java.lang.Integer"/>
+	<parameter name="DateAcct1" class="java.sql.Timestamp">
+		<defaultValueExpression><![CDATA["2021-06-01"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DateAcct2" class="java.sql.Timestamp">
+		<defaultValueExpression><![CDATA["2021-12-31"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="RESOURCE_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["\"]]></defaultValueExpression>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[SELECT ci.dateinvoiced,
+     ci.ad_org_id::char(7) AS AD_Org_ID,
+    vw.lve_voucherwithholding_ID,
+    wt.type AS withholdingtype,Upper(wt."name") as withholding_name,Upper(wt.description) as withholding_description,
+    replace(ao.taxid::text, '-'::text, ''::text) AS rifempresa,
+    ao2.name AS empresa,
+    ao2.description AS direccion_empresa,
+    btrim(to_char(date_part('year'::text, iw.dateacct), '0000'::text)) AS anio_periodo,
+    btrim(to_char(date_part('month'::text, iw.dateacct), '00'::text)) AS mes_periodo,
+    TO_CHAR(iw.dateacct,'DD/MM/YYYY') AS fechareten,   
+    vw.withholdingno AS numerocomprobante,
+    COALESCE(tid.name,'')||replace(bp.taxid::text, '-'::text, ''::text) AS riftercero_old,
+    replace(bp.taxid::text, '-'::text, ''::text) AS riftercero,
+    bp.name AS tercero,bp.A_License_No b_partner_A_License_No,
+    lbp.address AS direccion_tercero,
+    TO_CHAR(ci.dateinvoiced,'DD/MM/YYYY') AS fechadocumento,
+    CASE WHEN dt.docbasetype = ANY (ARRAY['ARI'::bpchar,'API'::bpchar]) THEN COALESCE(ci.lve_poinvoiceno,ci.documentno) ELSE '' END AS numerodocumento,
+    ci.lve_controlnumber AS control,
+    CASE WHEN dt.docbasetype = ANY (ARRAY['ARD'::bpchar,'APD'::bpchar]) THEN COALESCE(ci.lve_poinvoiceno,ci.documentno) ELSE '' END AS numeronotadebito,
+    CASE WHEN dt.docbasetype = ANY (ARRAY['ARC'::bpchar,'APC'::bpchar]) THEN COALESCE(ci.lve_poinvoiceno,ci.documentno) ELSE '' END AS numeronotacredito,
+    CASE
+     WHEN dt.docbasetype = ANY (ARRAY['API'::bpchar, 'ARI'::bpchar]) THEN CASE WHEN wt.type = 'ISLR' THEN 'FACT'::text ELSE '01-reg'::text END 
+     WHEN dt.docbasetype = ANY (ARRAY['APD'::bpchar, 'ARD'::bpchar]) THEN CASE WHEN wt.type = 'ISLR' THEN 'N.DEB'::text ELSE '02-reg'::text END 
+     WHEN dt.docbasetype = ANY (ARRAY['APC'::bpchar, 'ARC'::bpchar]) THEN CASE WHEN wt.type = 'ISLR' THEN 'N.CRE'::text ELSE '03-reg'::text END 
+     ELSE ''::text
+    END AS tipodocumento,
+    (SELECT
+                COALESCE(ci2.lve_poinvoiceno,ci2.documentno) AS documentoafectado
+           FROM c_invoice ci2
+          WHERE ci2.c_invoice_id = ci.lve_invoiceaffected_id AND ci2.DocStatus = 'CO') AS documentoafectado,
+    ci.grandtotal AS montodocumento,
+    lve_calcexento(ci.c_invoice_id) AS exento,
+    lve_impbase('bf'::bpchar, ci.c_invoice_id, it.rate) AS baseimponible,
+    to_char((CASE WHEN wt.Type = 'IVA' THEN it.rate ELSE iw.percent END), '99.99'::text) AS alic,
+    abs(iw.taxamt) AS montoiva,
+    wct.name AS concepto  ,lc.value as LCO_ISIC_n, cbl.address_billto , wr.code , to_char(dmaxmin.d1 , 'DD/MM/YYYY') d1, to_char(dmaxmin.d2 , 'DD/MM/YYYY') d2 ,
+    ao.a_license_no ad_org_a_license_no
+   ,ao.phone,ao.phone2,ao.email,'COMPROBANTE DE RETENCIONES DE ISLR' REPONAME
+   FROM c_invoice ci
+     JOIN (SELECT it.c_invoice_id,t.rate FROM c_invoicetax it 
+     JOIN c_tax t ON it.c_tax_id = t.c_tax_id) it ON ci.c_invoice_id = it.c_invoice_id 
+     JOIN lco_invoicewithholding iw ON ci.c_invoice_id = iw.c_invoice_id 
+     JOIN lve_voucherwithholding vw ON vw.lve_voucherwithholding_id = iw.lve_voucherwithholding_id
+     JOIN lco_withholdingtype wt ON iw.lco_withholdingtype_id = wt.lco_withholdingtype_id
+     JOIN lco_withholdingrule wr ON iw.lco_withholdingrule_id = wr.lco_withholdingrule_id
+     JOIN lco_withholdingcalc wc ON wc.lco_withholdingcalc_id = wr.lco_withholdingcalc_id 
+     LEFT JOIN lco_withholdingcategory wct ON wr.lco_withholdingcategory_id = wct.lco_withholdingcategory_id 
+     JOIN c_doctype dt ON ci.c_doctype_id = dt.c_doctype_id AND (dt.docbasetype = ANY (ARRAY['API'::bpchar, 'APC'::bpchar, 'APD'::bpchar, 'ARI'::bpchar, 'ARD'::bpchar, 'ARC'::bpchar]))
+     JOIN c_bpartner bp ON bp.c_bpartner_id = ci.c_bpartner_id 
+     JOIN c_bpartner_location bpl ON bp.c_bpartner_id = bpl.c_bpartner_id AND ci.c_bpartner_location_id = bpl.c_bpartner_location_id 
+     JOIN ad_org_v ao ON ao.ad_org_id = ci.ad_org_id 
+     JOIN ad_client ao2 ON ao2.ad_client_id  = ci.ad_client_id      
+     JOIN lve_rv_location l ON ao.c_location_id = l.c_location_id 
+     JOIN lve_rv_location lbp ON bpl.c_location_id = lbp.c_location_id 
+     LEFT JOIN lco_taxidtype tid ON bp.lco_taxidtype_id = tid.lco_taxidtype_id 
+     left join LCO_ISIC lc on bp.lco_isic_id = lc.lco_isic_id 
+     left join cust_c_bpartner_location cbl on cbl.c_bpartner_id = ci.c_bpartner_id 
+     JOIN (SELECT vw.lve_voucherwithholding_ID,min(ci.dateinvoiced) d1 ,max(ci.dateinvoiced) d2
+FROM
+     c_invoice ci
+JOIN lco_invoicewithholding iw ON ci.c_invoice_id = iw.c_invoice_id
+JOIN lve_voucherwithholding vw ON vw.lve_voucherwithholding_id = iw.lve_voucherwithholding_id  AND vw.docstatus = 'CO'
+     GROUP BY vw.lve_voucherwithholding_ID) AS dmaxmin ON vw.lve_voucherwithholding_ID = dmaxmin.lve_voucherwithholding_ID
+WHERE vw.AD_Client_ID = $P{AD_Client_ID}
+     AND (vw.ad_org_id = $P{AD_Org_ID}  or $P{AD_Org_ID} is null)
+     and iw.dateacct BETWEEN $P{DateAcct1}::date AND $P{DateAcct2}::date
+     and  (vw.c_bpartner_id = $P{C_BPartner_ID} or $P{C_BPartner_ID} is null)
+     and wt.TYPE = 'ISLR' 
+     and it.rate > 0
+     ORDER BY bp.name,vw.withholdingno]]>
+	</queryString>
+	<field name="dateinvoiced" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="dateinvoiced"/>
+		<property name="com.jaspersoft.studio.field.label" value="dateinvoiced"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_invoice"/>
+	</field>
+	<field name="ad_org_id" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ad_org_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="ad_org_id"/>
+	</field>
+	<field name="lve_voucherwithholding_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="lve_voucherwithholding_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="lve_voucherwithholding_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lve_voucherwithholding"/>
+	</field>
+	<field name="withholdingtype" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="withholdingtype"/>
+		<property name="com.jaspersoft.studio.field.label" value="withholdingtype"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lco_withholdingtype"/>
+	</field>
+	<field name="withholding_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="withholding_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="withholding_name"/>
+	</field>
+	<field name="withholding_description" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="withholding_description"/>
+		<property name="com.jaspersoft.studio.field.label" value="withholding_description"/>
+	</field>
+	<field name="rifempresa" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="rifempresa"/>
+		<property name="com.jaspersoft.studio.field.label" value="rifempresa"/>
+	</field>
+	<field name="empresa" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="empresa"/>
+		<property name="com.jaspersoft.studio.field.label" value="empresa"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_client"/>
+	</field>
+	<field name="direccion_empresa" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="direccion_empresa"/>
+		<property name="com.jaspersoft.studio.field.label" value="direccion_empresa"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_client"/>
+	</field>
+	<field name="anio_periodo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="anio_periodo"/>
+		<property name="com.jaspersoft.studio.field.label" value="anio_periodo"/>
+	</field>
+	<field name="mes_periodo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="mes_periodo"/>
+		<property name="com.jaspersoft.studio.field.label" value="mes_periodo"/>
+	</field>
+	<field name="fechareten" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="fechareten"/>
+		<property name="com.jaspersoft.studio.field.label" value="fechareten"/>
+	</field>
+	<field name="numerocomprobante" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="numerocomprobante"/>
+		<property name="com.jaspersoft.studio.field.label" value="numerocomprobante"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lve_voucherwithholding"/>
+	</field>
+	<field name="riftercero_old" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="riftercero_old"/>
+		<property name="com.jaspersoft.studio.field.label" value="riftercero_old"/>
+	</field>
+	<field name="riftercero" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="riftercero"/>
+		<property name="com.jaspersoft.studio.field.label" value="riftercero"/>
+	</field>
+	<field name="tercero" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="tercero"/>
+		<property name="com.jaspersoft.studio.field.label" value="tercero"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_bpartner"/>
+	</field>
+	<field name="b_partner_a_license_no" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="b_partner_a_license_no"/>
+		<property name="com.jaspersoft.studio.field.label" value="b_partner_a_license_no"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_bpartner"/>
+	</field>
+	<field name="direccion_tercero" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="direccion_tercero"/>
+		<property name="com.jaspersoft.studio.field.label" value="direccion_tercero"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lve_rv_location"/>
+	</field>
+	<field name="fechadocumento" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="fechadocumento"/>
+		<property name="com.jaspersoft.studio.field.label" value="fechadocumento"/>
+	</field>
+	<field name="numerodocumento" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="numerodocumento"/>
+		<property name="com.jaspersoft.studio.field.label" value="numerodocumento"/>
+	</field>
+	<field name="control" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="control"/>
+		<property name="com.jaspersoft.studio.field.label" value="control"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_invoice"/>
+	</field>
+	<field name="numeronotadebito" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="numeronotadebito"/>
+		<property name="com.jaspersoft.studio.field.label" value="numeronotadebito"/>
+	</field>
+	<field name="numeronotacredito" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="numeronotacredito"/>
+		<property name="com.jaspersoft.studio.field.label" value="numeronotacredito"/>
+	</field>
+	<field name="tipodocumento" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="tipodocumento"/>
+		<property name="com.jaspersoft.studio.field.label" value="tipodocumento"/>
+	</field>
+	<field name="documentoafectado" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="documentoafectado"/>
+		<property name="com.jaspersoft.studio.field.label" value="documentoafectado"/>
+	</field>
+	<field name="montodocumento" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="montodocumento"/>
+		<property name="com.jaspersoft.studio.field.label" value="montodocumento"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_invoice"/>
+	</field>
+	<field name="exento" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="exento"/>
+		<property name="com.jaspersoft.studio.field.label" value="exento"/>
+	</field>
+	<field name="baseimponible" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="baseimponible"/>
+		<property name="com.jaspersoft.studio.field.label" value="baseimponible"/>
+	</field>
+	<field name="alic" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="alic"/>
+		<property name="com.jaspersoft.studio.field.label" value="alic"/>
+	</field>
+	<field name="montoiva" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="montoiva"/>
+		<property name="com.jaspersoft.studio.field.label" value="montoiva"/>
+	</field>
+	<field name="concepto" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="concepto"/>
+		<property name="com.jaspersoft.studio.field.label" value="concepto"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lco_withholdingcategory"/>
+	</field>
+	<field name="lco_isic_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="lco_isic_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="lco_isic_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lco_isic"/>
+	</field>
+	<field name="address_billto" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="address_billto"/>
+		<property name="com.jaspersoft.studio.field.label" value="address_billto"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cust_c_bpartner_location"/>
+	</field>
+	<field name="code" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="code"/>
+		<property name="com.jaspersoft.studio.field.label" value="code"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lco_withholdingrule"/>
+	</field>
+	<field name="d1" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="d1"/>
+		<property name="com.jaspersoft.studio.field.label" value="d1"/>
+	</field>
+	<field name="d2" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="d2"/>
+		<property name="com.jaspersoft.studio.field.label" value="d2"/>
+	</field>
+	<field name="ad_org_a_license_no" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ad_org_a_license_no"/>
+		<property name="com.jaspersoft.studio.field.label" value="ad_org_a_license_no"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="phone" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="phone"/>
+		<property name="com.jaspersoft.studio.field.label" value="phone"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="phone2" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="phone2"/>
+		<property name="com.jaspersoft.studio.field.label" value="phone2"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="email" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="email"/>
+		<property name="com.jaspersoft.studio.field.label" value="email"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="reponame" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="reponame"/>
+		<property name="com.jaspersoft.studio.field.label" value="reponame"/>
+	</field>
+	<variable name="BP_baseimponible" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{baseimponible}]]></variableExpression>
+	</variable>
+	<variable name="BP_montoiva" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{montoiva}]]></variableExpression>
+	</variable>
+	<group name="tercero" isStartNewPage="true" isReprintHeaderOnEachPage="true" minHeightToStartNewPage="10">
+		<groupExpression><![CDATA[$F{tercero}]]></groupExpression>
+		<groupHeader>
+			<band height="55">
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				<textField>
+					<reportElement x="81" y="2" width="408" height="12" uuid="aba9e0ae-8543-4231-9c25-3683dc48720c">
+						<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="fabd8c20-bd1d-4879-8a72-edbb604348c3"/>
+					</reportElement>
+					<textElement verticalAlignment="Bottom">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{tercero}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="522" y="2" width="50" height="12" uuid="e59a537c-76de-44e7-805d-fac1678df929"/>
+					<textElement textAlignment="Center" verticalAlignment="Bottom">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{riftercero}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="399" y="41" width="84" height="10" uuid="59f75f89-06ae-4d97-a4c7-4934d5662d88">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.spacingAfter" value="px"/>
+						<property name="com.jaspersoft.studio.unit.spacingBefore" value="px"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Bottom">
+						<font size="5" isBold="true"/>
+						<paragraph spacingBefore="2" spacingAfter="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA["MONTO OBJETO RETENCION"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="483" y="41" width="90" height="10" uuid="980ed085-9e04-4956-89ad-9461d3bd1dae">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.spacingBefore" value="px"/>
+						<property name="com.jaspersoft.studio.unit.spacingAfter" value="px"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+						<rightPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Bottom">
+						<font size="5" isBold="true"/>
+						<paragraph spacingBefore="2" spacingAfter="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA["MONTO RETENIDO"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="1" y="41" width="49" height="10" uuid="e2001ab3-3824-4739-ae55-d05f22d45d07">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="com.jaspersoft.studio.unit.spacingBefore" value="px"/>
+						<property name="com.jaspersoft.studio.unit.spacingAfter" value="px"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Bottom">
+						<font size="5" isBold="true"/>
+						<paragraph spacingBefore="2" spacingAfter="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA["FECHA CONTABLE"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="120" y="41" width="69" height="10" uuid="cd9df1d9-84d1-4e10-91c2-7abd60d50aef">
+						<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="37123740-149e-4dac-a30e-b7fce716b9b5"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.spacingBefore" value="px"/>
+						<property name="com.jaspersoft.studio.unit.spacingAfter" value="px"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Bottom">
+						<font size="5" isBold="true"/>
+						<paragraph spacingBefore="2" spacingAfter="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA["NRO. CONTROL"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="49" y="41" width="70" height="10" uuid="4dab8f94-6bcb-4658-9f74-042e7317942f">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.spacingBefore" value="px"/>
+						<property name="com.jaspersoft.studio.unit.spacingAfter" value="px"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Bottom">
+						<font size="5" isBold="true"/>
+						<paragraph spacingBefore="2" spacingAfter="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA["FACTURA"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="190" y="41" width="210" height="10" uuid="b37b1df6-651b-4d6f-9822-a5e57c59cccc">
+						<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="fabd8c20-bd1d-4879-8a72-edbb604348c3"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.spacingBefore" value="px"/>
+						<property name="com.jaspersoft.studio.unit.spacingAfter" value="px"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="1.0"/>
+						<leftPen lineWidth="1.0"/>
+						<bottomPen lineWidth="1.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Bottom">
+						<font size="5" isBold="true"/>
+						<paragraph spacingBefore="2" spacingAfter="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA["COD. CONCEPTO"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="81" y="16" width="490" height="20" uuid="844f7c37-b32a-449b-88d3-6cf1d25a7dc2">
+						<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="fabd8c20-bd1d-4879-8a72-edbb604348c3"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement verticalAlignment="Top">
+						<font size="8"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{direccion_tercero}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="2" y="2" width="78" height="12" uuid="96e6d1d4-60b9-43d5-ad47-f810b9d6077b">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textElement verticalAlignment="Bottom">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["PROVEEDOR:"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="2" y="16" width="79" height="10" uuid="95b897cc-5d06-49f8-8516-c2c8413fdbde">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</reportElement>
+					<textElement verticalAlignment="Bottom">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["DIRECCION FISCAL:"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="491" y="2" width="30" height="12" uuid="bd3039fc-c462-4c3c-8f99-f3656f84166c">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Bottom">
+						<font size="7" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["R.I.F.: "]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="30">
+				<textField pattern="#,##0.00">
+					<reportElement x="398" y="6" width="84" height="10" uuid="0f983f5c-2196-4158-b03e-410e92d3b150">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Right">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{BP_baseimponible}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00">
+					<reportElement x="484" y="6" width="86" height="10" uuid="19d6c2e7-8e9f-489f-8bd2-5eb318d6214b">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Right">
+						<font size="6" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{BP_montoiva}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="230" y="6" width="168" height="10" uuid="f23ce66f-ce48-4ee0-9361-634b499be1f9">
+						<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="fabd8c20-bd1d-4879-8a72-edbb604348c3"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Top">
+						<font size="5" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["TOTAL RETENCIONES DEL PERIODO:"]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="1" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="157" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="46" width="200" height="10" uuid="8ada9ecd-25c7-46e7-9963-9f74c8c54e59">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{empresa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="86" width="572" height="23" uuid="b7611adf-96ca-4bec-a835-f11182a8bbe3"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{reponame}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="0" y="0" width="130" height="50" uuid="c23734e1-aecc-44f1-a726-531f51551609"/>
+				<imageExpression><![CDATA[$P{RESOURCE_DIR} + "logo.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="0" y="56" width="100" height="10" uuid="1219a844-8cd2-41ff-804a-cf02226e0d5a"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{rifempresa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="66" width="380" height="10" uuid="e3cf664e-344d-4464-b5f5-4d54615e7f1e"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{direccion_empresa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="76" width="140" height="10" uuid="abe99383-5cc0-4f7f-9f7c-a5e451aa6c56">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{phone}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="76" width="40" height="10" uuid="67841c01-d375-41c6-822c-30b9c5ad9b35"/>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Teléfono:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="533" y="1" width="10" height="11" uuid="2c8620aa-1f16-4136-8419-e86a2948bfea">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[de:]]></text>
+			</staticText>
+			<textField pattern="HH:mm" isBlankWhenNull="true">
+				<reportElement x="519" y="24" width="49" height="11" uuid="f84cb209-b48c-4a52-9316-2c29e3b0d8e1">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("h:mm a").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="481" y="24" width="36" height="11" uuid="ec792910-df2a-4838-9016-e75eadda3f5c">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="481" y="2" width="36" height="11" uuid="5a9a382c-70fe-4a73-b6b6-40209b5c48e4">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Página:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="481" y="13" width="36" height="11" uuid="959b5f36-56f1-4ae2-8e9c-26e1145c64ee">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="521" y="1" width="11" height="11" uuid="1ff744a5-2ab9-4ea5-b918-f76a17d5dfdf">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" isBlankWhenNull="true">
+				<reportElement x="547" y="1" width="21" height="11" uuid="119caa21-f930-4324-b734-518b00f84ba5">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="519" y="13" width="49" height="11" uuid="64ef9044-315b-47ee-b9af-633b0454ee63">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="481" y="36" width="44" height="11" uuid="dcaf96ba-3059-4a88-abf0-9b8a21b6a11b">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Periodo:]]></text>
+			</staticText>
+			<textField pattern="HH:mm" isBlankWhenNull="true">
+				<reportElement x="519" y="36" width="49" height="11" uuid="cd818e7d-8f49-4520-ac09-1e4dce98eb40">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{anio_periodo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="114" width="572" height="12" uuid="79d5105d-debd-483b-82cf-0ebe360b7e9d">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["CONFORME  AL DECRETO 1808 DE FECHA 12 DE MAYO DE 1997"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="125" width="572" height="12" uuid="946474cb-5605-4dd0-ac49-fc504c17f167">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["GACETA OFICIAL Nro. 36.203"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="139" width="572" height="12" uuid="724ebe7e-8399-4910-a839-84f191ccd986">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["DESDE: " + $F{d1} + "      -       HASTA: " + $F{d2}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="11" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="17" splitType="Stretch">
+			<textField>
+				<reportElement x="49" y="0" width="70" height="17" uuid="36242324-aead-4dcf-886e-f8e017359d9b">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numerodocumento}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="49" height="17" uuid="d0bfbcac-6c7d-4bc1-8ed5-005403624da9">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fechareten}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="119" y="0" width="69" height="17" uuid="e65d5279-9e7b-481d-bbdd-9fa064f46ce3">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="37123740-149e-4dac-a30e-b7fce716b9b5"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{control}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="398" y="0" width="84" height="17" uuid="56bf7896-a107-4700-b0f9-004b244032a6">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font size="6"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{baseimponible}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="482" y="0" width="90" height="17" uuid="9268b77a-e1af-4a60-984f-05ebdae714e9">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font size="6"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{montoiva}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="188" y="0" width="210" height="17" uuid="37eaff23-75e8-4af4-808d-3d093056c987">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="37123740-149e-4dac-a30e-b7fce716b9b5"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{code} + " - " + $F{concepto}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="5" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="85" splitType="Stretch">
+			<textField>
+				<reportElement x="15" y="16" width="170" height="10" uuid="5bf2752a-2d64-42f2-8cf9-4797d0edb23e">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="fabd8c20-bd1d-4879-8a72-edbb604348c3"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="5" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FIRMA Y SELLO DEL AGENTE DE RETENCION"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="386" y="16" width="170" height="10" uuid="5dbdb2e0-da5c-4f79-b4da-c9543288ae63">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="fabd8c20-bd1d-4879-8a72-edbb604348c3"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="5" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FIRMA Y SELLO DEL AGENTE DE RETENIDO"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="2" y="50" width="568" height="10" uuid="d6e5c0f6-9b4f-4743-adde-2e4e319e1d31">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="fabd8c20-bd1d-4879-8a72-edbb604348c3"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Planta: Ctra. Via a payara Nro. S/Nro Sector Piedras Blancas, Acarigua - Estado Portuguesa. Venezuela . Telefonos (0255)- 6002300"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="2" y="62" width="568" height="10" uuid="c597e0d8-127d-4f92-857d-2be2c544a195">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="fabd8c20-bd1d-4879-8a72-edbb604348c3"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Oficinas Caracas: Av. La Salle, Torre Phelps, Piso 16, Plaza Venezuela - Caracas. Telefonos (0212) 3006400 Fax: (0212) 3006422"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

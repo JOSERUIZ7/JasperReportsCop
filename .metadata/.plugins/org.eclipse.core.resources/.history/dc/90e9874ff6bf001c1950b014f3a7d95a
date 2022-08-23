@@ -1,0 +1,1819 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_Letter" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1d222bb4-62f0-4d3f-8ae0-1d09a380d051">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="YearTrx" class="java.lang.Integer"/>
+	<parameter name="C_Currency_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1000001]]></defaultValueExpression>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[	select 
+			t_ope ,
+			"name" ,
+			sum(amount1) SUM_NOV ,
+			sum(amount2) SUM_DIC ,
+			sum(amount3) SUM_ENE ,
+			sum(amount4) SUM_FEB ,
+			sum(amount5) SUM_MAR ,
+			sum(amount6) SUM_ABR ,
+			sum(amount7) SUM_MAY ,
+			sum(amount8) SUM_JUN ,
+			sum(amount9) SUM_JUL ,
+			sum(amount10) SUM_AGO ,
+			sum(amount11) SUM_SEP ,
+			sum(amount12) SUM_OCT ,
+		'DESDE: '|| to_CHAR(TO_DATE('01/11/'|| to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY'),'DD/MM/YYYY') || '  -  HASTA: '||to_CHAR(TO_DATE('30/11/'|| to_char($P{YearTrx} - 1 ,'9999') , 'DD/MM/YYYY') , 'DD/MM/YYYY') NOV ,
+		'DESDE: '|| to_CHAR(TO_DATE('01/12/'|| to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY'),'DD/MM/YYYY') || '  -  HASTA: '||to_CHAR(TO_DATE('31/12/'|| to_char($P{YearTrx} - 1 ,'9999'), 'DD/MM/YYYY') , 'DD/MM/YYYY') DIC ,
+		'DESDE: '|| to_CHAR(TO_DATE('01/01/'|| to_char($P{YearTrx},'9999')  , 'DD/MM/YYYY'),'DD/MM/YYYY') || '  -  HASTA: ' || to_CHAR(TO_DATE('30/01/'  || to_char($P{YearTrx},'9999'), 'DD/MM/YYYY') , 'DD/MM/YYYY') ENE ,
+		'DESDE: '|| to_CHAR(TO_DATE('01/02/'|| to_char($P{YearTrx},'9999')  , 'DD/MM/YYYY'),'DD/MM/YYYY') || '  -  HASTA: ' || TO_CHAR((TO_DATE('01/03/' || to_char($P{YearTrx},'9999'), 'DD/MM/YYYY')- CAST('1 days' AS INTERVAL)),'DD/MM/YYYY') FEB ,
+		'DESDE: '|| to_CHAR(TO_DATE('01/03/'|| to_char($P{YearTrx},'9999'), 'DD/MM/YYYY'),'DD/MM/YYYY') || '  -  HASTA: '||to_CHAR(TO_DATE('31/03/'|| to_char($P{YearTrx},'9999'), 'DD/MM/YYYY') , 'DD/MM/YYYY') MAR ,
+		'DESDE: '|| to_CHAR(TO_DATE('01/04/'|| to_char($P{YearTrx},'9999'), 'DD/MM/YYYY'),'DD/MM/YYYY') || '  -  HASTA: '||to_CHAR(TO_DATE('30/04/'|| to_char($P{YearTrx},'9999'), 'DD/MM/YYYY') , 'DD/MM/YYYY') ABR ,
+		'DESDE: '|| to_CHAR(TO_DATE('01/05/'|| to_char($P{YearTrx},'9999'), 'DD/MM/YYYY'),'DD/MM/YYYY') || '  -  HASTA: '||to_CHAR(TO_DATE('31/05/'|| to_char($P{YearTrx},'9999'), 'DD/MM/YYYY') , 'DD/MM/YYYY') MAY ,
+		'DESDE: '|| to_CHAR(TO_DATE('01/06/'|| to_char($P{YearTrx},'9999'), 'DD/MM/YYYY'),'DD/MM/YYYY') || '  -  HASTA: '||to_CHAR(TO_DATE('30/06/'|| to_char($P{YearTrx},'9999'), 'DD/MM/YYYY') , 'DD/MM/YYYY') JUN ,
+		'DESDE: '|| to_CHAR(TO_DATE('01/07/'|| to_char($P{YearTrx},'9999'), 'DD/MM/YYYY'),'DD/MM/YYYY') || '  -  HASTA: '||to_CHAR(TO_DATE('31/07/'|| to_char($P{YearTrx},'9999'), 'DD/MM/YYYY') , 'DD/MM/YYYY') JUL ,
+		'DESDE: '|| to_CHAR(TO_DATE('01/08/'|| to_char($P{YearTrx},'9999'), 'DD/MM/YYYY'),'DD/MM/YYYY') || '  -  HASTA: '||to_CHAR(TO_DATE('31/08/'|| to_char($P{YearTrx},'9999'), 'DD/MM/YYYY') , 'DD/MM/YYYY') AGO ,
+		'DESDE: '|| to_CHAR(TO_DATE('01/09/'|| to_char($P{YearTrx},'9999'), 'DD/MM/YYYY'),'DD/MM/YYYY') || '  -  HASTA: '||to_CHAR(TO_DATE('30/09/'|| to_char($P{YearTrx},'9999'), 'DD/MM/YYYY') , 'DD/MM/YYYY') SEP ,
+		'DESDE: '|| to_CHAR(TO_DATE('01/10/'|| to_char($P{YearTrx},'9999'), 'DD/MM/YYYY'),'DD/MM/YYYY') || '  -  HASTA: '||to_CHAR(TO_DATE('31/10/'|| to_char($P{YearTrx},'9999'), 'DD/MM/YYYY') , 'DD/MM/YYYY') OCT 
+	from (
+	 		select 
+			10 t_ope ,
+			 TO_DATE('01/11/' || to_char($P{YearTrx} - 1 ,'9999') , 'DD/MM/YYYY') datetrx1 ,  
+			 TO_DATE('30/11/' || to_char($P{YearTrx} - 1 ,'9999') , 'DD/MM/YYYY') datetrx2 ,  
+		'Saldo Inicial' as name ,
+		sum(amount) amount1,
+			0 amount2  ,
+			0 amount3  ,
+			0 amount4  ,
+			0 amount5  ,
+			0 amount6  ,
+			0 amount7  ,
+			0 amount8  ,
+			0 amount9  ,
+			0 amount10 ,
+			0 amount11 ,
+			0 amount12 
+		from v_cop_initialbalance vci 
+		where datetrx < TO_DATE('01/11/' || to_char($P{YearTrx} - 1 ,'9999') , 'DD/MM/YYYY')
+	
+		union
+				select
+					20 t_ope ,
+					 TO_DATE('01/11/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY') datetrx1 ,  
+					 TO_DATE('30/11/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY') datetrx2 ,  
+					 ar.name,
+					 sum(a.amount) as amount1,
+					 0 amount2 ,
+					 0 amount3 ,
+					 0 amount4 ,
+					 0 amount5 ,
+		 			 0 amount6 ,
+					 0 amount7 ,
+					 0 amount8 ,
+					 0 amount9  ,
+					 0 amount10 ,
+					 0 amount11 ,
+					 0 amount12 
+				from
+					COP_DailyOpeningBalance a
+				join ad_ref_list ar on
+					ar.ad_reference_id = 1000176
+					and a.incometype = ar.value
+				where
+					a.DateTrx between TO_DATE('01/11/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY') and TO_DATE('30/11/' || to_char($P{YearTrx} - 1,'9999'), 'DD/MM/YYYY')
+					and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+				group by
+					a.datetrx,
+					ar.name
+	union
+			select
+						 30 t_ope ,
+						 TO_DATE('01/11/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY') datetrx1 ,  
+						 TO_DATE('30/11/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY') datetrx2 ,  
+						'INGRESOS' as name, 
+			  			 sum(a.amount) as amount1,
+						 0 amount2  ,
+	  					 0 amount3  ,
+						 0 amount4  ,
+						 0 amount5  ,
+						 0 amount6  ,
+						 0 amount7  ,
+						 0 amount8  ,
+						 0 amount9  ,
+						 0 amount10 ,
+						 0 amount11 ,
+						 0 amount12 
+			from
+						COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+						ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+						a.DateTrx between TO_DATE('01/11/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY') and TO_DATE('30/11/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY')
+							and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by 1
+			
+	union 
+						select
+							max(t_ope) t_ope ,
+							max(datetrx1) datetrx1,
+							max(datetrx2) datetrx2 ,
+							"name" ,
+							sum(amount) amount1 ,
+							0 amount2 ,
+							0 amount3 ,
+							0 amount4 ,
+							0 amount5 ,
+							0 amount6 ,
+							0 amount7 ,
+							0 amount8 ,
+							0 amount9  ,
+							0 amount10 ,
+							0 amount11 ,
+							0 amount12 
+						from
+							(
+							select
+								 40 t_ope ,
+								TO_DATE('01/11/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY') datetrx1 ,
+								TO_DATE('30/11/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY') datetrx2 ,
+								x1.dateacct,x1.C_currency_ID,
+								x1.group_parent as name,(x1.mount_payment),
+								x1.mount_payment as amount
+								 ,CASE WHEN x1.C_Charge_ID = 500307  THEN 'Y' else 'N' END  AS transferencia
+							from
+								cop_paym_shopp x1
+							left join COP_BPartnerType a on
+								x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID
+							where
+								x1.DateAcct between TO_DATE('01/11/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY') and TO_DATE('30/11/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY')
+								and x1.c_currency_id = $P{C_Currency_ID}
+							order by x1.group_parent ,x1.dateacct
+							) as A1
+								where a1.transferencia = 'N'	
+							group by
+								datetrx1,NAME
+	union 
+	-------------------------------ini diciembre--------------------------
+	select 
+			10 t_ope ,
+			 TO_DATE('01/12/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY') datetrx1 ,  
+			 TO_DATE('31/12/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY') datetrx2 ,  
+		'Saldo Inicial' as name ,
+			0 amount1,
+			sum(amount) amount2,
+			0 amount3,
+			0 amount4 ,
+			0 amount5  ,
+			0 amount6  ,
+			0 amount7  ,
+			0 amount8  ,
+			0 amount9  ,
+			0 amount10 ,
+			0 amount11 ,
+			0 amount12 
+		from v_cop_initialbalance vci 
+		where datetrx < TO_DATE('01/12/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY')
+	union
+			select
+				20 t_ope ,
+				 TO_DATE('01/12/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY') datetrx1 ,  
+				 TO_DATE('31/12/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY') datetrx2 ,  
+				 ar.name,
+				0 amount1,
+			    sum(a.amount) as amount2,
+				0 amount3,
+				0 amount4 ,
+				0 amount5  ,
+				0 amount6  ,
+				0 amount7  ,
+				0 amount8  ,
+				0 amount9  ,
+				0 amount10 ,
+				0 amount11 ,
+				0 amount12 
+			from
+				COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+				ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+				a.DateTrx between TO_DATE('01/12/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY') and TO_DATE('31/12/' || to_char($P{YearTrx} - 1,'9999'), 'DD/MM/YYYY')
+				and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by
+				a.datetrx,
+				ar.name
+	union
+			select
+							 30 t_ope ,
+						 TO_DATE('01/12/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY') datetrx1 ,  
+						 TO_DATE('31/12/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY') datetrx2 ,  
+						'INGRESOS' as name, 
+						0 amount1,
+	  	  			    sum(a.amount) as amount2,
+						0 amount3,
+						0 amount4 ,
+						0 amount5  ,
+						0 amount6  ,
+						0 amount7  ,
+						0 amount8  ,
+						0 amount9  ,
+						0 amount10 ,
+						0 amount11 ,
+						0 amount12 
+			from
+						COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+						ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+						a.DateTrx between TO_DATE('01/12/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY')::date and TO_DATE('31/12/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY')::date
+				and a.isactive = 'Y'  and a.c_currency_id = $P{C_Currency_ID}
+			group by 1
+			
+	union 
+					select
+							max(t_ope) t_ope ,
+							max(datetrx1) datetrx1,
+							max(datetrx2) datetrx2 ,
+							"name" ,
+							0 amount1 ,
+							sum(amount) amount2 ,
+							0 amount3 ,
+							0 amount4 ,
+							0 amount5  ,
+							0 amount6  ,
+							0 amount7  ,
+							0 amount8  ,
+							0 amount9  ,
+							0 amount10 ,
+							0 amount11 ,
+							0 amount12 
+						from
+							(
+							select
+								 40 t_ope ,
+								TO_DATE('01/12/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY') datetrx1 ,
+								TO_DATE('31/12/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY') datetrx2 ,
+								x1.dateacct,x1.C_currency_ID,
+								x1.group_parent as name,(x1.mount_payment),
+								x1.mount_payment as amount,							
+								case when x1.C_Charge_ID = 500307 then 'Y' else 'N' end transferencia
+							from
+								cop_paym_shopp x1
+							left join COP_BPartnerType a on
+								x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID
+							where
+								x1.DateAcct between TO_DATE('01/12/' || to_char($P{YearTrx} - 1,'9999') , 'DD/MM/YYYY') and TO_DATE('31/12/' || to_char($P{YearTrx}  -1,'9999') , 'DD/MM/YYYY')
+								and x1.c_currency_id = $P{C_Currency_ID}
+							order by x1.group_parent ,x1.dateacct
+							) as A1
+								where a1.transferencia = 'N'
+	
+							group by
+								datetrx1,NAME
+	 ------------------------------fin diciembre--------------------------
+	union 
+	-------------------------------ini enero--------------------------
+	
+		(select 
+			10 t_ope ,
+			 TO_DATE('01/01/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+			 TO_DATE('31/01/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,  
+		'Saldo Inicial' as name ,
+			0 amount1,
+			0 amount2,
+			sum(amount) amount3,
+			0 amount4 ,
+			0 amount5  ,
+			0 amount6  ,
+			0 amount7  ,
+			0 amount8  ,
+			0 amount9  ,
+			0 amount10 ,
+			0 amount11 ,
+			0 amount12 
+		from v_cop_initialbalance vci 
+		where datetrx < TO_DATE('01/01/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY'))
+	
+	union
+			(select
+				20 t_ope ,
+				 TO_DATE('01/01/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+				 TO_DATE('31/01/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,  
+				 ar.name,
+				0 amount1,
+				0 amount2,
+				 sum(a.amount) as amount3,
+				0 amount4 ,
+				0 amount5  ,
+				0 amount6  ,
+				0 amount7  ,
+				0 amount8  ,
+				0 amount9  ,
+				0 amount10 ,
+				0 amount11 ,
+				0 amount12 
+			from
+				COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+				ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+				a.DateTrx between TO_DATE('01/01/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') and TO_DATE('31/01/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+				and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by
+				a.datetrx,
+				ar.name)
+	union
+			(select
+							 30 t_ope ,
+						 TO_DATE('01/01/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+						 TO_DATE('31/01/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,  
+						'INGRESOS' as name, 
+						0 amount1,
+						0 amount2,
+		  			    sum(a.amount) as amount3,
+						0 amount4 ,
+						0 amount5  ,
+						0 amount6  ,
+						0 amount7  ,
+						0 amount8  ,
+						0 amount9  ,
+						0 amount10 ,
+						0 amount11 ,
+						0 amount12 
+			from
+						COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+						ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+						a.DateTrx between TO_DATE('01/01/' ||  to_char($P{YearTrx},'9999')   , 'DD/MM/YYYY')::date and TO_DATE('31/01/' || to_char($P{YearTrx},'9999')     , 'DD/MM/YYYY')::date
+						and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by 1)
+			
+	union 
+					(select
+							max(t_ope) t_ope ,
+							max(datetrx1) datetrx1,
+								max(datetrx2) datetrx2 ,
+							"name" ,
+							0 amount1 ,
+							0 amount2 ,
+							sum(amount) amount3 ,
+							0 amount4 ,
+							0 amount5  ,
+							0 amount6  ,
+							0 amount7  ,
+							0 amount8  ,
+							0 amount9  ,
+							0 amount10 ,
+							0 amount11 ,
+							0 amount12 
+						from
+							(
+							select
+								 40 t_ope ,
+								TO_DATE('01/01/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,
+								TO_DATE('31/01/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,
+								x1.dateacct,x1.C_currency_ID,
+								x1.group_parent as name,(x1.mount_payment),
+								x1.mount_payment as amount,							
+								case when x1.C_Charge_ID = 500307 then 'Y' else 'N' end transferencia
+							from
+								cop_paym_shopp x1
+							left join COP_BPartnerType a on
+								x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID
+							where
+								x1.DateAcct between TO_DATE('01/01/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') and TO_DATE('31/01/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+								and x1.c_currency_id = $P{C_Currency_ID}
+							order by x1.group_parent ,x1.dateacct
+							) as A1
+								where a1.transferencia = 'N'
+	
+							group by
+								datetrx1,NAME)
+	 ------------------------------fin enero --------------------------
+	
+	union 
+	-------------------------------ini Febrero--------------------------
+	
+		(select 
+			10 t_ope ,
+			 TO_DATE('01/02/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+			(TO_DATE('01/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') - CAST('1 days' AS INTERVAL))::date datetrx2 ,
+			'Saldo Inicial' as name ,
+			0 amount1,
+			0 amount2,
+			0 amount3 ,
+			sum(amount) amount4,
+			0 amount5  ,
+			0 amount6  ,
+			0 amount7  ,
+			0 amount8  ,
+			0 amount9  ,
+			0 amount10 ,
+			0 amount11 ,
+			0 amount12 
+		from v_cop_initialbalance vci 
+		where datetrx < TO_DATE('01/02/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY'))
+	
+	union
+			(select
+				20 t_ope ,
+				 TO_DATE('01/02/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+				 (TO_DATE('01/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') - CAST('1 days' AS INTERVAL))::date datetrx2 ,  
+				 ar.name,
+				0 amount1,
+				0 amount2,
+				0 amount3 ,
+				 sum(a.amount) as amount4,
+				0 amount5  ,
+				0 amount6  ,
+				0 amount7  ,
+				0 amount8  ,
+				0 amount9  ,
+				0 amount10 ,
+				0 amount11 ,
+				0 amount12 
+			from
+				COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+				ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+				a.DateTrx between TO_DATE('01/02/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') and (TO_DATE('01/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') - CAST('1 days' AS INTERVAL))::date
+				and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by
+				a.datetrx,
+				ar.name)
+	union
+			(select
+							 30 t_ope ,
+						 TO_DATE('01/02/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+						 (TO_DATE('01/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') - CAST('1 days' AS INTERVAL))::date datetrx2 ,  
+						'INGRESOS' as name, 
+						0 amount1,
+						0 amount2,
+						0 amount3 ,
+		  			    sum(a.amount) as amount4,
+						0 amount5  ,
+						0 amount6  ,
+						0 amount7  ,
+						0 amount8  ,
+						0 amount9  ,
+						0 amount10 ,
+						0 amount11 ,
+						0 amount12 
+			from
+						COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+						ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+						a.DateTrx between TO_DATE('01/02/' ||  to_char($P{YearTrx},'9999')   , 'DD/MM/YYYY')::date and 
+						(TO_DATE('01/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') - CAST('1 days' AS INTERVAL))::date
+						and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by 1)
+			
+	union 
+					(select
+							max(t_ope) t_ope ,
+							max(datetrx1) datetrx1,
+								max(datetrx2) datetrx2 ,
+							"name" ,
+							0 amount1 ,
+							0 amount2 ,
+							0 amount3 ,
+							sum(amount) amount4 ,
+							0 amount5  ,
+							0 amount6  ,
+							0 amount7  ,
+							0 amount8  ,
+							0 amount9  ,
+							0 amount10 ,
+							0 amount11 ,
+							0 amount12 
+						from
+							(
+							select
+								 40 t_ope ,
+								TO_DATE('01/02/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,
+								(TO_DATE('01/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') - CAST('1 days' AS INTERVAL))::date datetrx2 ,
+								x1.dateacct,x1.C_currency_ID,
+								x1.group_parent as name,(x1.mount_payment),
+								x1.mount_payment as amount,							
+								case when x1.C_Charge_ID = 500307 then 'Y' else 'N' end transferencia
+							from
+								cop_paym_shopp x1
+							left join COP_BPartnerType a on
+								x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID
+							where
+								x1.DateAcct between TO_DATE('01/02/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') and (TO_DATE('01/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') - CAST('1 days' AS INTERVAL))::date
+								and x1.c_currency_id = $P{C_Currency_ID}
+							order by x1.group_parent ,x1.dateacct
+							) as A1
+								where a1.transferencia = 'N'
+	
+							group by
+								datetrx1,NAME)
+	 ------------------------------fin Febrero --------------------------
+								
+	union 
+	
+	-------------------------------ini Marzo--------------------------
+	
+		(select 
+			10 t_ope ,
+			 TO_DATE('01/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+			 TO_DATE('31/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,
+			'Saldo Inicial' as name ,
+			0 amount1,
+			0 amount2,
+			0 amount3 ,
+			0 amount4 ,
+			sum(amount) amount5 ,
+			0 amount6  ,
+			0 amount7  ,
+			0 amount8  ,
+			0 amount9  ,
+			0 amount10 ,
+			0 amount11 ,
+			0 amount12 
+			from v_cop_initialbalance vci 
+		where datetrx < TO_DATE('01/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY'))
+	
+	union
+			(select
+				20 t_ope ,
+				 TO_DATE('01/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+				  TO_DATE('31/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,  
+				 ar.name,
+				0 amount1,
+				0 amount2,
+				0 amount3 ,
+				0 amount4 ,
+				sum(a.amount) as amount5,
+				0 amount6  ,
+				0 amount7  ,
+				0 amount8  ,
+				0 amount9  ,
+				0 amount10 ,
+				0 amount11 ,
+				0 amount12 
+			from
+				COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+				ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+				a.DateTrx between TO_DATE('01/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') and  TO_DATE('31/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+				and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by
+				a.datetrx,
+				ar.name)
+	union
+			(select
+						30 t_ope ,
+						TO_DATE('01/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+						TO_DATE('31/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,  
+						'INGRESOS' as name, 
+						0 amount1,
+						0 amount2,
+						0 amount3 ,
+						0 amount4 ,
+						sum(a.amount) as amount5,
+						0 amount6  ,
+						0 amount7  ,
+						0 amount8  ,
+						0 amount9  ,
+						0 amount10 ,
+						0 amount11 ,
+						0 amount12 
+			from
+						COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+						ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+						a.DateTrx between TO_DATE('01/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')::date and 
+						TO_DATE('31/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+						and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by 1)
+			
+	union 
+					(select
+							max(t_ope) t_ope ,
+							max(datetrx1) datetrx1,
+								max(datetrx2) datetrx2 ,
+							"name" ,
+							0 amount1 ,
+							0 amount2 ,
+							0 amount3 ,
+							0 amount4 ,
+							sum(amount) amount5 ,
+							0 amount6  ,
+							0 amount7  ,
+							0 amount8  ,
+							0 amount9  ,
+							0 amount10 ,
+							0 amount11 ,
+							0 amount12 
+						from
+							(
+							select
+								 40 t_ope ,
+								TO_DATE('01/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,
+								 TO_DATE('31/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,
+								x1.dateacct,x1.C_currency_ID,
+								x1.group_parent as name,(x1.mount_payment),
+								x1.mount_payment as amount,							
+								case when x1.C_Charge_ID = 500307 then 'Y' else 'N' end transferencia
+							from
+								cop_paym_shopp x1
+							left join COP_BPartnerType a on
+								x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID
+							where
+								x1.DateAcct between TO_DATE('01/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') and  TO_DATE('31/03/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+								and x1.c_currency_id = $P{C_Currency_ID}
+							order by x1.group_parent ,x1.dateacct
+							) A1
+								where a1.transferencia = 'N'
+	
+							group by
+								datetrx1,NAME)
+	 ------------------------------fin  Marzo --------------------------
+	union 
+	-------------------------------ini ABRIL--------------------------
+	
+		(select 
+			10 t_ope ,
+			 TO_DATE('01/04/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+			 TO_DATE('30/04/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,
+			'Saldo Inicial' as name ,
+			0 amount1,
+			0 amount2,
+			0 amount3 ,
+			0 amount4 ,
+			0 amount5  ,
+			sum(amount) amount6 ,
+			0 amount7  ,
+			0 amount8  ,
+			0 amount9  ,
+			0 amount10 ,
+			0 amount11 ,
+			0 amount12 
+			from v_cop_initialbalance vci 
+		where datetrx < TO_DATE('01/04/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY'))
+	
+	union
+			(select
+				20 t_ope ,
+				 TO_DATE('01/04/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+				  TO_DATE('30/04/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,  
+				 ar.name,
+				0 amount1,
+				0 amount2,
+				0 amount3 ,
+				0 amount4 ,
+				0 amount5  ,
+				sum(a.amount) as amount6,
+				0 amount7  ,
+				0 amount8  ,
+				0 amount9  ,
+				0 amount10 ,
+				0 amount11 ,
+				0 amount12 
+			from
+				COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+				ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+				a.DateTrx between TO_DATE('01/04/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') and  TO_DATE('30/04/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+				and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by
+				a.datetrx,
+				ar.name)
+	union
+			(select
+						30 t_ope ,
+						TO_DATE('01/04/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+						TO_DATE('30/04/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,  
+						'INGRESOS' as name, 
+						0 amount1,
+						0 amount2,
+						0 amount3 ,
+						0 amount4 ,
+						0 amount5  ,
+						sum(a.amount) as amount6,
+						0 amount7  ,
+						0 amount8  ,
+						0 amount9  ,
+						0 amount10 ,
+						0 amount11 ,
+						0 amount12 
+			from
+						COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+						ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+						a.DateTrx between TO_DATE('01/04/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')::date and 
+						TO_DATE('30/04/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+						and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by 1)
+			
+	union 
+					(select
+							max(t_ope) t_ope ,
+							max(datetrx1) datetrx1,
+								max(datetrx2) datetrx2 ,
+							"name" ,
+							0 amount1 ,
+							0 amount2 ,
+							0 amount3 ,
+							0 amount4 ,
+							0 amount5  ,
+							sum(amount) amount6 ,
+							0 amount7  ,
+							0 amount8  ,
+							0 amount9  ,
+							0 amount10 ,
+							0 amount11 ,
+							0 amount12 
+						from
+							(
+							select
+								 40 t_ope ,
+								TO_DATE('01/04/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,
+								 TO_DATE('30/04/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,
+								x1.dateacct,x1.C_currency_ID,
+								x1.group_parent as name,(x1.mount_payment),
+								x1.mount_payment as amount,							
+								case when x1.C_Charge_ID = 500307 then 'Y' else 'N' end transferencia
+							from
+								cop_paym_shopp x1
+							left join COP_BPartnerType a on
+								x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID
+							where
+								x1.DateAcct between TO_DATE('01/04/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') and  TO_DATE('30/04/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+								and x1.c_currency_id = $P{C_Currency_ID}
+							order by x1.group_parent ,x1.dateacct
+							) A1
+								where a1.transferencia = 'N'
+	
+							group by
+								datetrx1,NAME)
+	 ------------------------------fin  ABRIL --------------------------
+	union
+	-------------------------------ini MAYO--------------------------
+	
+		(select 
+			10 t_ope ,
+			 TO_DATE('01/05/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+			 TO_DATE('31/05/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,
+			'Saldo Inicial' as name ,
+			0 amount1,
+			0 amount2,
+			0 amount3 ,
+			0 amount4 ,
+			0 amount5  ,
+		0 amount6		  ,
+			sum(amount) amount7 ,
+			0 amount8  ,
+			0 amount9  ,
+			0 amount10 ,
+			0 amount11 ,
+			0 amount12 
+			from v_cop_initialbalance vci 
+		where datetrx < TO_DATE('01/05/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY'))
+	
+	union
+			(select
+				20 t_ope ,
+				 TO_DATE('01/05/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+				  TO_DATE('31/05/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,  
+				 ar.name,
+				0 amount1,
+				0 amount2,
+				0 amount3 ,
+				0 amount4 ,
+				0 amount5  ,
+				0 amount6  ,
+				sum(a.amount) as amount7,
+				0 amount8  ,
+				0 amount9  ,
+				0 amount10 ,
+				0 amount11 ,
+				0 amount12 
+			from
+				COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+				ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+				a.DateTrx between TO_DATE('01/05/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') and  TO_DATE('31/05/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+				and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by
+				a.datetrx,
+				ar.name)
+	union
+			(select
+						30 t_ope ,
+						TO_DATE('01/05/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+						TO_DATE('31/05/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,  
+						'INGRESOS' as name, 
+						0 amount1,
+						0 amount2,
+						0 amount3 ,
+						0 amount4 ,
+						0 amount5  ,
+						0 amount6  ,
+						sum(a.amount) as amount7,
+						0 amount8  ,
+						0 amount9  ,
+						0 amount10 ,
+						0 amount11 ,
+						0 amount12 
+			from
+						COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+						ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+						a.DateTrx between TO_DATE('01/05/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')::date and 
+						TO_DATE('31/05/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+						and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by 1)
+			
+	union 
+					(select
+							max(t_ope) t_ope ,
+							max(datetrx1) datetrx1,
+								max(datetrx2) datetrx2 ,
+							"name" ,
+							0 amount1 ,
+							0 amount2 ,
+							0 amount3 ,
+							0 amount4 ,
+							0 amount5  ,
+							0 amount6  ,
+							sum(amount) amount7 ,
+							0 amount8  ,
+							0 amount9  ,
+							0 amount10 ,
+							0 amount11 ,
+							0 amount12 
+						from
+							(
+							select
+								 40 t_ope ,
+								TO_DATE('01/05/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,
+								 TO_DATE('31/05/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,
+								x1.dateacct,x1.C_currency_ID,
+								x1.group_parent as name,(x1.mount_payment),
+								x1.mount_payment as amount,							
+								case when x1.C_Charge_ID = 500307 then 'Y' else 'N' end transferencia
+							from
+								cop_paym_shopp x1
+							left join COP_BPartnerType a on
+								x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID
+							where
+								x1.DateAcct between TO_DATE('01/05/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') and  TO_DATE('31/05/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+								and x1.c_currency_id = $P{C_Currency_ID}
+							order by x1.group_parent ,x1.dateacct
+							) A1
+								where a1.transferencia = 'N'
+	
+							group by
+								datetrx1,NAME)
+	 ------------------------------fin  MAYO --------------------------
+	union 
+	-------------------------------ini JUNIO--------------------------
+	
+		(select 
+			10 t_ope ,
+			 TO_DATE('01/06/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+			 TO_DATE('30/06/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,
+			'Saldo Inicial' as name ,
+			0 amount1,
+			0 amount2,
+			0 amount3 ,
+			0 amount4 ,
+			0 amount5  ,
+			0 amount6  ,
+			0 amount7  ,
+			sum(amount) amount8 ,
+			0 amount9  ,
+			0 amount10 ,
+			0 amount11 ,
+			0 amount12 
+			from v_cop_initialbalance vci 
+		where datetrx < TO_DATE('01/06/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY'))
+	
+	union
+			(select
+				20 t_ope ,
+				 TO_DATE('01/06/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+				  TO_DATE('30/06/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,  
+				 ar.name,
+				0 amount1,
+				0 amount2,
+				0 amount3 ,
+				0 amount4 ,
+				0 amount5  ,
+				0 amount6  ,
+				0 amount7  ,
+				sum(a.amount) as amount8,
+				0 amount9  ,
+				0 amount10 ,
+				0 amount11 ,
+				0 amount12 
+			from
+				COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+				ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+				a.DateTrx between TO_DATE('01/06/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') and  TO_DATE('30/06/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+				and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by
+				a.datetrx,
+				ar.name)
+	union
+			(select
+						30 t_ope ,
+						TO_DATE('01/06/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+						TO_DATE('30/06/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,  
+						'INGRESOS' as name, 
+						0 amount1,
+						0 amount2,
+						0 amount3 ,
+						0 amount4 ,
+						0 amount5  ,
+						0 amount6  ,
+						0 amount7  ,
+						sum(a.amount) as amount8,
+						0 amount9  ,
+						0 amount10 ,
+						0 amount11 ,
+						0 amount12 
+			from
+						COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+						ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+						a.DateTrx between TO_DATE('01/06/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')::date and 
+						TO_DATE('30/06/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+						and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by 1)
+			
+	union 
+					(select
+							max(t_ope) t_ope ,
+							max(datetrx1) datetrx1,
+								max(datetrx2) datetrx2 ,
+							"name" ,
+							0 amount1 ,
+							0 amount2 ,
+							0 amount3 ,
+							0 amount4 ,
+							0 amount5  ,
+							0 amount6  ,
+							0 amount7  ,
+							sum(amount) amount8 ,
+							0 amount9  ,
+							0 amount10 ,
+							0 amount11 ,
+							0 amount12 
+						from
+							(
+							select
+								 40 t_ope ,
+								TO_DATE('01/06/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,
+								 TO_DATE('30/06/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,
+								x1.dateacct,x1.C_currency_ID,
+								x1.group_parent as name,(x1.mount_payment),
+								x1.mount_payment as amount,							
+								case when x1.C_Charge_ID = 500307 then 'Y' else 'N' end transferencia
+							from
+								cop_paym_shopp x1
+							left join COP_BPartnerType a on
+								x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID
+							where
+								x1.DateAcct between TO_DATE('01/06/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') and  TO_DATE('30/06/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+								and x1.c_currency_id = $P{C_Currency_ID}
+							order by x1.group_parent ,x1.dateacct
+							) A1
+								where a1.transferencia = 'N'
+	
+							group by
+								datetrx1,NAME)
+	 ------------------------------fin  JUNIO --------------------------
+	union 
+	-------------------------------ini JULIO--------------------------
+	
+		(select 
+			10 t_ope ,
+			 TO_DATE('01/07/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+			 TO_DATE('31/07/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,
+			'Saldo Inicial' as name ,
+			0 amount1,
+			0 amount2,
+			0 amount3 ,
+			0 amount4 ,
+			0 amount5  ,
+			0 amount6  ,
+			0 amount7  ,
+			0 amount8  ,
+			sum(amount) amount9 ,
+			0 amount10 ,
+			0 amount11 ,
+			0 amount12 
+			from v_cop_initialbalance vci 
+		where datetrx < TO_DATE('01/07/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY'))
+	
+	union
+			(select
+				20 t_ope ,
+				 TO_DATE('01/07/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+				  TO_DATE('31/07/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,  
+				 ar.name,
+				0 amount1,
+				0 amount2,
+				0 amount3 ,
+				0 amount4 ,
+				0 amount5  ,
+				0 amount6  ,
+				0 amount7  ,
+				0 amount8  ,
+				sum(a.amount) as amount9,
+				0 amount10 ,
+				0 amount11 ,
+				0 amount12 
+			from
+				COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+				ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+				a.DateTrx between TO_DATE('01/07/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') and  TO_DATE('31/07/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+				and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by
+				a.datetrx,
+				ar.name)
+	union
+			(select
+						30 t_ope ,
+						TO_DATE('01/07/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+						TO_DATE('31/07/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,  
+						'INGRESOS' as name, 
+						0 amount1,
+						0 amount2,
+						0 amount3 ,
+						0 amount4 ,
+						0 amount5  ,
+						0 amount6  ,
+						0 amount7  ,
+						0 amount8  ,
+						sum(a.amount) as amount9,
+						0 amount10 ,
+						0 amount11 ,
+						0 amount12 
+			from
+						COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+						ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+						a.DateTrx between TO_DATE('01/07/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')::date and 
+						TO_DATE('31/07/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+						and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by 1)
+			
+	union 
+					(select
+							max(t_ope) t_ope ,
+							max(datetrx1) datetrx1,
+								max(datetrx2) datetrx2 ,
+							"name" ,
+							0 amount1 ,
+							0 amount2 ,
+							0 amount3 ,
+							0 amount4 ,
+							0 amount5  ,
+							0 amount6  ,
+							0 amount7  ,
+							0 amount8  ,
+							sum(amount) amount9 ,
+							0 amount10 ,
+							0 amount11 ,
+							0 amount12 
+						from
+							(
+							select
+								 40 t_ope ,
+								TO_DATE('01/07/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,
+								 TO_DATE('31/07/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,
+								x1.dateacct,x1.C_currency_ID,
+								x1.group_parent as name,(x1.mount_payment),
+								x1.mount_payment as amount,							
+								case when x1.C_Charge_ID = 500307 then 'Y' else 'N' end transferencia
+							from
+								cop_paym_shopp x1
+							left join COP_BPartnerType a on
+								x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID
+							where
+								x1.DateAcct between TO_DATE('01/07/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') and  TO_DATE('31/07/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+								and x1.c_currency_id = $P{C_Currency_ID}
+							order by x1.group_parent ,x1.dateacct
+							) A1
+								where a1.transferencia = 'N'
+	
+							group by
+								datetrx1,NAME)
+	 ------------------------------fin  JULIO --------------------------
+	union 
+	-------------------------------ini AGOSTO--------------------------
+	
+		(select 
+			10 t_ope ,
+			 TO_DATE('01/08/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+			 TO_DATE('31/08/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,
+			'Saldo Inicial' as name ,
+			0 amount1,
+			0 amount2,
+			0 amount3 ,
+			0 amount4 ,
+			0 amount5  ,
+			0 amount6  ,
+			0 amount7  ,
+			0 amount8  ,
+			0 amount9 ,
+			sum(amount) amount10 ,
+			0 amount11 ,
+			0 amount12 
+			from v_cop_initialbalance vci 
+		where datetrx < TO_DATE('01/08/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY'))
+	
+	union
+			(select
+				20 t_ope ,
+				 TO_DATE('01/08/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+				  TO_DATE('31/08/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,  
+				 ar.name,
+				0 amount1,
+				0 amount2,
+				0 amount3 ,
+				0 amount4 ,
+				0 amount5  ,
+				0 amount6  ,
+				0 amount7  ,
+				0 amount8  ,
+				0 amount9 ,
+				sum(a.amount) as amount10,
+				0 amount11 ,
+				0 amount12 
+			from
+				COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+				ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+				a.DateTrx between TO_DATE('01/08/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') and  TO_DATE('31/08/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+				and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by
+				a.datetrx,
+				ar.name)
+	union
+			(select
+						30 t_ope ,
+						TO_DATE('01/08/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+						TO_DATE('31/08/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,  
+						'INGRESOS' as name, 
+						0 amount1,
+						0 amount2,
+						0 amount3 ,
+						0 amount4 ,
+						0 amount5  ,
+						0 amount6  ,
+						0 amount7  ,
+						0 amount8  ,
+						0 amount9 ,
+						sum(a.amount) as amount10,
+						0 amount11 ,
+						0 amount12 
+			from
+						COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+						ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+						a.DateTrx between TO_DATE('01/08/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')::date and 
+						TO_DATE('31/08/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+						and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by 1)
+			
+	union 
+					(select
+							max(t_ope) t_ope ,
+							max(datetrx1) datetrx1,
+								max(datetrx2) datetrx2 ,
+							"name" ,
+							0 amount1 ,
+							0 amount2 ,
+							0 amount3 ,
+							0 amount4 ,
+							0 amount5  ,
+							0 amount6  ,
+							0 amount7  ,
+							0 amount8  ,
+							0 amount9 ,
+							sum(amount) amount10 ,
+							0 amount11 ,
+							0 amount12 
+						from
+							(
+							select
+								 40 t_ope ,
+								TO_DATE('01/08/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,
+								 TO_DATE('31/08/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,
+								x1.dateacct,x1.C_currency_ID,
+								x1.group_parent as name,(x1.mount_payment),
+								x1.mount_payment as amount,							
+								case when x1.C_Charge_ID = 500307 then 'Y' else 'N' end transferencia
+							from
+								cop_paym_shopp x1
+							left join COP_BPartnerType a on
+								x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID
+							where
+								x1.DateAcct between TO_DATE('01/08/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') and  TO_DATE('31/08/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+								and x1.c_currency_id = $P{C_Currency_ID}
+							order by x1.group_parent ,x1.dateacct
+							) A1
+								where a1.transferencia = 'N'
+	
+							group by
+								datetrx1,NAME)
+	 ------------------------------fin  AGOSTO --------------------------
+	union 
+	-------------------------------ini SEPTIEMBRE--------------------------
+	
+		(select 
+			10 t_ope ,
+			 TO_DATE('01/09/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+			 TO_DATE('30/09/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,
+			'Saldo Inicial' as name ,
+			0 amount1,
+			0 amount2,
+			0 amount3 ,
+			0 amount4 ,
+			0 amount5  ,
+			0 amount6  ,
+			0 amount7  ,
+			0 amount8  ,
+			0 amount9 ,
+			0 amount10 ,
+			sum(amount) amount11 ,
+			0 amount12 
+			from v_cop_initialbalance vci 
+		where datetrx < TO_DATE('01/09/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY'))
+	
+	union
+			(select
+				20 t_ope ,
+				 TO_DATE('01/09/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+				  TO_DATE('30/09/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,  
+				 ar.name,
+				0 amount1,
+				0 amount2,
+				0 amount3 ,
+				0 amount4 ,
+				0 amount5  ,
+				0 amount6  ,
+				0 amount7  ,
+				0 amount8  ,
+				0 amount9 ,
+				0 amount10 ,
+				sum(a.amount) as amount11,
+				0 amount12 
+			from
+				COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+				ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+				a.DateTrx between TO_DATE('01/09/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') and  TO_DATE('30/09/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+				and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by
+				a.datetrx,
+				ar.name)
+	union
+			(select
+						30 t_ope ,
+						TO_DATE('01/09/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+						TO_DATE('30/09/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,  
+						'INGRESOS' as name, 
+						0 amount1,
+						0 amount2,
+						0 amount3 ,
+						0 amount4 ,
+						0 amount5  ,
+						0 amount6  ,
+						0 amount7  ,
+						0 amount8  ,
+						0 amount9 ,
+						0 amount10 ,
+						sum(a.amount) as amount11,
+						0 amount12 
+			from
+						COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+						ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+						a.DateTrx between TO_DATE('01/09/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')::date and 
+						TO_DATE('30/09/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+						and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by 1)
+			
+	union 
+					(select
+							max(t_ope) t_ope ,
+							max(datetrx1) datetrx1,
+								max(datetrx2) datetrx2 ,
+							"name" ,
+							0 amount1 ,
+							0 amount2 ,
+							0 amount3 ,
+							0 amount4 ,
+							0 amount5  ,
+							0 amount6  ,
+							0 amount7  ,
+							0 amount8  ,
+							0 amount9 ,
+							0 amount10 ,
+							sum(amount) amount11 ,
+							0 amount12 
+						from
+							(
+							select
+								 40 t_ope ,
+								TO_DATE('01/09/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,
+								 TO_DATE('30/09/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,
+								x1.dateacct,x1.C_currency_ID,
+								x1.group_parent as name,(x1.mount_payment),
+								x1.mount_payment as amount,							
+								case when x1.C_Charge_ID = 500307 then 'Y' else 'N' end transferencia
+							from
+								cop_paym_shopp x1
+							left join COP_BPartnerType a on
+								x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID
+							where
+								x1.DateAcct between TO_DATE('01/09/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') and  TO_DATE('30/09/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+								and x1.c_currency_id = $P{C_Currency_ID}
+							order by x1.group_parent ,x1.dateacct
+							) A1
+								where a1.transferencia = 'N'
+	
+							group by
+								datetrx1,NAME)
+	 ------------------------------fin  SEPTIEMBRE --------------------------
+	union 
+	-------------------------------ini OCTUBRE--------------------------
+	
+		(select 
+			10 t_ope ,
+			 TO_DATE('01/10/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+			 TO_DATE('31/10/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,
+			'Saldo Inicial' as name ,
+			0 amount1,
+			0 amount2,
+			0 amount3 ,
+			0 amount4 ,
+			0 amount5  ,
+			0 amount6  ,
+			0 amount7  ,
+			0 amount8  ,
+			0 amount9 ,
+			0 amount10 ,
+			0 amount11 ,
+			sum(amount) amount12  
+			from v_cop_initialbalance vci 
+		where datetrx < TO_DATE('01/10/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY'))
+	
+	union
+			(select
+				20 t_ope ,
+				 TO_DATE('01/10/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+				  TO_DATE('31/10/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,  
+				 ar.name,
+				0 amount1,
+				0 amount2,
+				0 amount3 ,
+				0 amount4 ,
+				0 amount5  ,
+				0 amount6  ,
+				0 amount7  ,
+				0 amount8  ,
+				0 amount9 ,
+				0 amount10 ,
+				0 amount11 ,
+				sum(a.amount) as amount12
+			from
+				COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+				ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+				a.DateTrx between TO_DATE('01/10/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') and  TO_DATE('31/10/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+				and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by
+				a.datetrx,
+				ar.name)
+	union
+			(select
+						30 t_ope ,
+						TO_DATE('01/10/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,  
+						TO_DATE('31/10/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,  
+						'INGRESOS' as name, 
+						0 amount1,
+						0 amount2,
+						0 amount3 ,
+						0 amount4 ,
+						0 amount5  ,
+						0 amount6  ,
+						0 amount7  ,
+						0 amount8  ,
+						0 amount9 ,
+						0 amount10 ,
+						0 amount11 ,
+						sum(a.amount) as amount12
+			from
+						COP_DailyOpeningBalance a
+			join ad_ref_list ar on
+						ar.ad_reference_id = 1000176
+				and a.incometype = ar.value
+			where
+						a.DateTrx between TO_DATE('01/10/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')::date and 
+						TO_DATE('31/10/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+						and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+			group by 1)
+			
+	union 
+					(select
+							max(t_ope) t_ope ,
+							max(datetrx1) datetrx1,
+								max(datetrx2) datetrx2 ,
+							"name" ,
+							0 amount1 ,
+							0 amount2 ,
+							0 amount3 ,
+							0 amount4 ,
+							0 amount5  ,
+							0 amount6  ,
+							0 amount7  ,
+							0 amount8  ,
+							0 amount9 ,
+							0 amount10 ,
+							0 amount11 ,
+							sum(amount) amount12 
+							from
+							(
+							select
+								 40 t_ope ,
+								TO_DATE('01/10/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx1 ,
+								 TO_DATE('31/10/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') datetrx2 ,
+								x1.dateacct,x1.C_currency_ID,
+								x1.group_parent as name,(x1.mount_payment),
+								x1.mount_payment as amount,							
+								case when x1.C_Charge_ID = 500307 then 'Y' else 'N' end transferencia
+							from
+								cop_paym_shopp x1
+							left join COP_BPartnerType a on
+								x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID
+							where
+								x1.DateAcct between TO_DATE('01/10/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY') and  TO_DATE('31/10/' || to_char($P{YearTrx},'9999')    , 'DD/MM/YYYY')
+								and x1.c_currency_id = $P{C_Currency_ID}
+							order by x1.group_parent ,x1.dateacct
+							) A1
+								where a1.transferencia = 'N'
+	
+							group by
+								datetrx1,NAME)
+	 ------------------------------fin  OCTUBRE --------------------------
+	 ) as x
+	group by x.t_ope,x.name
+	order by x.t_ope,x.name]]>
+	</queryString>
+	<field name="t_ope" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="t_ope"/>
+		<property name="com.jaspersoft.studio.field.label" value="t_ope"/>
+	</field>
+	<field name="name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="name"/>
+	</field>
+	<field name="sum_nov" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_nov"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_nov"/>
+	</field>
+	<field name="sum_dic" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_dic"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_dic"/>
+	</field>
+	<field name="sum_ene" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_ene"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_ene"/>
+	</field>
+	<field name="sum_feb" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_feb"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_feb"/>
+	</field>
+	<field name="sum_mar" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_mar"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_mar"/>
+	</field>
+	<field name="sum_abr" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_abr"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_abr"/>
+	</field>
+	<field name="sum_may" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_may"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_may"/>
+	</field>
+	<field name="sum_jun" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_jun"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_jun"/>
+	</field>
+	<field name="sum_jul" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_jul"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_jul"/>
+	</field>
+	<field name="sum_ago" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_ago"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_ago"/>
+	</field>
+	<field name="sum_sep" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_sep"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_sep"/>
+	</field>
+	<field name="sum_oct" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_oct"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_oct"/>
+	</field>
+	<field name="nov" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nov"/>
+		<property name="com.jaspersoft.studio.field.label" value="nov"/>
+	</field>
+	<field name="dic" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="dic"/>
+		<property name="com.jaspersoft.studio.field.label" value="dic"/>
+	</field>
+	<field name="ene" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ene"/>
+		<property name="com.jaspersoft.studio.field.label" value="ene"/>
+	</field>
+	<field name="feb" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="feb"/>
+		<property name="com.jaspersoft.studio.field.label" value="feb"/>
+	</field>
+	<field name="mar" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="mar"/>
+		<property name="com.jaspersoft.studio.field.label" value="mar"/>
+	</field>
+	<field name="abr" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="abr"/>
+		<property name="com.jaspersoft.studio.field.label" value="abr"/>
+	</field>
+	<field name="may" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="may"/>
+		<property name="com.jaspersoft.studio.field.label" value="may"/>
+	</field>
+	<field name="jun" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="jun"/>
+		<property name="com.jaspersoft.studio.field.label" value="jun"/>
+	</field>
+	<field name="jul" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="jul"/>
+		<property name="com.jaspersoft.studio.field.label" value="jul"/>
+	</field>
+	<field name="ago" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ago"/>
+		<property name="com.jaspersoft.studio.field.label" value="ago"/>
+	</field>
+	<field name="sep" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="sep"/>
+		<property name="com.jaspersoft.studio.field.label" value="sep"/>
+	</field>
+	<field name="oct" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="oct"/>
+		<property name="com.jaspersoft.studio.field.label" value="oct"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="63" height="30" uuid="f8d74f06-3b4a-4f90-9407-afadd259eb41">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="f10f5146-d65c-4acc-b894-bf6a9fa5c2f7"/>
+				</reportElement>
+				<text><![CDATA[t_ope]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="63" y="0" width="53" height="30" uuid="b67096fb-b3b3-4875-a15f-1a0ca6cb1f2c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="419bfef9-087f-47b4-adbe-99baa3da2cb2"/>
+				</reportElement>
+				<text><![CDATA[name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="116" y="0" width="53" height="30" uuid="ab991e6a-c1e9-40a7-8210-3565f6ea0c63">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="d87ea811-0f53-4974-b912-4b42d3bc40eb"/>
+				</reportElement>
+				<text><![CDATA[sum_nov]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="169" y="0" width="53" height="30" uuid="eb2d4529-9ad4-4c3b-ae92-32fb773eb055">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="eb762252-e1ab-4c0b-8af0-ad41c0d58cbb"/>
+				</reportElement>
+				<text><![CDATA[sum_dic]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="222" y="0" width="53" height="30" uuid="793d216c-a8d1-452c-bf7d-d3e54d4d1ba9">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="5e6528d1-be00-4c66-be4f-d0d0fc6e0d3a"/>
+				</reportElement>
+				<text><![CDATA[sum_ene]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="275" y="0" width="53" height="30" uuid="b95e2cca-a067-4390-9716-c185d4f0bd31">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="8ace0f1b-b8d7-4070-b765-1165824e8b13"/>
+				</reportElement>
+				<text><![CDATA[sum_feb]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="328" y="0" width="53" height="30" uuid="e416da04-aa35-416a-aaf6-b17b25d0ace9">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="eb2a60d2-6c1f-4068-a9cb-d4cb92d194f0"/>
+				</reportElement>
+				<text><![CDATA[sum_mar]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="381" y="0" width="53" height="30" uuid="2d803e7b-2224-406e-95d5-02f6cefdab60">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="dc8b2ec1-3418-42e6-92f4-ff63577cb727"/>
+				</reportElement>
+				<text><![CDATA[sum_abr]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="434" y="0" width="53" height="30" uuid="45ce5ce5-18f2-4e85-8ac0-047710b0211e">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="75871552-974c-4918-bbd7-5cd0426e8c8a"/>
+				</reportElement>
+				<text><![CDATA[sum_may]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="487" y="0" width="53" height="30" uuid="47ffcaea-babc-4d0d-87ef-bb41694d96cd">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="85feb36a-ad0a-4f27-9933-e0c14259f10c"/>
+				</reportElement>
+				<text><![CDATA[sum_jun]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="540" y="0" width="53" height="30" uuid="e895231a-b3eb-434b-9e3c-b18433b53295">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="9bd86fb7-620d-432d-8286-cfe13a077a83"/>
+				</reportElement>
+				<text><![CDATA[sum_jul]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="593" y="0" width="53" height="30" uuid="6ce9890e-04aa-4acd-9dab-55fe02aa9d41">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="3efef42e-fa44-4767-ad85-e14857864c2a"/>
+				</reportElement>
+				<text><![CDATA[sum_ago]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="646" y="0" width="53" height="30" uuid="31016e0a-61a4-454f-94cf-b8da38111e51">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="17fa4c78-d591-470e-a082-a4711e860177"/>
+				</reportElement>
+				<text><![CDATA[sum_sep]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="699" y="0" width="53" height="30" uuid="b4a22b48-1d03-4c73-b064-58b03ed2c6e9">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4e8a2e0e-50a0-4d1d-85e8-54d15897a76a"/>
+				</reportElement>
+				<text><![CDATA[sum_oct]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="59" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="63" height="30" uuid="c2841f97-994c-4048-b76c-ff9f914e6852">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="f10f5146-d65c-4acc-b894-bf6a9fa5c2f7"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{t_ope}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="63" y="0" width="53" height="30" uuid="6559c2ea-f9fa-4d81-ab42-eee364cd52a9">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="419bfef9-087f-47b4-adbe-99baa3da2cb2"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="116" y="0" width="53" height="30" uuid="6111a8c0-8ed9-4a22-9e21-4d92dbc51baa">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="d87ea811-0f53-4974-b912-4b42d3bc40eb"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{sum_nov}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="169" y="0" width="53" height="30" uuid="651dd9c3-dab1-462b-a40d-d5ea3a6e500b">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="eb762252-e1ab-4c0b-8af0-ad41c0d58cbb"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{sum_dic}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="222" y="0" width="53" height="30" uuid="56e4e1a6-6a1e-43a6-9027-7e6ca6f16f53">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="5e6528d1-be00-4c66-be4f-d0d0fc6e0d3a"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{sum_ene}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="275" y="0" width="53" height="30" uuid="d9b20d1f-f5d3-4f5f-ae08-3424b44500c4">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="8ace0f1b-b8d7-4070-b765-1165824e8b13"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{sum_feb}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="328" y="0" width="53" height="30" uuid="8d0856dc-93dd-4e96-8e33-4e8c2b41a1eb">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="eb2a60d2-6c1f-4068-a9cb-d4cb92d194f0"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{sum_mar}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="381" y="0" width="53" height="30" uuid="5abe166b-0f94-4bc4-b57d-d1e35852d4c0">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="dc8b2ec1-3418-42e6-92f4-ff63577cb727"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{sum_abr}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="434" y="0" width="53" height="30" uuid="ca5ecb4e-2609-42e2-927a-246b2272b176">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="75871552-974c-4918-bbd7-5cd0426e8c8a"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{sum_may}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="487" y="0" width="53" height="30" uuid="4d126ff7-4346-4422-8d8e-3d5537c85753">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="85feb36a-ad0a-4f27-9933-e0c14259f10c"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{sum_jun}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="540" y="0" width="53" height="30" uuid="166b9f96-371c-4f27-81bd-12cb55d4ba7e">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="9bd86fb7-620d-432d-8286-cfe13a077a83"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{sum_jul}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="593" y="0" width="53" height="30" uuid="49e2e3c5-79d6-49f2-b172-8636724a3ccd">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="3efef42e-fa44-4767-ad85-e14857864c2a"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{sum_ago}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="646" y="0" width="53" height="30" uuid="d35211ad-af04-4f47-ae38-7e235d62d79c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="17fa4c78-d591-470e-a082-a4711e860177"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{sum_sep}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="699" y="0" width="53" height="30" uuid="5bb55fa2-1ddb-4784-999f-64ddb3940849">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4e8a2e0e-50a0-4d1d-85e8-54d15897a76a"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{sum_oct}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

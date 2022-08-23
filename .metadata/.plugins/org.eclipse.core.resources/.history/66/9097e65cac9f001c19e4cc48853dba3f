@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="crosstab_1" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="dcadc399-fb2e-4a11-95eb-c460fdd2c8d3">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<queryString language="SQL">
+		<![CDATA[select 
+	b.name ad_org_n ,
+	e.description salesrep_n,
+	d.name c_bpartner_n ,
+	trim(c.value) m_product_v,
+--	trim(c.value) || ' ' || c.name m_product_n,
+	sum(a.QtyInvoiced) QtyInvoiced ,CT.CANT_CLIE,CT.CANT_CLIE_T,
+--	sum(a.linenetamt) linenetamt, 
+'DESDE: ' || SUBSTR('2022-02-01',9,2) || '/' || SUBSTR('2022-02-01',6,2) || '/' 
+	 || SUBSTR('2022-02-01',1,4) || ' - HASTA:' || SUBSTR('2022-02-28',9,2) 
+	 || '/' || SUBSTR('2022-02-28',6,2) || '/' || SUBSTR('2022-02-28',1,4) ||
+	 case when 1000003 is null then ' -Todas las Organizaciones' else ' -Solo Organizacion: ' ||  b.name end
+	 as NAME , ''  tapto
+from
+	cop_rv_c_invoiceline a join ad_org b on a.ad_org_id = b.ad_org_id 
+	join m_product c on c.m_product_id = a.m_product_id 
+	join c_bpartner d on d.c_bpartner_ID = a.c_bpartner_ID
+	join ad_user e on e.ad_user_id = a.salesrep_id 
+	left join (select distinct 
+ad_org_n,salesrep_n,
+COUNT(c_bpartner_n) OVER(PARTITION by salesrep_n) AS CANT_CLIE,
+COUNT(c_bpartner_n) OVER(PARTITION by ad_org_n) AS CANT_CLIE_T
+from 
+(select DISTINCT 
+	b.name ad_org_n ,e.description salesrep_n,d.name c_bpartner_n 
+from
+	cop_rv_c_invoiceline a join ad_org b on a.ad_org_id = b.ad_org_id 
+	join m_product c on c.m_product_id = a.m_product_id 
+	join c_bpartner d on d.c_bpartner_ID = a.c_bpartner_ID
+	join ad_user e on e.ad_user_id = a.salesrep_id 
+	where
+	a.DateInvoiced between '2022-02-01' and '2022-02-28'
+	and a.issotrx = 'Y' and a.m_product_id is not null 
+	and ((a.ad_org_id = 1000003) or ( 1000003  is null ))
+group by
+	b.name,d.name,
+	c.value,
+	c.name ,e.description
+	having sum(a.QtyInvoiced) <> 0 
+order by b.name,E.description) as A ) as CT on CT.ad_org_n  = b.name and CT.salesrep_n = e.description
+	where
+	a.DateInvoiced between '2022-02-01' and '2022-02-28'
+	and a.issotrx = 'Y' and a.m_product_id is not null 
+	and ((a.ad_org_id = 1000003) or ( 1000003  is null ))
+group by
+	b.name,d.name,
+	c.value,
+	c.name ,e.description,CT.CANT_CLIE,CT.CANT_CLIE_T
+order by b.name, e.description,d.name,trim(c.value)]]>
+	</queryString>
+	<field name="salesrep_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="salesrep_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="salesrep_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_user"/>
+	</field>
+	<field name="c_bpartner_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="c_bpartner_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_bpartner_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_bpartner"/>
+	</field>
+	<field name="m_product_v" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="m_product_v"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_product_v"/>
+	</field>
+	<field name="qtyinvoiced" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="qtyinvoiced"/>
+		<property name="com.jaspersoft.studio.field.label" value="qtyinvoiced"/>
+	</field>
+	<group name="salesrep_n">
+		<groupExpression><![CDATA[$F{salesrep_n}]]></groupExpression>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

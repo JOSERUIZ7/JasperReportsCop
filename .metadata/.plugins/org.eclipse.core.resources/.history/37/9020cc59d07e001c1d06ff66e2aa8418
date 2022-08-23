@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT_Voting_Result" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5692675d-9539-4a34-8c74-2f648e259cbb">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="idempiere_accionista"/>
+	<parameter name="COP_AssemblyQuestions_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1000010]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Respuesta" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<parameter name="RESOURCE_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["/"]]></defaultValueExpression>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[
+select
+	x.resp ,
+	case
+		when $P{Respuesta} = 1 then
+			SUM(x.r1) * 100 / x.t_accion
+		when $P{Respuesta} = 2 then
+			SUM(x.r2) * 100 / x.t_accion
+		when $P{Respuesta} = 3 then 
+			SUM(x.r3) * 100 / x.t_accion
+		when $P{Respuesta} = 4 then
+			SUM(x.r4) * 100 / x.t_accion
+		when $P{Respuesta} = 5 then
+			SUM(x.r5) * 100 / x.t_accion
+		when $P{Respuesta} = 6 then
+			SUM(x.r6) * 100 / x.t_accion
+		when $P{Respuesta} = 7 then
+			SUM(x.r7) * 100 / x.t_accion
+		when $P{Respuesta} = 8 then
+			SUM(x.r8) * 100 / x.t_accion
+	end r ,
+x.t_accion,
+
+(select coalesce(trim(description),'')||coalesce(trim(description2),'')||coalesce(trim(description3),'')||coalesce(trim(description4),'') from COP_AssemblyQuestionList where COP_AssemblyQuestions_ID = $P{COP_AssemblyQuestions_ID} and qty = $P{Respuesta}) as pregunta
+from
+	(
+	select
+		'SI' RESP,
+		' Asamblea: ' || F.Value || ' Fecha: ' || F.DateDoc::date || ' Libro: ' || D.Name || ' Folio: ' || F.ValueNumber as "Acta_Asamblea",
+								a.COP_AssemblyRecord_Id,
+		a.name,
+		E.NAME C_BPARTNER_N ,
+		c.description
+	,
+		case
+			when split_part(c.description, '_', 1 ::int) = 'SI' then E.Qty
+			else 0
+		end r1
+	,
+		case
+			when split_part(c.description, '_', 2 ::int) = 'SI' then E.Qty
+			else 0
+		end r2
+	,
+		case
+			when split_part(c.description, '_', 3 ::int) = 'SI' then E.Qty
+			else 0
+		end r3
+	,
+		case
+			when split_part(c.description, '_', 4 ::int) = 'SI' then E.Qty
+			else 0
+		end r4
+	,
+		case
+			when split_part(c.description, '_', 5 ::int) = 'SI' then E.Qty
+			else 0
+		end r5
+	,
+		case
+			when split_part(c.description, '_', 6 ::int) = 'SI' then E.Qty
+			else 0
+		end r6		
+	,
+		case
+			when split_part(c.description, '_', 7 ::int) = 'SI' then E.Qty
+			else 0
+		end r7
+	,
+		case
+			when split_part(c.description, '_', 8 ::int) = 'SI' then E.Qty
+			else 0
+		end r8
+,
+		(
+		select
+			sum(g.Qty)
+		from
+			C_BPartner g
+		where
+			g.isactive = 'Y'
+			and g.IsShareHolder = 'Y') as t_accion
+	from
+		COP_AssemblyQuestions A
+	left join COP_ShareholderVotes b on
+		b.cop_assemblyquestions_id = a.COP_AssemblyQuestions_id
+	left join M_AttributeSetInstance c on
+		c.M_AttributeSetInstance_ID = b.M_AttributeSetInstance_ID
+	left join C_BPartner E on
+		E.C_BPartner_ID = b.C_BPartner_ID
+	inner join COP_Book D on
+		D.COP_Book_ID = E.COP_Book_ID
+	left join COP_AssemblyRecord F on
+		F.COP_AssemblyRecord_ID = A.COP_AssemblyRecord_ID
+	where
+		a.isactive = 'Y'
+		and a.COP_AssemblyQuestions_ID = $P{COP_AssemblyQuestions_ID}
+union
+	select
+		'NO' RESP,
+		' Asamblea: ' || F.Value || ' Fecha: ' || F.DateDoc::date || ' Libro: ' || D.Name || ' Folio: ' || F.ValueNumber as "Acta_Asamblea",
+								a.COP_AssemblyRecord_Id,
+		a.name,
+		E.NAME C_BPARTNER_N ,
+		c.description
+	,
+		case
+			when split_part(c.description, '_', 1 ::int) = 'NO' then E.Qty
+			else 0
+		end r1
+	,
+		case
+			when split_part(c.description, '_', 2 ::int) = 'NO' then E.Qty
+			else 0
+		end r2
+	,
+		case
+			when split_part(c.description, '_', 3 ::int) = 'NO' then E.Qty
+			else 0
+		end r3
+	,
+		case
+			when split_part(c.description, '_', 4 ::int) = 'NO' then E.Qty
+			else 0
+		end r4
+	,
+		case
+			when split_part(c.description, '_', 5 ::int) = 'NO' then E.Qty
+			else 0
+		end r5
+	,
+		case
+			when split_part(c.description, '_', 6 ::int) = 'NO' then E.Qty
+			else 0
+		end r6		
+	,
+		case
+			when split_part(c.description, '_', 7 ::int) = 'NO' then E.Qty
+			else 0
+		end r7
+	,
+		case
+			when split_part(c.description, '_', 8 ::int) = 'NO' then E.Qty
+			else 0
+		end r8
+	
+,
+		(
+		select
+			sum(g.Qty)
+		from
+			C_BPartner g
+		where
+			g.isactive = 'Y'
+			and g.IsShareHolder = 'Y') as t_accion
+	from
+		COP_AssemblyQuestions A
+	left join COP_ShareholderVotes b on
+		b.cop_assemblyquestions_id = a.COP_AssemblyQuestions_id
+	left join M_AttributeSetInstance c on
+		c.M_AttributeSetInstance_ID = b.M_AttributeSetInstance_ID
+	left join C_BPartner E on
+		E.C_BPartner_ID = b.C_BPartner_ID
+	inner join COP_Book D on
+		D.COP_Book_ID = E.COP_Book_ID
+	left join COP_AssemblyRecord F on
+		F.COP_AssemblyRecord_ID = A.COP_AssemblyRecord_ID
+	where
+		a.isactive = 'Y'
+		and a.COP_AssemblyQuestions_ID = $P{COP_AssemblyQuestions_ID} 
+
+) as X
+group by
+	x.resp ,
+	x.t_accion]]>
+	</queryString>
+	<field name="resp" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="resp"/>
+		<property name="com.jaspersoft.studio.field.label" value="resp"/>
+	</field>
+	<field name="r" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="r"/>
+		<property name="com.jaspersoft.studio.field.label" value="r"/>
+	</field>
+	<field name="t_accion" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="t_accion"/>
+		<property name="com.jaspersoft.studio.field.label" value="t_accion"/>
+	</field>
+	<field name="pregunta" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="pregunta"/>
+		<property name="com.jaspersoft.studio.field.label" value="pregunta"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="100" splitType="Stretch">
+			<textField>
+				<reportElement x="120" y="3" width="630" height="97" uuid="ed653064-dc82-4a7d-bf5c-c894b3a2736e"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pregunta}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="0" y="-1" width="110" height="39" uuid="3d362a35-235e-44ab-b820-244c1e3f2e00"/>
+				<imageExpression><![CDATA[$P{RESOURCE_DIR} + "logo.png"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="8" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="7" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="382" splitType="Stretch">
+			<bar3DChart>
+				<chart isShowLegend="true" evaluationTime="Report" renderType="image" theme="default">
+					<reportElement x="0" y="0" width="750" height="370" uuid="4a97d3e6-25af-4c1d-9aa9-ceab47f3a008"/>
+					<chartTitle position="Left"/>
+					<chartSubtitle/>
+					<chartLegend position="Right"/>
+				</chart>
+				<categoryDataset>
+					<dataset resetType="Report"/>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{resp}]]></seriesExpression>
+						<categoryExpression><![CDATA[0]]></categoryExpression>
+						<valueExpression><![CDATA[$F{r}]]></valueExpression>
+						<labelExpression><![CDATA[$F{pregunta}]]></labelExpression>
+						<itemHyperlink hyperlinkType="LocalPage" hyperlinkTarget="Top"/>
+					</categorySeries>
+				</categoryDataset>
+				<bar3DPlot>
+					<plot/>
+					<itemLabel/>
+					<categoryAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</valueAxisFormat>
+				</bar3DPlot>
+			</bar3DChart>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="5" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="7" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="9" splitType="Stretch"/>
+	</summary>
+</jasperReport>

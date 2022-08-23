@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_A4_1" pageWidth="612" pageHeight="792" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e0c798c0-225f-48b9-9128-e5ce20996c5f">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="C_BPartner_ID" class="java.lang.Integer"/>
+	<parameter name="RESOURCE_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DateDoc" class="java.sql.Date"/>
+	<queryString>
+		<![CDATA[select  
+a.name as shareholder, 
+a.value taxid,
+a.qty,
+c.Nshareholder,
+round(a.qty*100/(select sum(qty) from c_bpartner where isshareholder='Y'),5) porcentage,
+b.*,
+CASE 
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=1 THEN
+		'UNO'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=2 THEN
+		'DOS'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=3 THEN
+		'TRES'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=4 THEN
+		'CUATRO'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=5 THEN
+		'CINCO'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=6 THEN
+		'SEIS'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=7 THEN
+		'SIETE'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=8 THEN
+		'OCHO'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=9 THEN
+		'NUEVE'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=10 THEN
+		'DIEZ'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=11 THEN
+		'ONCE'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=12 THEN
+		'DOCE'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=13 THEN
+		'TRECE'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=14 THEN
+		'CATORCE'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=15 THEN
+		'QUINCE'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=16 THEN
+		'DIECISEIS'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=17 THEN
+		'DIECISIETE'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=18 THEN
+		'DIECIOCHO'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=19 THEN
+		'DIECINUEVE'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=20 THEN
+		'VEINTE'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=21 THEN
+		'VEINTIUN'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=22 THEN
+		'VEINTIDOS'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=23 THEN
+		'VEINTITRES'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=24 THEN
+		'VEINTICUATRO'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=25 THEN
+		'VEINTICINCO'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=26 THEN
+		'VEINTISEIS'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=27 THEN
+		'VEINTISIETE'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=28 THEN
+		'VEINTIOCHO'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=29 THEN
+		'VEINTINUEVE'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=30 THEN
+		'TREINTA'
+	WHEN EXTRACT(DAY FROM $P{DateDoc}::date )=31 THEN
+		'TREINTA Y UN'
+END DIA,
+CASE 
+	WHEN EXTRACT(MONTH FROM $P{DateDoc}::date )=1 THEN
+		'ENERO'
+	WHEN EXTRACT(MONTH FROM $P{DateDoc}::date )=2 THEN
+		'FEBRERO'
+	WHEN EXTRACT(MONTH FROM $P{DateDoc}::date )=3 THEN
+		'MARZO'
+	WHEN EXTRACT(MONTH FROM $P{DateDoc}::date )=4 THEN
+		'ABRIL'
+	WHEN EXTRACT(MONTH FROM $P{DateDoc}::date )=5 THEN
+		'MAYO'
+	WHEN EXTRACT(MONTH FROM $P{DateDoc}::date )=6 THEN
+		'JUNIO'
+	WHEN EXTRACT(MONTH FROM $P{DateDoc}::date )=7 THEN
+		'JULIO'
+	WHEN EXTRACT(MONTH FROM $P{DateDoc}::date )=8 THEN
+		'AGOSTO'
+	WHEN EXTRACT(MONTH FROM $P{DateDoc}::date )=9 THEN
+		'SEPTIEMBRE'
+	WHEN EXTRACT(MONTH FROM $P{DateDoc}::date )=10 THEN
+		'OCTUBRE'
+	WHEN EXTRACT(MONTH FROM $P{DateDoc}::date )=11 THEN
+		'NOVIEMBRE'
+	WHEN EXTRACT(MONTH FROM $P{DateDoc}::date )=12 THEN
+		'DICIEMBRE'
+END MES, 
+CASE 
+	WHEN EXTRACT(YEAR FROM $P{DateDoc}::date )=2022 THEN
+	'DOS MIL VEINTIDOS'
+	WHEN EXTRACT(YEAR FROM $P{DateDoc}::date )=2023 THEN
+	'DOS MIL VEINTITRES'
+END ANO,
+d.value book,
+c.ValueNumber folio
+
+from COP_RV_ShareHolder a JOIN (select
+	a.name role_name,
+d.name role_name2, d. taxid taxid2
+from
+	ad_role a join AD_User_Roles b on a.ad_role_id = b.ad_role_id and b.AD_User_ID <> 100
+join ad_user c on
+	c.ad_user_id = b.ad_user_id 
+	join c_bpartner d on d.c_bpartner_id = c.c_bpartner_id 
+where
+	a.ad_role_id = 1000048 and c.isactive='Y') b on 1=1
+	inner join c_bpartner c on a.c_bpartner_id=c.c_bpartner_id
+	inner join COP_Book d on c.COP_Book_id=d.COP_Book_id
+ where a.c_bpartner_id = $P{C_BPartner_ID}]]>
+	</queryString>
+	<field name="shareholder" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="shareholder"/>
+		<property name="com.jaspersoft.studio.field.label" value="shareholder"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_shareholder"/>
+	</field>
+	<field name="taxid" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="taxid"/>
+		<property name="com.jaspersoft.studio.field.label" value="taxid"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_shareholder"/>
+	</field>
+	<field name="qty" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="qty"/>
+		<property name="com.jaspersoft.studio.field.label" value="qty"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_shareholder"/>
+	</field>
+	<field name="nshareholder" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="nshareholder"/>
+		<property name="com.jaspersoft.studio.field.label" value="nshareholder"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_bpartner"/>
+	</field>
+	<field name="porcentage" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="porcentage"/>
+		<property name="com.jaspersoft.studio.field.label" value="porcentage"/>
+	</field>
+	<field name="role_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="role_name"/>
+		<property name="com.jaspersoft.studio.field.label" value="role_name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_role"/>
+	</field>
+	<field name="role_name2" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="role_name2"/>
+		<property name="com.jaspersoft.studio.field.label" value="role_name2"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_bpartner"/>
+	</field>
+	<field name="taxid2" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="taxid2"/>
+		<property name="com.jaspersoft.studio.field.label" value="taxid2"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_bpartner"/>
+	</field>
+	<field name="dia" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="dia"/>
+		<property name="com.jaspersoft.studio.field.label" value="dia"/>
+	</field>
+	<field name="mes" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="mes"/>
+		<property name="com.jaspersoft.studio.field.label" value="mes"/>
+	</field>
+	<field name="ano" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ano"/>
+		<property name="com.jaspersoft.studio.field.label" value="ano"/>
+	</field>
+	<field name="book" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="book"/>
+		<property name="com.jaspersoft.studio.field.label" value="book"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_book"/>
+	</field>
+	<field name="folio" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="folio"/>
+		<property name="com.jaspersoft.studio.field.label" value="folio"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_bpartner"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="163" splitType="Stretch">
+			<staticText>
+				<reportElement x="39" y="134" width="490" height="22" uuid="08666361-c75b-4af6-ae87-c30a0f45b1dc"/>
+				<textElement textAlignment="Center">
+					<font fontName="Times New Roman" size="12" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[CERTIFICADO DE ACCIONES]]></text>
+			</staticText>
+			<image>
+				<reportElement x="39" y="47" width="150" height="50" uuid="fb8a6237-930c-4494-a77f-833819bb32f0"/>
+				<imageExpression><![CDATA[$P{RESOURCE_DIR} + "logo.png"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="469" splitType="Stretch">
+			<textField>
+				<reportElement x="39" y="-18" width="490" height="180" uuid="5f80bc1d-6efd-4620-8643-ce7fcf29f1e5">
+					<property name="com.jaspersoft.studio.unit.spacingAfter" value="px"/>
+				</reportElement>
+				<box topPadding="0" leftPadding="0" bottomPadding="0"/>
+				<textElement textAlignment="Justified" verticalAlignment="Top">
+					<font fontName="Times New Roman" size="11"/>
+					<paragraph lineSpacing="1_1_2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{role_name2} + " titular de la Cédula de Identidad No." +$F{taxid2} + " en su carácter de Presidente de la empresa CONSORCIO OLEAGINOSO PORTUGUESA, S.A. (COPOSA). Con domicilio fiscal carretera vía a Payara Nro. S/Nro. Sector Piedras Blancas. Acarigua-Portuguesa. Zona Postal 3301. Inscrita por ante hoy denominado Registro Mercantil Segundo de la Circunscripción Judicial del Estado Portuguesa, en fecha 28/01/1974. Bajo el No. 22. Folio 39 al 56 del Libro de Registro de Comercio No. 1. Siendo su última modificación estatutaria ante el mismo Registro de fecha  07 de febrero de 2022, N° 31, Tomo 4-A.,  y ratificados según ACTA DE ASAMBLEA ante el mismo Registro en fecha 18 de febrero de 2022  , N° 14, Tomo 6-A y Registro de Información Fiscal (RIF)N° J-08502021-7; por medio de la presente. CERTIFICA QUE: "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="39" y="205" width="490" height="124" uuid="c6d8af17-25d1-4333-8a69-536e244fe581"/>
+				<box topPadding="0" leftPadding="0" bottomPadding="0"/>
+				<textElement textAlignment="Justified" verticalAlignment="Top">
+					<font fontName="Times New Roman" size="11"/>
+					<paragraph lineSpacing="1_1_2"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Titular de la Cédula de Identidad o RIF " + $F{taxid}+  " es propietario de "+ $F{qty} +" Acciones, por una valor nominal de cada accion de Bs. 0.0000023. Lo que corresponde al " + $F{porcentage}+  "% del Capital total de la Empresa de Bs. 5.018,18. Tales acciones las obtuvo como lo indica el Estado de Cuenta de Acciones suscritas y pagadas, segun código de accionistas N°. "+$F{nshareholder} +" La titularidad de dichas acciones se encuentran registradas en los Libros de Acciones de la Compañía N° "+$F{book}+" Folio N° "+$F{folio}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="40" y="305" width="490" height="39" uuid="124ed3ba-2c9d-4c68-a811-3088a6033e06"/>
+				<textElement>
+					<font fontName="Times New Roman" size="11"/>
+					<paragraph lineSpacing="Double"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Certificación que se expide a solicitud de parte interesada a los "+$F{dia}+" días del mes de "+$F{mes}+" del "+$F{ano}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="39" y="162" width="490" height="20" uuid="e81e1ed3-0021-46ea-a44c-ae083fe64899"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Traditional Arabic" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["**" +  $F{shareholder} + "**"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="408" width="448" height="20" uuid="fdb3893c-3279-4048-a61f-a7d9ecc9b701"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{role_name2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="380" y="421" width="148" height="20" uuid="b083d01d-32e8-4f98-9e0c-4f5dd9c0b656"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA["C.I.N: "+$F{taxid2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="380" y="434" width="148" height="20" uuid="e6130ef1-3d68-4fa6-983e-a88155ebcf6f"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman" size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Presidente"]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<summary>
+		<band height="75">
+			<textField>
+				<reportElement x="0" y="23" width="570" height="16" uuid="e829fd9d-71a2-4cb5-939b-1920404e123e"/>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" size="8"/>
+					<paragraph lineSpacing="Double"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ACARIGUA CARRETERA VÍA PAYARA NOR S/NRO, SECTOR PIEDRAS BLANCAS ACARIGUA-PORTUGUESA TELF:(0255)6002300 - CENTRALISTA: 6002301 - FAX: 6002409"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="49" y="32" width="490" height="19" uuid="9c8c9819-05ba-47b8-9f28-24cf8d95229a"/>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["E-MAIL: accionistas@coposa.com"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="42" width="569" height="17" uuid="804573eb-639b-4536-8026-73097414a12e"/>
+				<textElement textAlignment="Center">
+					<font fontName="Calibri" size="8"/>
+					<paragraph lineSpacing="Double"/>
+				</textElement>
+				<textFieldExpression><![CDATA["CARACAS: TORRE  - PISO 14 - PLAZA VENEZUELA - CARACAS. TELFS.: (0212) 7823033 - 7822455 - 7822655 - 7822866"]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

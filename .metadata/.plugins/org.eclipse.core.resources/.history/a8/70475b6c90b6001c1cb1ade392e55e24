@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_A4_Landscape" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a5a2f3b2-bfb9-481c-a7ed-759fc6b609c8">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="FiscalYear" class="java.lang.String">
+		<defaultValueExpression><![CDATA['2021-2022']]></defaultValueExpression>
+	</parameter>
+	<parameter name="RESOURCE_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="C_Currency_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[100]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select 
+                               X.ad_client_id ,
+                               X.ad_org_id ,
+                               SUBSTRING(X.fiscalyear, 1, 4) nov_dic,
+                               SUBSTRING(X.fiscalyear, 6, 4) ene_oct,
+                               SUBSTRING(X.fiscalyear, 6, 4) ene_oct,
+                               X.fiscalyear,
+                               X.tipo_operacion ,
+                               X.name ,
+                               X.c_currency_id ,
+                               'MONTOS EXPRESADOS EN: '|| CC.ISO_Code as CURRENCY_N,
+                               sum(case 
+                                               WHEN x.c_currency_id != $P{C_Currency_ID} THEN
+                               currencyconvert(X.monto_nov,X.c_currency_id,$P{C_Currency_ID},X.dateacct,1000000,1000000,0) 
+                               else X.monto_nov end) as SUM_nov ,
+                               sum(case 
+                                               WHEN x.c_currency_id != $P{C_Currency_ID} THEN
+                               currencyconvert(X.monto_dic,X.c_currency_id,$P{C_Currency_ID},X.dateacct,1000000,1000000,0) 
+                               else X.monto_dic end) as SUM_dic ,
+                               sum(case 
+                                               WHEN x.c_currency_id != $P{C_Currency_ID} THEN
+                               currencyconvert(X.monto_ene,X.c_currency_id,$P{C_Currency_ID},X.dateacct,1000000,1000000,0) 
+                               else X.monto_ene end) as SUM_ene ,
+                               sum(case 
+                                               WHEN x.c_currency_id != $P{C_Currency_ID} THEN
+                               currencyconvert(X.monto_fec,X.c_currency_id,$P{C_Currency_ID},X.dateacct,1000000,1000000,0) 
+                               else X.monto_fec end) as SUM_fec ,
+                               sum(case 
+                                               WHEN x.c_currency_id != $P{C_Currency_ID} THEN
+                               currencyconvert(X.monto_mar,X.c_currency_id,$P{C_Currency_ID},X.dateacct,1000000,1000000,0) 
+                               else X.monto_mar end) as SUM_mar ,
+                               sum(case 
+                                               WHEN x.c_currency_id != $P{C_Currency_ID} THEN
+                               currencyconvert(X.monto_abr,X.c_currency_id,$P{C_Currency_ID},X.dateacct,1000000,1000000,0) 
+                               else X.monto_abr end) as SUM_abr ,
+                               sum(case 
+                                               WHEN x.c_currency_id != $P{C_Currency_ID} THEN
+                               currencyconvert(X.monto_may,X.c_currency_id,$P{C_Currency_ID},X.dateacct,1000000,1000000,0) 
+                               else X.monto_may end) as SUM_may ,
+                               sum(case 
+                                               WHEN x.c_currency_id != $P{C_Currency_ID} THEN
+                               currencyconvert(X.monto_jun,X.c_currency_id,$P{C_Currency_ID},X.dateacct,1000000,1000000,0) 
+                               else X.monto_jun end) as SUM_jun ,
+                               sum(case 
+                                               WHEN x.c_currency_id != $P{C_Currency_ID} THEN
+                               currencyconvert(X.monto_jul,X.c_currency_id,$P{C_Currency_ID},X.dateacct,1000000,1000000,0) 
+                               else X.monto_jul end) as SUM_jul ,
+                               sum(case 
+                                               WHEN x.c_currency_id != $P{C_Currency_ID} THEN
+                               currencyconvert(X.monto_ago,X.c_currency_id,$P{C_Currency_ID},X.dateacct,1000000,1000000,0) 
+                               else X.monto_ago end) as SUM_ago ,
+                               sum(case 
+                                               WHEN x.c_currency_id != $P{C_Currency_ID} THEN
+                               currencyconvert(X.monto_sep,X.c_currency_id,$P{C_Currency_ID},X.dateacct,1000000,1000000,0) 
+                               else X.monto_sep end) as SUM_sep ,
+                               sum(case 
+                                               WHEN x.c_currency_id != $P{C_Currency_ID} THEN
+                               currencyconvert(X.monto_oct,X.c_currency_id,$P{C_Currency_ID},X.dateacct,1000000,1000000,0) 
+                               else X.monto_oct end) as SUM_oct 
+from 
+(
+SELECT
+                A.ad_client_id,
+                A.ad_org_id,
+                A.FiscalYear,
+                A.PERIODO,
+                A.fecha,
+                A.tipo_operacion,
+                CASE 
+                WHEN A.COP_PayGroup_ID=0 THEN
+                               A.NAME
+                WHEN c.NAME is null THEN
+                               A.NAME
+                WHEN A.COP_PayGroup_ID is null THEN
+                               'GASTOS DE ADMINISTRACIÓN'
+                ELSE
+                               c.NAME
+END AS NAME,
+                A.c_currency_id,
+                SUM (monto_nov) monto_nov,
+                SUM (monto_dic) monto_dic,
+                SUM (monto_ene) monto_ene,
+                SUM (monto_fec) monto_fec,
+                SUM (monto_mar) monto_mar,
+                SUM (monto_abr) monto_abr,
+                SUM (monto_may) monto_may,
+                SUM (monto_jun) monto_jun,
+                SUM (monto_jul) monto_jul,
+                SUM (monto_ago) monto_ago,
+                SUM (monto_sep) monto_sep,
+                SUM (monto_oct) monto_oct,
+                TRIM ( PERIODO ) || chr( 13 ) || TRIM ( fecha ) AS perfecha ,
+                a.dateacct::DATE
+FROM
+                V_COP_YearCashFlow a
+                LEFT JOIN COP_PayGroup B ON A.COP_PayGroup_ID=B.COP_PayGroup_ID
+                LEFT JOIN COP_PayGroup c ON c.COP_PayGroup_ID=b.COP_PayGroup_to_ID
+WHERE
+                fiscalyear = '$P{FiscalYear}'
+GROUP BY 1,2,3,4,5,6,7,8,dateacct
+ORDER BY 3,4,5,6) as X
+join c_currency cc on CC.c_currency_ID = $P{C_Currency_ID}
+GROUP BY 1,2,3,4,5,6,7,8,9,10]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

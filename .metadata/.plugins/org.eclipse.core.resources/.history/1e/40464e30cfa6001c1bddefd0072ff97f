@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 5.5.1  -->
+<!-- 2022-02-17T10:49:41 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT__Accountstatement - sin pago.jrxml" pageWidth="612" pageHeight="792" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="107ed96a-cdca-4cd1-8930-81a855e918ba">
+	<parameter name="C_SalesRegion_ID1" class="java.lang.String"/>
+	<parameter name="C_SalesRegion_ID2" class="java.lang.String"/>
+	<parameter name="SalesRep_ID" class="java.lang.Integer"/>
+	<parameter name="C_BPartner_ID" class="java.lang.Integer"/>
+	<parameter name="AD_Org_ID" class="java.lang.Integer"/>
+	<parameter name="C_Currency_ID_To" class="java.math.BigDecimal"/>
+	<parameter name="DateDoc1" class="java.sql.Date"/>
+	<parameter name="DateDoc2" class="java.sql.Date"/>
+	<parameter name="C_DocType_ID" class="java.lang.String"/>
+	<queryString language="plsql">
+		<![CDATA[SELECT * FROM 
+	(select 
+	    org.name as org,
+	   i.c_invoice_id,
+	    cb.name as tercero,
+	    b.ISO_Code as moneda,
+	    round((currencyconvert(i.grandtotal,i.c_currency_id,b.c_currency_id_to,i.dateinvoiced,i.c_conversiontype_id,i.ad_client_id,i.ad_org_id) * i.multiplierap),2) AS amt,
+	    round((currencyconvert(invoiceopen(i.c_invoice_id, null),i.c_currency_id,b.c_currency_id_to,i.dateinvoiced, i.c_conversiontype_id, i.ad_client_id , i.ad_org_id) * i.multiplierap),2) AS openamt,
+	    i.dateinvoiced AS datedoc,
+	    cd.name as tipodoc,
+	    cpy.value::text as term_pay,
+	    i.dateacct,
+	    i.documentno,
+	    cb.value as codigo,
+	    round(cb.so_creditlimit,2) as so_creditlimit,
+	    cs.value as cod_region,
+	    cs.name region,
+	    coalesce (ubp.name,us.description,us.name) as salesrep,
+	    paymenttermduedate(i.c_paymentterm_id,i.dateinvoiced) as duedate,
+	    i.c_salesregion_id,
+ round(currencyconvert(i.grandtotal * i.multiplierap, i.c_currency_id,100::numeric, coalesce(da.dateinvoiced ,i.dateinvoiced::timestamp with time zone), i.c_conversiontype_id, i.ad_client_id, i.ad_org_id),2) AS amtconvert,
+	    round(currencyconvert(invoiceopen(i.c_invoice_id, null) * i.multiplierap,i.c_currency_id,100::numeric , coalesce(da.dateinvoiced ,i.dateinvoiced::timestamp with time zone), i.c_conversiontype_id, i.ad_client_id, i.ad_org_id),2) AS openamtconvert
+	    ,b.c_currency_id_to
+	   FROM c_invoice_v i
+	    left join ad_client cli on i.ad_client_id=cli.ad_client_id
+	    left join C_PaymentTerm cpy on i.C_PaymentTerm_id = cpy.C_PaymentTerm_id    
+	    LEFT JOIN c_order co ON i.c_order_id = co.c_order_id
+	    left JOIN c_bpartner cb ON i.c_bpartner_id = cb.c_bpartner_id
+	    left join c_bpartner_location cbl on i.c_bpartner_location_id = cbl.c_bpartner_location_id 
+	    left join c_salesregion cs on cbl.c_salesregion_id = cs.c_salesregion_id 
+	    left join ad_user us on cs.salesrep_id = us.ad_user_id 
+		left join c_bpartner ubp on us.c_bpartner_id = ubp.c_bpartner_id 
+		left join ad_org_v org on i.ad_org_id = org.ad_org_id
+		left join c_doctype cd on i.c_doctype_id = cd.c_doctype_id
+		left join c_invoice da on i.LVE_invoiceAffected_ID = da.c_invoice_id,
+( SELECT DISTINCT rc.c_currency_id as c_currency_id_to,c.iso_code
+                   FROM ftu_reportcurrency rc
+                     JOIN c_currency c ON rc.c_currency_id = c.c_currency_id) b
+	 WHERE i.ispaid = 'N'::bpchar AND (i.docstatus = ANY (ARRAY['CO'::bpchar, 'CL'::bpchar]))
+	   	and( i.ad_org_id =$P{AD_Org_ID} or $P{AD_Org_ID} is null)
+	    and( i.c_bpartner_id=$P{C_BPartner_ID} or $P{C_BPartner_ID} is null)
+	    and( cs.value>=$P{C_SalesRegion_ID1} or $P{C_SalesRegion_ID1} is null)
+	    and( cs.value<=$P{C_SalesRegion_ID2} or $P{C_SalesRegion_ID2} is null)
+	    and (i.salesrep_id=$P{SalesRep_ID} or $P{SalesRep_ID} is null)
+	   	and (date(i.dateinvoiced) >= $P{DateDoc1} or coalesce($P{DateDoc1},now()) = now())
+	   	and (date(i.dateinvoiced) <= $P{DateDoc2} or coalesce($P{DateDoc2},now()) = now())
+	   	and (i.c_doctype_id::bpchar != all(string_to_array($P{C_DocType_ID}, ',')::bpchar[]) or $P{C_DocType_ID} is null)
+	   	and( b.c_currency_id_to =$P{C_Currency_ID_To})
+		and i.issotrx='Y'
+	
+	union(
+	 select 
+	
+	    org.name as org,
+	    i.c_invoice_id,
+	    cb.name as tercero,
+	    b.ISO_Code as moneda,
+	    round((currencyconvert(p.payamt, p.c_currency_id,b.c_currency_id_to,p.datetrx,p.c_conversiontype_id,p.ad_client_id,p.ad_org_id) * p.multiplierap::numeric * '-1'::integer::numeric),2) AS amt,
+	    round((currencyconvert(paymentavailable(p.c_payment_id),p.c_currency_id,b.c_currency_id_to,p.datetrx,p.c_conversiontype_id,p.ad_client_id,p.ad_org_id) * p.multiplierap::numeric * '-1'::integer::numeric),2) AS openamt,
+	    p.datetrx AS datedoc,
+	    cd.name as tipodoc,
+	    null::text as term_pay,
+	    p.dateacct,
+	    p.documentno,
+	   cb.value AS codigo,
+	    0 AS so_creditlimit,
+	    cs.value as cod_region,
+	    cs.name region,
+	      coalesce (ubp.name,us.description,us.name) as salesrep,
+	    NULL::timestamp without time zone AS duedate,
+	    NULL::numeric AS c_salesregion_id,
+ 		round(currencyconvert(p.payamt * p.multiplierap::numeric * '-1'::integer,p.c_currency_id,100::numeric, p.datetrx::timestamp with time zone, p.c_conversiontype_id, p.ad_client_id, p.ad_org_id),2) AS amtconvert,
+	    round(currencyconvert(paymentavailable(p.c_payment_id) * p.multiplierap::numeric * '-1'::integer, p.c_currency_id,100::numeric, p.datetrx::timestamp with time zone, p.c_conversiontype_id, p.ad_client_id, p.ad_org_id),2) AS openamtconvert,
+		b.c_currency_id_to
+	   FROM c_payment_v p
+	    left join ad_client cli on p.ad_client_id=cli.ad_client_id    
+	    LEFT JOIN c_order co ON p.c_order_id = co.c_order_id    
+	    left join c_invoice_v i on p.c_invoice_id =i.c_invoice_id
+	    left join C_PaymentTerm cpy on i.C_PaymentTerm_id = cpy.C_PaymentTerm_id 
+	    left JOIN c_bpartner cb ON p.c_bpartner_id = cb.c_bpartner_id
+	    left join c_bpartner_location cbl on cbl.c_bpartner_id = cb.c_bpartner_id and isremitto = 'Y'
+	    left join c_salesregion cs on cbl.c_salesregion_id = cs.c_salesregion_id 
+	    left join ad_user us on cs.salesrep_id = us.ad_user_id 
+		left join c_bpartner ubp on us.c_bpartner_id = ubp.c_bpartner_id 	
+		left join c_doctype cd on p.c_doctype_id = cd.c_doctype_id
+		left join ad_org_v org on org.ad_org_id = cd.ad_org_id,
+		( SELECT DISTINCT rc.c_currency_id as c_currency_id_to,c.iso_code
+                   FROM ftu_reportcurrency rc
+                     JOIN c_currency c ON rc.c_currency_id = c.c_currency_id) b
+		
+	  
+	WHERE p.isallocated = 'N'::bpchar AND p.c_bpartner_id IS NOT NULL AND (p.docstatus = ANY (ARRAY['CO'::bpchar, 'CL'::bpchar]))
+	   	and( cd.ad_org_id =$P{AD_Org_ID} or $P{AD_Org_ID} is null)
+	    and( p.c_bpartner_id=$P{C_BPartner_ID} or $P{C_BPartner_ID} is null)
+	    and( cs.value>=$P{C_SalesRegion_ID1} or $P{C_SalesRegion_ID1} is null)
+	    and( cs.value<=$P{C_SalesRegion_ID2} or $P{C_SalesRegion_ID2} is null)
+	    and (p.salesrep_id=$P{SalesRep_ID} or $P{SalesRep_ID} is null)
+	   	and (date(p.datetrx) >= $P{DateDoc1} or coalesce($P{DateDoc1},now()) = now())
+	   	and (date(p.datetrx) <= $P{DateDoc2} or coalesce($P{DateDoc2},now()) = now())
+	   	and (p.c_doctype_id::bpchar != all(string_to_array($P{C_DocType_ID}, ',')::bpchar[]) or $P{C_DocType_ID} is null)
+	   	and( b.c_currency_id_to =$P{C_Currency_ID_To})
+		and p.isreceipt='Y'
+	  )) AS t
+	  where t.openamt <> 0 
+	 ORDER BY 
+region,org,salesrep,tercero,datedoc,documentno ASC;]]>
+	</queryString>
+	<field name="org" class="java.lang.String"/>
+	<field name="c_invoice_id" class="java.math.BigDecimal"/>
+	<field name="tercero" class="java.lang.String"/>
+	<field name="moneda" class="java.lang.String"/>
+	<field name="amt" class="java.math.BigDecimal"/>
+	<field name="openamt" class="java.math.BigDecimal"/>
+	<field name="datedoc" class="java.sql.Timestamp"/>
+	<field name="tipodoc" class="java.lang.String"/>
+	<field name="term_pay" class="java.lang.String"/>
+	<field name="dateacct" class="java.sql.Timestamp"/>
+	<field name="documentno" class="java.lang.String"/>
+	<field name="codigo" class="java.lang.String"/>
+	<field name="so_creditlimit" class="java.math.BigDecimal"/>
+	<field name="cod_region" class="java.lang.String"/>
+	<field name="region" class="java.lang.String"/>
+	<field name="salesrep" class="java.lang.String"/>
+	<field name="duedate" class="java.sql.Timestamp"/>
+	<field name="c_salesregion_id" class="java.math.BigDecimal"/>
+	<field name="amtconvert" class="java.math.BigDecimal"/>
+	<field name="openamtconvert" class="java.math.BigDecimal"/>
+	<field name="c_currency_id_to" class="java.math.BigDecimal"/>
+	<variable name="totalamt" class="java.math.BigDecimal" resetType="Group" resetGroup="cliente" calculation="Sum">
+		<variableExpression><![CDATA[$F{amt}]]></variableExpression>
+	</variable>
+	<variable name="totalopenamt" class="java.math.BigDecimal" resetType="Group" resetGroup="cliente" calculation="Sum">
+		<variableExpression><![CDATA[$F{openamt}]]></variableExpression>
+	</variable>
+	<variable name="totalamtconvert" class="java.math.BigDecimal" resetType="Group" resetGroup="cliente" calculation="Sum">
+		<variableExpression><![CDATA[$F{amtconvert}]]></variableExpression>
+	</variable>
+	<variable name="totalopenamtconv" class="java.math.BigDecimal" resetType="Group" resetGroup="cliente" calculation="Sum">
+		<variableExpression><![CDATA[$F{openamtconvert}]]></variableExpression>
+	</variable>
+	<variable name="totalamt_z" class="java.math.BigDecimal" resetType="Group" resetGroup="cliente" calculation="Sum">
+		<variableExpression><![CDATA[$F{amt}]]></variableExpression>
+	</variable>
+	<variable name="totalopenamt_z" class="java.math.BigDecimal" resetType="Group" resetGroup="cliente" calculation="Sum">
+		<variableExpression><![CDATA[$F{openamt}]]></variableExpression>
+	</variable>
+	<variable name="totalamtconvert_z" class="java.math.BigDecimal" resetType="Group" resetGroup="cliente" calculation="Sum">
+		<variableExpression><![CDATA[$F{amtconvert}]]></variableExpression>
+	</variable>
+	<variable name="TotalZone" class="java.math.BigDecimal" resetType="Group" resetGroup="zona" calculation="Sum">
+		<variableExpression><![CDATA[$F{amt}]]></variableExpression>
+	</variable>
+	<variable name="TotalGeneral" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{amt}]]></variableExpression>
+	</variable>
+	<variable name="ZoneTotalOpenAmt" class="java.math.BigDecimal" resetType="Group" resetGroup="zona" calculation="Sum">
+		<variableExpression><![CDATA[$F{openamt}]]></variableExpression>
+	</variable>
+	<variable name="ZoneTotalAmtConvert" class="java.math.BigDecimal" resetType="Group" resetGroup="zona" calculation="Sum">
+		<variableExpression><![CDATA[$F{amtconvert}]]></variableExpression>
+	</variable>
+	<variable name="ZoneTotalOpenAmtConv" class="java.math.BigDecimal" resetType="Group" resetGroup="zona" calculation="Sum">
+		<variableExpression><![CDATA[$F{openamtconvert}]]></variableExpression>
+	</variable>
+	<variable name="GeneralTotalOpenAmt" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{openamt}]]></variableExpression>
+	</variable>
+	<variable name="GeneralTotalAmtConvert" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{amtconvert}]]></variableExpression>
+	</variable>
+	<variable name="GeneralTotalOpenAmtConv" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{openamtconvert}]]></variableExpression>
+	</variable>
+	<group name="Org Group">
+		<groupExpression><![CDATA[$F{org}]]></groupExpression>
+		<groupHeader>
+			<band height="14">
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement x="70" y="0" width="100" height="12" uuid="2c1b3c60-ed55-4b12-aba3-a25dd50aca03"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="7" isBold="false" isItalic="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{org}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="0" width="70" height="12" uuid="8aea7d23-03ed-4e3b-8d5c-d3771cdda6fd"/>
+					<box>
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Distribuidora:]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="zona/Vendedor">
+		<groupExpression><![CDATA[$F{region}]]></groupExpression>
+		<groupHeader>
+			<band height="26">
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement x="29" y="0" width="62" height="12" uuid="c5809028-846e-42ac-9e25-d9f4a481d550"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="7" isBold="false" isItalic="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{region}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="0" width="30" height="12" uuid="5fc3375b-3752-4274-8264-305593662652"/>
+					<box>
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Zona:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="115" y="0" width="48" height="12" uuid="16e3f450-2191-4d20-bea6-e136aaf42af6"/>
+					<box>
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="7" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Vendedor:]]></text>
+				</staticText>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement x="161" y="0" width="344" height="12" uuid="e0a3cb35-233f-4d7c-8949-814f34dfd925"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="7" isBold="false" isItalic="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{salesrep}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="163" y="14" width="40" height="12" uuid="dd6382e3-7819-49d9-9be8-7c9691e1284b"/>
+					<box>
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Termino]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="292" y="14" width="40" height="12" uuid="6eea3fe7-ec93-4e90-a63c-c6357f9f011a"/>
+					<box>
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Moneda]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="202" y="14" width="45" height="12" uuid="0b3b62bd-4140-4335-9614-89e58262e4b3"/>
+					<box>
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Fecha]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="528" y="14" width="44" height="12" uuid="10ac93c3-cee8-43c7-811e-cf5f905ea36c"/>
+					<box>
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Saldo$]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="332" y="14" width="69" height="12" uuid="27bbd60c-421a-48ab-a184-27254d05db8b"/>
+					<box>
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Monto Bs.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="247" y="14" width="45" height="12" uuid="510e91a9-5f0c-4430-a402-0de72fd68ab1"/>
+					<box>
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Venc.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="478" y="14" width="50" height="12" uuid="6a06380b-7a2e-49a9-87cf-e8a16a8cf4ac"/>
+					<box>
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Monto$]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="401" y="14" width="77" height="12" uuid="d05a88ab-94f7-488a-9225-0081d15865a0"/>
+					<box>
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Saldo Bs.]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="19">
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement x="120" y="4" width="210" height="10" printWhenGroupChanges="zona/Vendedor" uuid="e2361bcb-5823-4074-b94d-9f35f30d645a"/>
+					<textElement textAlignment="Right" verticalAlignment="Top" markup="styled">
+						<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Total Zona " + $F{region}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00#" isBlankWhenNull="true">
+					<reportElement x="332" y="4" width="69" height="10" printWhenGroupChanges="zona/Vendedor" uuid="af71516a-10e6-4a7b-81f6-d6711b72c21b"/>
+					<textElement textAlignment="Right" verticalAlignment="Top">
+						<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
+						<paragraph rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{TotalZone}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00#" isBlankWhenNull="true">
+					<reportElement x="401" y="4" width="77" height="10" printWhenGroupChanges="zona/Vendedor" uuid="3a6c1b91-9415-4801-8331-e94628e7580c"/>
+					<textElement textAlignment="Right" verticalAlignment="Top">
+						<font fontName="SansSerif" size="7" isBold="true" isItalic="true"/>
+						<paragraph rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{ZoneTotalOpenAmt}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00#" isBlankWhenNull="true">
+					<reportElement x="478" y="4" width="50" height="10" printWhenGroupChanges="zona/Vendedor" uuid="61ed8cb0-0723-4eb2-931b-19b994c8a903"/>
+					<textElement textAlignment="Right" verticalAlignment="Top">
+						<font fontName="SansSerif" size="7" isBold="true" isItalic="true"/>
+						<paragraph rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{ZoneTotalAmtConvert}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00#" isBlankWhenNull="true">
+					<reportElement x="528" y="4" width="44" height="10" printWhenGroupChanges="zona/Vendedor" uuid="989cbf4a-222e-4a43-8f12-d9083403e114"/>
+					<textElement textAlignment="Right" verticalAlignment="Top">
+						<font fontName="SansSerif" size="7" isBold="true" isItalic="true"/>
+						<paragraph rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{ZoneTotalOpenAmtConv}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="zona">
+		<groupExpression><![CDATA[$F{region}]]></groupExpression>
+	</group>
+	<group name="cliente">
+		<groupExpression><![CDATA[$F{tercero}]]></groupExpression>
+		<groupHeader>
+			<band height="12">
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement x="40" y="0" width="368" height="12" uuid="f0463322-9ce1-46d5-9880-a36ca352fe19"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{codigo} +"  " + $F{tercero}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="0" width="50" height="12" uuid="06872bdb-5a85-413d-bd8a-a37bcd6229d6"/>
+					<box>
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Cliente:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="410" y="0" width="84" height="12" uuid="56cebe9e-3b66-4e19-9788-2035a3de8c54"/>
+					<box>
+						<bottomPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Lim. Crédito:]]></text>
+				</staticText>
+				<textField pattern="#,##0.00#" isBlankWhenNull="false">
+					<reportElement x="476" y="0" width="96" height="11" uuid="6c86f8b6-279c-4e9e-a95b-2f70cfb7705f"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="7" isBold="false" isItalic="false"/>
+						<paragraph rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{so_creditlimit}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="18">
+				<textField pattern="#,##0.00#" isBlankWhenNull="true">
+					<reportElement x="401" y="8" width="77" height="10" printWhenGroupChanges="zona/Vendedor" uuid="26c0336e-d5c6-4f46-bce3-cc094f351f84"/>
+					<textElement textAlignment="Right" verticalAlignment="Top">
+						<font fontName="SansSerif" size="7" isBold="true" isItalic="true"/>
+						<paragraph rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{totalopenamt}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00#" isBlankWhenNull="true">
+					<reportElement x="478" y="8" width="50" height="10" printWhenGroupChanges="zona/Vendedor" uuid="f0f77d10-d471-46b5-9950-a17305b7db05"/>
+					<textElement textAlignment="Right" verticalAlignment="Top">
+						<font fontName="SansSerif" size="7" isBold="true" isItalic="true"/>
+						<paragraph rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{totalamtconvert}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00#" isBlankWhenNull="true">
+					<reportElement x="528" y="8" width="44" height="10" printWhenGroupChanges="zona/Vendedor" uuid="29dbcd44-2abf-4830-a432-79630e5afbfc"/>
+					<textElement textAlignment="Right" verticalAlignment="Top">
+						<font fontName="SansSerif" size="7" isBold="true" isItalic="true"/>
+						<paragraph rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{totalopenamtconv}]]></textFieldExpression>
+				</textField>
+				<rectangle>
+					<reportElement positionType="Float" x="333" y="0" width="239" height="1" printWhenGroupChanges="zona/Vendedor" uuid="8239a83c-fde8-4b17-96ac-0cdc92b420a4"/>
+					<graphicElement>
+						<pen lineWidth="0.1" lineStyle="Solid"/>
+					</graphicElement>
+				</rectangle>
+				<textField pattern="#,##0.00#">
+					<reportElement x="332" y="8" width="69" height="10" printWhenGroupChanges="zona/Vendedor" uuid="11d80755-b272-4def-83bc-190af3cdd0b7"/>
+					<textElement textAlignment="Right" verticalAlignment="Top">
+						<font fontName="SansSerif" size="7" isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{totalamt}]]></textFieldExpression>
+				</textField>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement x="1" y="8" width="329" height="10" printWhenGroupChanges="zona/Vendedor" uuid="1d1228fb-0773-47f7-a7ff-b0134acc1899"/>
+					<textElement textAlignment="Right" verticalAlignment="Top">
+						<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Total Cliente: "]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<title>
+		<band height="4" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="43">
+			<staticText>
+				<reportElement x="535" y="5" width="10" height="11" uuid="06061cb4-ff40-4a53-aa36-ca9c3a425136"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[de:]]></text>
+			</staticText>
+			<textField pattern="HH:mm" isBlankWhenNull="true">
+				<reportElement x="521" y="27" width="49" height="11" uuid="c1a5da1f-9798-462a-9635-c5b6975be549"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("h:mm a").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="486" y="27" width="36" height="11" uuid="dadf8415-4f91-4493-accb-393fa8a9e027"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="486" y="5" width="36" height="11" uuid="804cdd4c-5e16-44a1-9fcc-307893de77d2"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Página:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="486" y="16" width="36" height="11" uuid="1b14bce4-27ed-4a52-835b-93cb223afaeb"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="523" y="5" width="11" height="11" uuid="4ae5f557-ae44-4c1b-a28b-a31c706a74f4"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" isBlankWhenNull="true">
+				<reportElement x="549" y="5" width="21" height="11" uuid="9063dd67-9f68-4bc0-aa11-656f0c42b4a9"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="521" y="16" width="49" height="11" uuid="4820c3f6-bb6e-4588-8929-0652a3705301"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="1" width="570" height="20" uuid="315a9f0d-7991-4e28-baff-99e30b54b5fc"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Informe Estado de Cuenta]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="10" splitType="Stretch">
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="163" height="10" uuid="b855bc45-7771-42f3-880d-f2fce2004122"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{documentno} + " - " + $F{tipodoc}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.###;(#,##0.###-)" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="163" y="0" width="40" height="10" uuid="9b378328-23cc-4b2d-b6b9-cff7c3e3f44f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{term_pay}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="203" y="0" width="44" height="10" uuid="a0240a6e-6bd2-4000-8bc4-ff7d6475bf1e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{datedoc}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="247" y="0" width="45" height="10" uuid="e18f29f4-d730-492b-a738-a80558fe592d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{duedate}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="292" y="0" width="40" height="10" uuid="cd35b537-747b-462b-8217-afda7d9865b4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="false" isItalic="false"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{moneda}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="332" y="0" width="69" height="10" uuid="31faeed4-dfdd-4f35-9b3d-113dd41275bb"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="false" isItalic="false"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{amt}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="401" y="0" width="77" height="10" uuid="ad680382-684b-47a6-895b-7d449597be76"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="false" isItalic="false"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{openamt}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="478" y="0" width="50" height="10" uuid="54587249-dc20-46d8-bbb6-15deeacda639"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="false" isItalic="false"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{amtconvert}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="528" y="0" width="44" height="10" uuid="2e10a086-5d22-46e8-98c9-298816f2e8ad"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="false" isItalic="false"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{openamtconvert}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="15">
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement x="42" y="0" width="288" height="10" printWhenGroupChanges="zona/Vendedor" uuid="eb44ca27-cafd-4bd9-a24f-403300356e4a"/>
+				<textElement textAlignment="Right" verticalAlignment="Top" markup="styled">
+					<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Total General"]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#" isBlankWhenNull="true">
+				<reportElement x="332" y="0" width="68" height="10" printWhenGroupChanges="zona/Vendedor" uuid="578d953b-c8f4-492d-88b4-4e38a85d5003"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="7" isBold="true" isItalic="true"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TotalGeneral}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#" isBlankWhenNull="true">
+				<reportElement x="401" y="0" width="77" height="10" printWhenGroupChanges="zona/Vendedor" uuid="4bfa5975-b25d-4fc8-a3f1-da7162c1313c"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="7" isBold="true" isItalic="true"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{GeneralTotalOpenAmt}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#" isBlankWhenNull="true">
+				<reportElement x="478" y="0" width="50" height="10" printWhenGroupChanges="zona/Vendedor" uuid="d4780fb4-5fa8-49ad-9991-91d60cc66568"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="7" isBold="true" isItalic="true"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{GeneralTotalAmtConvert}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#" isBlankWhenNull="true">
+				<reportElement x="528" y="0" width="44" height="10" printWhenGroupChanges="zona/Vendedor" uuid="d21635e6-d0c2-4d8c-87e3-fdc68960ddbe"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="SansSerif" size="7" isBold="true" isItalic="true"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{GeneralTotalOpenAmtConv}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

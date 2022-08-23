@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT_Cash_Flow_Casting" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="7f6df15d-b727-4645-ad40-211dc8e99953">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="QA"/>
+	<parameter name="DateTrx1" class="java.sql.Date"/>
+	<parameter name="DateTrx2" class="java.sql.Date"/>
+	<queryString language="SQL">
+		<![CDATA[select
+	a.datetrx ::date ,ar.name,a.amount 
+from
+	COP_DailyOpeningBalance a join ad_ref_list ar on ar.ad_reference_id = 1000176 and a.incometype= ar.value
+	
+where
+	a.DateTrx between $P{DateTrx1} and $P{DateTrx2} and a.isactive = 'Y'
+union 	
+select validfrom::date datetrx ,'Tipo de Cambio' as name, dividerate as amount from C_Conversion_Rate 
+	where validfrom >= $P{DateTrx1} and validto <= $P{DateTrx2} and c_currency_id_to = 100 and isactive = 'Y']]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

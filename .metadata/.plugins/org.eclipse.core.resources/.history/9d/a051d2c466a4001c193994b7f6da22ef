@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT_daily_cash_flow" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="32d50429-1e43-45ab-9af5-06087f3559ed">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<parameter name="DateTrx1" class="java.sql.Date"/>
+	<queryString language="SQL">
+		<![CDATA[select 
+
+ "name"	  ,
+ SUM(amount1) as amount1	  ,
+ SUM(amount2) as amount2	  , 
+ SUM(amount3) as amount3	  ,
+ SUM(amount4) as amount4	  ,  
+ to_char( ($P{DateTrx1}::date   + CAST('0 days' AS INTERVAL))::date , 'DD/MM/YYYY') as COL1,
+ to_char( ($P{DateTrx1}::date   + CAST('1 days' AS INTERVAL))::date , 'DD/MM/YYYY') as COL2,
+ to_char( ($P{DateTrx1}::date   + CAST('2 days' AS INTERVAL))::date , 'DD/MM/YYYY') as COL3,
+ to_char( ($P{DateTrx1}::date   + CAST('3 days' AS INTERVAL))::date , 'DD/MM/YYYY') as COL4
+
+,
+ case
+		when name = 'Tipo de Cambio' then
+ (SUM(amount1) +
+ SUM(amount2) + 
+ SUM(amount3) +
+ SUM(amount4) ) / 4 
+	else 
+  SUM(amount1) +
+ SUM(amount2) + 
+ SUM(amount3) +
+ SUM(amount4)
+end as SUMA ,
+
+	case
+		when name = 'Tipo de Cambio' then 1
+		when name = 'Saldo inicial de caja' then 2
+		when name = 'Cobranzas' then 3
+		when name = 'Consumo Masivo' then 4
+		when name = 'Ventas Industriales' then 5
+		else 9
+	end orden 
+	
+
+	from
+((select
+	 to_char(a.datetrx, 'DD/MM/YYYY') datetrx ,ar.name,a.amount as amount1, null amount2, null amount3, null amount4 
+from
+	COP_DailyOpeningBalance a join ad_ref_list ar on ar.ad_reference_id = 1000176 and a.incometype= ar.value
+	
+where
+	a.DateTrx between $P{DateTrx1} and $P{DateTrx1} and a.isactive = 'Y' 
+union 	
+	select to_char( $P{DateTrx1}::date , 'DD/MM/YYYY') datetrx ,'Tipo de Cambio' as name,
+	currencyrate(100,1000001,$P{DateTrx1},null,1000000,0) amount1, 0::numeric amount2  , 0::numeric amount3 , 0::numeric amount4)
+
+	union
+
+(select
+	  to_char(a.datetrx, 'DD/MM/YYYY') datetrx ,ar.name, 0::numeric amount1,a.amount as amount2,  0::numeric amount3,  0::numeric amount4 
+from
+	COP_DailyOpeningBalance a join ad_ref_list ar on ar.ad_reference_id = 1000176 and a.incometype= ar.value
+	
+where
+	a.DateTrx between ($P{DateTrx1}::date   + CAST('1 days' AS INTERVAL))::date and ($P{DateTrx1}::date   + CAST('1 days' AS INTERVAL))::date and a.isactive = 'Y'
+union 	
+	select to_char( ($P{DateTrx1}::date   + CAST('1 days' AS INTERVAL))::date , 'DD/MM/YYYY') datetrx ,'Tipo de Cambio' as name,
+	0::numeric amount1  ,
+	currencyrate(100,1000001,($P{DateTrx1}::date   + CAST('1 days' AS INTERVAL))::date,null,1000000,0) amount2,
+	 0::numeric amount3 , 0::numeric amount4)
+	 
+	union
+	
+	(select
+	  to_char(a.datetrx, 'DD/MM/YYYY') datetrx ,ar.name, 0::numeric amount1, 0::numeric amount2,a.amount as amount3,   0::numeric amount4 
+from
+	COP_DailyOpeningBalance a join ad_ref_list ar on ar.ad_reference_id = 1000176 and a.incometype= ar.value
+	
+where
+	a.DateTrx between ($P{DateTrx1}::date   + CAST('2 days' AS INTERVAL))::date and ($P{DateTrx1}::date   + CAST('2 days' AS INTERVAL))::date and a.isactive = 'Y'
+union 	
+	select to_char( ($P{DateTrx1}::date   + CAST('2 days' AS INTERVAL))::date , 'DD/MM/YYYY') datetrx ,'Tipo de Cambio' as name,
+	0::numeric amount1  ,0::numeric amount2 , 
+	currencyrate(100,1000001,($P{DateTrx1}::date   + CAST('2 days' AS INTERVAL))::date,null,1000000,0) amount3,
+	 0::numeric amount4)
+	 
+union
+
+(select
+	  to_char(a.datetrx, 'DD/MM/YYYY') datetrx ,ar.name, 0::numeric amount1, 0::numeric amount2, 0::numeric amount3,a.amount as amount4 
+from
+	COP_DailyOpeningBalance a join ad_ref_list ar on ar.ad_reference_id = 1000176 and a.incometype= ar.value
+	
+where
+	a.DateTrx between ($P{DateTrx1}::date   + CAST('3 days' AS INTERVAL))::date and ($P{DateTrx1}::date   + CAST('3 days' AS INTERVAL))::date and a.isactive = 'Y'
+union 	
+	select to_char( ($P{DateTrx1}::date   + CAST('3 days' AS INTERVAL))::date , 'DD/MM/YYYY') datetrx ,'Tipo de Cambio' as name,
+	0::numeric amount1  ,0::numeric amount2 , 0::numeric amount3, 
+	currencyrate(100,1000001,($P{DateTrx1}::date   + CAST('3 days' AS INTERVAL))::date,null,1000000,0) amount4
+	)
+	 
+union 
+
+select datetrx	  , "name"	  , sum(amount1) amount1	  , sum(amount2) amount2	  , sum(amount3) amount3	  , sum(amount4) amount4 from 
+(
+select
+to_char( $P{DateTrx1}::date , 'DD/MM/YYYY') datetrx,	 
+x1.c_charge_n as name,	 
+	currencyconvert(sum(x1.mount_ved_payment),x1.C_currency_ID,1000001,$P{DateTrx1}::date,1000000,1000000,0 ) as amount1  
+	,0::numeric as amount2,  0::numeric amount3,  0::numeric amount4 
+from
+	cop_paym_shopp x1 left join COP_BPartnerType a on x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID 
+where
+	x1.DateAcct between $P{DateTrx1} and $P{DateTrx1}
+group by 
+x1.C_currency_ID,
+x1.c_charge_n
+	having sum(x1.mount_ved_payment)  > 0
+	order by x1.c_charge_n 
+) as A1 	
+group by datetrx,NAME 
+
+union 
+
+select datetrx	  , "name"	  , sum(amount1) amount1	  , sum(amount2) amount2	  , sum(amount3) amount3	  , sum(amount4) amount4 from 
+(
+select
+to_char( ($P{DateTrx1}::date   + CAST('1 days' AS INTERVAL))::date , 'DD/MM/YYYY') datetrx,	 
+x1.c_charge_n as name,
+	0::numeric as amount1,
+	currencyconvert(sum(x1.mount_ved_payment),x1.C_currency_ID,1000001,$P{DateTrx1}::date,1000000,1000000,0 ) as amount2  
+	, 0::numeric amount3,  0::numeric amount4 
+from
+	cop_paym_shopp x1 left join COP_BPartnerType a on x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID 
+where
+	x1.DateAcct between ($P{DateTrx1}::date   + CAST('1 days' AS INTERVAL))::date and ($P{DateTrx1}::date   + CAST('1 days' AS INTERVAL))::date
+group by 
+x1.C_currency_ID,
+x1.c_charge_n
+	having sum(x1.mount_ved_payment)  > 0
+	order by x1.c_charge_n 
+) as A1 	
+group by datetrx,NAME 
+
+union 
+select datetrx	  , "name"	  , sum(amount1) amount1	  , sum(amount2) amount2	  , sum(amount3) amount3	  , sum(amount4) amount4 from 
+(
+select
+to_char( ($P{DateTrx1}::date   + CAST('2 days' AS INTERVAL))::date , 'DD/MM/YYYY') datetrx,	 
+x1.c_charge_n as name,
+	0::numeric as amount1,
+	0::numeric as amount2,
+	currencyconvert(sum(x1.mount_ved_payment),x1.C_currency_ID,1000001,$P{DateTrx1}::date,1000000,1000000,0 ) as amount3  
+	, 0::numeric amount4 
+from
+	cop_paym_shopp x1 left join COP_BPartnerType a on x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID 
+where
+	x1.DateAcct between ($P{DateTrx1}::date   + CAST('2 days' AS INTERVAL))::date and ($P{DateTrx1}::date   + CAST('2 days' AS INTERVAL))::date
+group by 
+x1.C_currency_ID,
+x1.c_charge_n
+	having sum(x1.mount_ved_payment)  > 0
+	order by x1.c_charge_n 
+) as A1 	
+group by datetrx,NAME 
+
+
+union 
+select datetrx	  , "name"	  , sum(amount1) amount1	  , sum(amount2) amount2	  , sum(amount3) amount3	  , sum(amount4) amount4 from 
+(
+select
+to_char( ($P{DateTrx1}::date   + CAST('3 days' AS INTERVAL))::date , 'DD/MM/YYYY') datetrx,	 
+x1.c_charge_n as name,
+	0::numeric as amount1,
+	0::numeric as amount2,
+	0::numeric as amount3,
+	currencyconvert(sum(x1.mount_ved_payment),x1.C_currency_ID,1000001,$P{DateTrx1}::date,1000000,1000000,0 ) as amount4  
+from
+	cop_paym_shopp x1 left join COP_BPartnerType a on x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID 
+where
+	x1.DateAcct between ($P{DateTrx1}::date   + CAST('3 days' AS INTERVAL))::date and ($P{DateTrx1}::date   + CAST('3 days' AS INTERVAL))::date
+group by 
+x1.C_currency_ID,
+x1.c_charge_n
+	having sum(x1.mount_ved_payment)  > 0
+	order by x1.c_charge_n 
+) as A1 	
+group by datetrx,NAME ) as X
+group by X.NAME 
+order by ORDEN ,NAME]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

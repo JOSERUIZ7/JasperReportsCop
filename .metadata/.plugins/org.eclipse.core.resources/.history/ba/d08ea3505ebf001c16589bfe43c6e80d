@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_Letter" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1d222bb4-62f0-4d3f-8ae0-1d09a380d051">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="YearTrx" class="java.lang.String">
+		<defaultValueExpression><![CDATA["2022"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="C_Currency_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1000001]]></defaultValueExpression>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[-------------------------------ini OCTUBRE--------------------------
+
+	(select 
+		10 t_ope ,
+		 TO_DATE('01/10/' || "2022"   , 'DD/MM/YYYY') datetrx1 ,  
+		 TO_DATE('31/10/' || "2022"    , 'DD/MM/YYYY') datetrx2 ,
+		'Saldo Inicial' as name ,
+		0 amount1,
+		0 amount2,
+		0 amount3 ,
+		0 amount4 ,
+		0 amount5  ,
+		0 amount6  ,
+		0 amount7  ,
+		0 amount8  ,
+		0 amount9 ,
+		0 amount10 ,
+		0 amount11 ,
+		sum(amount) amount12  
+		from v_cop_initialbalance vci 
+	where datetrx < TO_DATE('01/10/' || "2022"    , 'DD/MM/YYYY')
+
+union
+		  select
+			20 t_ope ,
+			 TO_DATE('01/10/' || "2022"    , 'DD/MM/YYYY') datetrx1 ,  
+			  TO_DATE('31/10/' || "2022"   , 'DD/MM/YYYY') datetrx2 ,  
+			 ar.name,
+			0 amount1,
+			0 amount2,
+			0 amount3 ,
+			0 amount4 ,
+			0 amount5  ,
+			0 amount6  ,
+			0 amount7  ,
+			0 amount8  ,
+			0 amount9 ,
+			0 amount10 ,
+			0 amount11 ,
+			sum(a.amount) as amount12
+		from
+			COP_DailyOpeningBalance a
+		join ad_ref_list ar on
+			ar.ad_reference_id = 1000176
+			and a.incometype = ar.value
+		where
+			a.DateTrx between TO_DATE('01/10/' || "2022"    , 'DD/MM/YYYY') and  TO_DATE('31/10/' || "2022"    , 'DD/MM/YYYY')
+			and a.isactive = 'Y' and a.c_currency_id = $P{C_Currency_ID}
+		group by
+			a.datetrx,
+			ar.name
+union
+		(select
+					30 t_ope ,
+					TO_DATE('01/10/' || "2022"   , 'DD/MM/YYYY') datetrx1 ,  
+					TO_DATE('31/10/' || "$P{YearTrx}"    , 'DD/MM/YYYY') datetrx2 ,  
+					'INGRESOS' as name, 
+					0 amount1,
+					0 amount2,
+					0 amount3 ,
+					0 amount4 ,
+					0 amount5  ,
+					0 amount6  ,
+					0 amount7  ,
+					0 amount8  ,
+					0 amount9 ,
+					0 amount10 ,
+					0 amount11 ,
+					sum(a.amount) as amount12
+--					sum(currencyconvert(a.amount, a.c_currency_id, $P{C_Currency_ID}, a.datetrx, 1000000, a.ad_client_id, 0)) as amount5
+		from
+					COP_DailyOpeningBalance a
+		join ad_ref_list ar on
+					ar.ad_reference_id = 1000176
+			and a.incometype = ar.value
+		where
+					a.DateTrx between TO_DATE('01/10/' || "2022"    , 'DD/MM/YYYY')::date and 
+					TO_DATE('31/10/' || "2022" , 'DD/MM/YYYY') and a.isactive = 'Y' and a.c_currency_id::integer = $P{C_Currency_ID}
+		group by 1
+		
+union 
+				(select
+						max(t_ope) t_ope ,
+						max(datetrx1) datetrx1,
+							max(datetrx2) datetrx2 ,
+						"name" ,
+						0 amount1 ,
+						0 amount2 ,
+						0 amount3 ,
+						0 amount4 ,
+						0 amount5  ,
+						0 amount6  ,
+						0 amount7  ,
+						0 amount8  ,
+						0 amount9 ,
+						0 amount10 ,
+						0 amount11 ,
+						sum(amount) amount12 
+						from
+						(
+						select
+							 40 t_ope ,
+							TO_DATE('01/10/' || $P{YearTrx}    , 'DD/MM/YYYY') datetrx1 ,
+							 TO_DATE('31/10/' || $P{YearTrx}    , 'DD/MM/YYYY') datetrx2 ,
+							x1.dateacct,x1.C_currency_ID,
+							x1.group_parent as name,(x1.mount_payment),
+--							currencyconvert((x1.mount_payment),x1.C_currency_ID,$P{C_Currency_ID},x1.dateacct,1000000,	1000000,0 )* -1 as amount  ,
+							x1.mount_payment as amount,							
+							case when x1.C_Charge_ID = 500307 then 'Y' else 'N' end transferencia
+						from
+							cop_paym_shopp x1
+						left join COP_BPartnerType a on
+							x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID
+						where
+							x1.DateAcct between TO_DATE('01/10/' || $P{YearTrx}    , 'DD/MM/YYYY') and  TO_DATE('31/10/' || $P{YearTrx}    , 'DD/MM/YYYY')
+							and x1.c_currency_id = $P{C_Currency_ID}
+						order by x1.group_parent ,x1.dateacct
+						) A1
+							where a1.transferencia = 'N'
+
+						group by
+							datetrx1,NAME)
+ ------------------------------fin  OCTUBRE --------------------------]]>
+	</queryString>
+	<field name="name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="name"/>
+	</field>
+	<field name="sum_nov" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_nov"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_nov"/>
+	</field>
+	<field name="sum_dic" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_dic"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_dic"/>
+	</field>
+	<field name="sum_ene" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_ene"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_ene"/>
+	</field>
+	<field name="sum_feb" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_feb"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_feb"/>
+	</field>
+	<field name="sum_mar" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_mar"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_mar"/>
+	</field>
+	<field name="sum_abr" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_abr"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_abr"/>
+	</field>
+	<field name="sum_may" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_may"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_may"/>
+	</field>
+	<field name="sum_jun" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_jun"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_jun"/>
+	</field>
+	<field name="sum_jul" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_jul"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_jul"/>
+	</field>
+	<field name="sum_ago" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_ago"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_ago"/>
+	</field>
+	<field name="sum_sep" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_sep"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_sep"/>
+	</field>
+	<field name="sum_oct" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="sum_oct"/>
+		<property name="com.jaspersoft.studio.field.label" value="sum_oct"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

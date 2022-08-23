@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_Letter_2" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="237173f4-6fb9-4033-a27a-d9e8e9260577">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<parameter name="COP_PayGroup_ID" class="java.lang.Integer"/>
+	<parameter name="C_BPartner_ID" class="java.lang.Integer"/>
+	<parameter name="DateTrx1" class="java.sql.Date"/>
+	<parameter name="DateTrx2" class="java.sql.Date"/>
+	<parameter name="C_Payment_ID" class="java.lang.Integer"/>
+	<parameter name="RESOURCE_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ShowHeader" class="java.lang.String">
+		<defaultValueExpression><![CDATA["Y"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="COP_BPartnerType_ID" class="java.lang.Integer"/>
+	<parameter name="C_Currency_ID" class="java.lang.Integer"/>
+	<parameter name="NoTransfers" class="java.lang.String">
+		<defaultValueExpression><![CDATA["N"]]></defaultValueExpression>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[select * from (
+select
+	x1.group_parent,	x1.cop_paygroup_n ,
+	x1.c_payment_n documentno,x1.dateacct,
+	x1.c_bpartner_id ,
+	x1.COP_PayGroup_ID ,
+	x1.COP_BPartnerType_ID,
+	a.name COP_BPartnerType_n,
+	x1.c_bpartner_n ,
+	x1.taxid, 
+	x1.C_currency_ID, 
+	sum(x1.mount_usd_payment) mount_usd_payment ,
+	sum(x1.mount_ved_payment) mount_ved_payment ,
+	'Aplicacion De Pago Por Ramo' reponame ,
+	  'DESDE: '|| substring($P{DateTrx1},9,2) || '/'|| substring($P{DateTrx1},6,2) ||'/'|| substring($P{DateTrx1},1,4)
+|| ' - HASTA:'||  substring($P{DateTrx2},9,2) || '/'|| substring($P{DateTrx2},6,2) ||'/'|| substring($P{DateTrx2},1,4) || CHR(13) || 
+case when $P{C_BPartner_ID} is null then '' else ' Solo tercero: ' || x1.c_bpartner_n || ' - '  end ||
+case when $P{COP_PayGroup_ID} is null then '' else ' Solo Grupo de Pago: ' || x1.COP_PayGroup_n || ' - '  end ||
+case when $P{C_Currency_ID} is null then 'Todas las Monedas'  else ' Solo Moneda: ' || x1.currency_payment || ' - ' || CHR(13)    end ||
+case when $P{COP_BPartnerType_ID} is null then '' else ' Solo Ramo Pago: ' || a.name || ' - '  end 
+	 as doc_info	,x1.c_payment_n ,x1.C_Charge_ID, case when x1.C_Charge_ID = 500307 then 'Y' else 'N' end transferencia,
+	 x1.c_charge_n 
+from
+	cop_paym_shopp_2 x1 left join COP_BPartnerType a on x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID 
+where
+	x1.DateAcct between $P{DateTrx1} and $P{DateTrx2} and 
+	(x1.C_BPartner_ID = $P{C_BPartner_ID} or  $P{C_BPartner_ID} is null) and 
+	(x1.cop_paygroup_id = $P{COP_PayGroup_ID} or  $P{COP_PayGroup_ID} is null) and 
+	(x1.COP_BPartnerType_ID = $P{COP_BPartnerType_ID} or  $P{COP_BPartnerType_ID} is null) and   
+	(x1.C_currency_ID = $P{C_Currency_ID} or $P{C_Currency_ID} is null)
+	 and case when $P{NoTransfers} = 'N' then 1=1 else (x1.c_charge_id is null or x1.c_charge_id != 500307) end
+group by x1.c_bpartner_id ,
+	x1.cop_paygroup_n ,
+	x1.cop_paygroup_id ,
+	x1.COP_BPartnerType_ID , a.name,
+	x1.c_bpartner_n ,
+	x1.taxid, x1.C_currency_ID,x1.currency_payment,x1.c_payment_n,x1.C_Charge_ID,x1.c_charge_n,x1.dateacct,x1.group_parent
+	having sum(x1.mount_ved_payment)  > 0
+	order by x1.group_parent,a.name , x1.cop_paygroup_n,x1.c_bpartner_n ) x2
+	order by x2.group_parent, x2.cop_paygroup_n,x2.COP_BPartnerType_n ,x2.c_bpartner_n]]>
+	</queryString>
+	<field name="group_parent" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="group_parent"/>
+		<property name="com.jaspersoft.studio.field.label" value="group_parent"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp_2"/>
+	</field>
+	<field name="cop_paygroup_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="cop_paygroup_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="cop_paygroup_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp_2"/>
+	</field>
+	<field name="documentno" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="documentno"/>
+		<property name="com.jaspersoft.studio.field.label" value="documentno"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp_2"/>
+	</field>
+	<field name="dateacct" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="dateacct"/>
+		<property name="com.jaspersoft.studio.field.label" value="dateacct"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp_2"/>
+	</field>
+	<field name="c_bpartner_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="c_bpartner_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_bpartner_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp_2"/>
+	</field>
+	<field name="cop_paygroup_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="cop_paygroup_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="cop_paygroup_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp_2"/>
+	</field>
+	<field name="cop_bpartnertype_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="cop_bpartnertype_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="cop_bpartnertype_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp_2"/>
+	</field>
+	<field name="cop_bpartnertype_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="cop_bpartnertype_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="cop_bpartnertype_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_bpartnertype"/>
+	</field>
+	<field name="c_bpartner_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="c_bpartner_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_bpartner_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp_2"/>
+	</field>
+	<field name="taxid" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="taxid"/>
+		<property name="com.jaspersoft.studio.field.label" value="taxid"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp_2"/>
+	</field>
+	<field name="c_currency_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="c_currency_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_currency_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp_2"/>
+	</field>
+	<field name="mount_usd_payment" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="mount_usd_payment"/>
+		<property name="com.jaspersoft.studio.field.label" value="mount_usd_payment"/>
+	</field>
+	<field name="mount_ved_payment" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="mount_ved_payment"/>
+		<property name="com.jaspersoft.studio.field.label" value="mount_ved_payment"/>
+	</field>
+	<field name="reponame" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="reponame"/>
+		<property name="com.jaspersoft.studio.field.label" value="reponame"/>
+	</field>
+	<field name="doc_info" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="doc_info"/>
+		<property name="com.jaspersoft.studio.field.label" value="doc_info"/>
+	</field>
+	<field name="c_payment_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="c_payment_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_payment_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp_2"/>
+	</field>
+	<field name="c_charge_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="c_charge_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_charge_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp_2"/>
+	</field>
+	<field name="transferencia" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="transferencia"/>
+		<property name="com.jaspersoft.studio.field.label" value="transferencia"/>
+	</field>
+	<field name="c_charge_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="c_charge_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_charge_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp_2"/>
+	</field>
+	<variable name="mount_ved_payment_1" class="java.math.BigDecimal" resetType="Group" resetGroup="cop_paygroup_n" calculation="Sum">
+		<variableExpression><![CDATA[$F{mount_ved_payment}]]></variableExpression>
+	</variable>
+	<variable name="mount_usd_payment_1" class="java.math.BigDecimal" resetType="Group" resetGroup="cop_paygroup_n" calculation="Sum">
+		<variableExpression><![CDATA[$F{mount_usd_payment}]]></variableExpression>
+	</variable>
+	<variable name="mount_ved_payment_2" class="java.math.BigDecimal" resetType="Group" resetGroup="Group_parent" calculation="Sum">
+		<variableExpression><![CDATA[$F{mount_ved_payment}]]></variableExpression>
+	</variable>
+	<variable name="mount_usd_payment_2" class="java.math.BigDecimal" resetType="Group" resetGroup="Group_parent" calculation="Sum">
+		<variableExpression><![CDATA[$F{mount_usd_payment}]]></variableExpression>
+	</variable>
+	<variable name="mount_ved_payment_3" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{mount_ved_payment}]]></variableExpression>
+	</variable>
+	<variable name="mount_usd_payment_3" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{mount_usd_payment}]]></variableExpression>
+	</variable>
+	<group name="Group_parent">
+		<groupExpression><![CDATA[$F{group_parent}]]></groupExpression>
+		<groupHeader>
+			<band height="9">
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement x="1" y="1" width="165" height="8" uuid="a27ac9e4-e55f-47de-b9de-52e0aae64425">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="5" isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{group_parent}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="50">
+				<textField pattern="#,##0.00#">
+					<reportElement x="444" y="0" width="60" height="7" uuid="a5e7c90d-9013-4266-bd1d-173876659674">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Right">
+						<font size="5"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{mount_ved_payment_2}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00#">
+					<reportElement x="506" y="0" width="60" height="7" uuid="0eb0d2f3-a349-4cbc-9647-1d4ed0330fa1">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Right">
+						<font size="5"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{mount_usd_payment_2}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="cop_paygroup_n">
+		<groupExpression><![CDATA[$F{cop_paygroup_n}]]></groupExpression>
+		<groupHeader>
+			<band/>
+		</groupHeader>
+		<groupFooter>
+			<band height="7">
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement x="180" y="0" width="264" height="7" uuid="a5088e34-e371-4291-8515-caf6eb1f1072">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="5" isBold="false" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["S.Total: " + $F{cop_paygroup_n}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00#" isBlankWhenNull="false">
+					<reportElement x="445" y="0" width="60" height="7" uuid="c3536109-9968-45d0-b38b-3a1c1ac95c6f">
+						<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="5" isBold="false" isItalic="true"/>
+						<paragraph rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{mount_ved_payment_1}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00#" isBlankWhenNull="false">
+					<reportElement x="506" y="0" width="60" height="7" uuid="5b4b2a53-6976-4444-b453-e22d839df67b">
+						<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="5" isBold="false" isItalic="true"/>
+						<paragraph rightIndent="2"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{mount_usd_payment_1}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="19" splitType="Stretch">
+			<textField>
+				<reportElement x="445" y="6" width="60" height="13" uuid="8c170799-f691-437c-8d4d-2319e74149b7">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Monto"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="246" y="6" width="118" height="13" uuid="a8d5c6f5-d639-4284-8458-375179ea732c">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Tercero"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="170" y="6" width="38" height="13" uuid="fc4672a0-e050-4dc9-adfa-bbd00554f6be">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Doc."]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="60" y="6" width="111" height="13" uuid="001de909-76aa-4177-a088-c6fb17790a52">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["GrupoPago"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="6" width="59" height="13" uuid="cf2d5a5f-8c3f-4ded-bf1e-a42aafc54c0c">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Ramo Pago"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="506" y="6" width="60" height="13" uuid="40665d7f-17b6-4f66-8438-b6fe4891b8c4">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Monto $"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="364" y="6" width="80" height="13" uuid="048e83d1-90de-4304-8215-a6cbaec1a779">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Cargo"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="208" y="6" width="38" height="13" uuid="e9630360-d56a-411d-8264-1d2548888e47">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Fecha"]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="8" splitType="Stretch">
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement x="170" y="0" width="38" height="8" uuid="adfe79d6-d6ff-4e8b-964a-8909a2b74df8">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{documentno}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement x="246" y="0" width="118" height="8" uuid="82ee9eaf-8ec4-45d5-a454-0aaed5884bff">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{taxid} + " - " + $F{c_bpartner_n}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="208" y="0" width="38" height="8" uuid="335a8fca-c4c6-4732-b6c6-e0974e29493c">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dateacct}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#" isBlankWhenNull="false">
+				<reportElement x="445" y="0" width="60" height="7" uuid="ae41ae98-092f-4f36-9805-93a1620dc74d">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5" isBold="false"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{mount_ved_payment}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement x="60" y="0" width="111" height="8" uuid="4927e2ea-7dbc-49ad-b8fe-fab95b47f6d1">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cop_paygroup_n}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#" isBlankWhenNull="false">
+				<reportElement x="506" y="0" width="60" height="7" uuid="21944ef7-9c0d-4f8f-ae91-ed42f58be585">
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5" isBold="false"/>
+					<paragraph rightIndent="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{mount_usd_payment}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement x="364" y="0" width="80" height="8" uuid="4a233f32-66e7-44df-b33b-72891d1fec73">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{c_charge_n}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

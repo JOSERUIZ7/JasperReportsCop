@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Rpt_Sales_Distributors" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6710f1b2-084e-48b2-8f72-2db6ab8d746a">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="DateInvoiced1" class="java.sql.Date"/>
+	<parameter name="DateInvoiced2" class="java.sql.Date"/>
+	<parameter name="RESOURCE_DIR" class="java.lang.String"/>
+	<parameter name="C_Currency_ID" class="java.lang.Integer"/>
+	<queryString language="SQL">
+		<![CDATA[select * from (
+select 
+x.m_product_n || '   ' ||  substring(coalesce(round(x.linenetamt / (sum(x.linenetamt) over () ),4) * 100,0)::text,1,5) || ' %' as m_product_n ,
+x.linenetamt ,
+sum(x.linenetamt) over () total, ton,qty,WeightSunagro,
+coalesce(round(x.linenetamt / (sum(x.linenetamt) over () ),4) * 100,0)::text as porc,
+coalesce(round(x.linenetamt / (sum(x.linenetamt) over () ),4) * 100,0) as porcv,
+'DESDE: ' || SUBSTR($P{DateInvoiced1},9,2) || '/' || SUBSTR($P{DateInvoiced1},6,2) || '/' 
+	 || SUBSTR($P{DateInvoiced1},1,4) || ' - HASTA:' || SUBSTR($P{DateInvoiced2},9,2) 
+	 || '/' || SUBSTR($P{DateInvoiced2},6,2) || '/' || SUBSTR($P{DateInvoiced2},1,4) as NAME 
+
+from 
+(
+select b.name m_product_n ,
+sum(currencyconvert(a.linenetamt,a.c_currency_id ,$P{C_Currency_ID},a.dateinvoiced ,a.C_ConversionType_ID , a.ad_client_id,a.ad_org_id)) linenetamt,
+sum(qtyinvoiced) qty, b.WeightSunagro , case when b.WeightSunagro <> 0 then round(((sum(qtyinvoiced)  *  b.WeightSunagro) / 1000 ),2) else 0 end as ton
+from cop_rv_c_invoiceline a  join m_product b on a.m_product_id = b.m_product_id 
+where
+	a.DateInvoiced between $P{DateInvoiced1} and $P{DateInvoiced2}
+	and a.issotrx = 'Y' and a.m_product_id is not null 
+	group by
+	b.name,b.WeightSunagro
+	order  by b.name) x
+	) as y 
+	where porcv > 1
+	order by linenetamt desc]]>
+	</queryString>
+	<field name="m_product_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="m_product_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_product_n"/>
+	</field>
+	<field name="linenetamt" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="linenetamt"/>
+		<property name="com.jaspersoft.studio.field.label" value="linenetamt"/>
+	</field>
+	<field name="total" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="total"/>
+		<property name="com.jaspersoft.studio.field.label" value="total"/>
+	</field>
+	<field name="ton" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ton"/>
+		<property name="com.jaspersoft.studio.field.label" value="ton"/>
+	</field>
+	<field name="qty" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="qty"/>
+		<property name="com.jaspersoft.studio.field.label" value="qty"/>
+	</field>
+	<field name="weightsunagro" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="weightsunagro"/>
+		<property name="com.jaspersoft.studio.field.label" value="weightsunagro"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_product"/>
+	</field>
+	<field name="porc" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="porc"/>
+		<property name="com.jaspersoft.studio.field.label" value="porc"/>
+	</field>
+	<field name="porcv" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="porcv"/>
+		<property name="com.jaspersoft.studio.field.label" value="porcv"/>
+	</field>
+	<field name="name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="name"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="371" splitType="Stretch">
+			<staticText>
+				<reportElement x="190" y="13" width="530" height="30" uuid="0c4060ef-81ab-4c8e-b852-5d1ad853b809"/>
+				<textElement textAlignment="Center">
+					<font fontName="Times New Roman" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total de Ventas por Productos]]></text>
+			</staticText>
+			<image>
+				<reportElement x="0" y="1" width="180" height="59" uuid="768fffc3-c430-4220-884e-e6336629ddd1"/>
+				<imageExpression><![CDATA[$P{RESOURCE_DIR} + "logo.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="190" y="45" width="530" height="12" uuid="fcf04f41-f84a-4770-9365-74a5f266561f">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<bar3DChart>
+				<chart evaluationTime="Report">
+					<reportElement x="0" y="63" width="800" height="308" uuid="a6c9670d-8525-462a-b759-815305a5eea6"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset resetType="Report"/>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{m_product_n}]]></seriesExpression>
+						<categoryExpression><![CDATA[0]]></categoryExpression>
+						<valueExpression><![CDATA[$F{linenetamt}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<bar3DPlot>
+					<plot/>
+					<itemLabel/>
+					<categoryAxisFormat>
+						<axisFormat/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat/>
+					</valueAxisFormat>
+				</bar3DPlot>
+			</bar3DChart>
+		</band>
+	</title>
+	<detail>
+		<band height="37"/>
+	</detail>
+	<summary>
+		<band height="47" splitType="Stretch"/>
+	</summary>
+</jasperReport>

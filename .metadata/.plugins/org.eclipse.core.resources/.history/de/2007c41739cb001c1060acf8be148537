@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Rpt_Payment_Group" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6710f1b2-084e-48b2-8f72-2db6ab8d746a">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<property name="com.jaspersoft.studio.report.description" value=""/>
+	<parameter name="DateInvoiced1" class="java.sql.Date"/>
+	<parameter name="DateInvoiced2" class="java.sql.Date"/>
+	<parameter name="RESOURCE_DIR" class="java.lang.String"/>
+	<parameter name="C_Currency_ID" class="java.lang.Integer"/>
+	<queryString language="SQL">
+		<![CDATA[select
+	z.cop_paygroup_n || '   ' ||  substring(coalesce(round(z.payment / (sum(z.payment) over () ),4) * 100,0)::text,1,5) || ' %' as cop_paygroup_n ,
+	z.payment ,sum(z.payment) over () total_pago,
+	coalesce(round(z.payment / (sum(z.payment) over () ),4) * 100,0)::text as porcentaje,
+	'DESDE: ' || SUBSTR($P{DateInvoiced1},9,2) || '/' || SUBSTR($P{DateInvoiced1},6,2) || '/'
+	        || SUBSTR($P{DateInvoiced1},1,4) || ' - HASTA:' || SUBSTR($P{DateInvoiced2},9,2)
+	        || '/' || SUBSTR($P{DateInvoiced2},6,2) || '/' || SUBSTR($P{DateInvoiced2},1,4) as fecha
+from
+		(select
+			case when a.cop_paygroup_n = '' then 'Sin Agrupacion' else a.cop_paygroup_n end cop_paygroup_n,
+			sum(currencyconvert(a.mount_payment, a.c_currency_id , $P{C_Currency_ID}, DateAcct, 1000000 , a.ad_client_id, a.ad_org_id)) payment
+		from
+			cop_paym_shopp a
+				left join COP_BPartnerType b on	a.COP_BPartnerType_ID = b.COP_BPartnerType_ID
+		where a.DateAcct between $P{DateInvoiced1} and $P{DateInvoiced2}
+		group by a.cop_paygroup_n
+		having sum(a.mount_ved_payment) > 0
+		order by a.cop_paygroup_n) z 
+	order by payment desc]]>
+	</queryString>
+	<field name="cop_paygroup_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="cop_paygroup_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="cop_paygroup_n"/>
+	</field>
+	<field name="payment" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="payment"/>
+		<property name="com.jaspersoft.studio.field.label" value="payment"/>
+	</field>
+	<field name="total_pago" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="total_pago"/>
+		<property name="com.jaspersoft.studio.field.label" value="total_pago"/>
+	</field>
+	<field name="porcentaje" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="porcentaje"/>
+		<property name="com.jaspersoft.studio.field.label" value="porcentaje"/>
+	</field>
+	<field name="fecha" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="fecha"/>
+		<property name="com.jaspersoft.studio.field.label" value="fecha"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="65" splitType="Stretch">
+			<staticText>
+				<reportElement x="190" y="13" width="530" height="30" uuid="0c4060ef-81ab-4c8e-b852-5d1ad853b809"/>
+				<textElement textAlignment="Center">
+					<font fontName="Times New Roman" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total de Pagos por Ramos]]></text>
+			</staticText>
+			<image>
+				<reportElement x="0" y="1" width="180" height="59" uuid="768fffc3-c430-4220-884e-e6336629ddd1"/>
+				<imageExpression><![CDATA[$P{RESOURCE_DIR} + "logo.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="190" y="45" width="530" height="12" uuid="fcf04f41-f84a-4770-9365-74a5f266561f">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<summary>
+		<band height="308" splitType="Stretch">
+			<bar3DChart>
+				<chart evaluationTime="Report">
+					<reportElement x="0" y="0" width="800" height="308" uuid="aa2aea4b-65b5-4c9a-8396-6a3ba644d57a"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset resetType="Report"/>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{m_product_n}]]></seriesExpression>
+						<categoryExpression><![CDATA[0]]></categoryExpression>
+						<valueExpression><![CDATA[$F{linenetamt}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<bar3DPlot>
+					<plot/>
+					<itemLabel/>
+					<categoryAxisFormat>
+						<axisFormat/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat/>
+					</valueAxisFormat>
+				</bar3DPlot>
+			</bar3DChart>
+		</band>
+	</summary>
+</jasperReport>

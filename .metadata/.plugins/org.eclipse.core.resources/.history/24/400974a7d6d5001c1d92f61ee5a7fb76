@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_Letter_1" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="62fd379a-a937-405f-bfe9-53de322332a3">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<queryString language="SQL">
+		<![CDATA[select * from (
+select
+	x1.group_parent,	x1.cop_paygroup_n ,
+	x1.c_payment_n documentno,x1.dateacct,
+	x1.c_bpartner_id ,
+	x1.COP_PayGroup_ID ,
+	x1.COP_BPartnerType_ID,
+	a.name COP_BPartnerType_n,
+	x1.c_bpartner_n ,
+	x1.taxid, 
+	x1.C_currency_ID, 
+	sum(x1.mount_usd_payment) mount_usd_payment ,
+	sum(x1.mount_ved_payment) mount_ved_payment ,
+	'Aplicacion De Pago Por Ramo' reponame ,
+	  'DESDE: '|| substring($P{DateTrx1},9,2) || '/'|| substring($P{DateTrx1},6,2) ||'/'|| substring($P{DateTrx1},1,4)
+|| ' - HASTA:'||  substring($P{DateTrx2},9,2) || '/'|| substring($P{DateTrx2},6,2) ||'/'|| substring($P{DateTrx2},1,4) || CHR(13) || 
+case when $P{C_BPartner_ID} is null then '' else ' Solo tercero: ' || x1.c_bpartner_n || ' - '  end ||
+case when $P{COP_PayGroup_ID} is null then '' else ' Solo Grupo de Pago: ' || x1.COP_PayGroup_n || ' - '  end ||
+case when $P{C_Currency_ID} is null then 'Todas las Monedas'  else ' Solo Moneda: ' || x1.currency_payment || ' - ' || CHR(13)    end ||
+case when $P{COP_BPartnerType_ID} is null then '' else ' Solo Ramo Pago: ' || a.name || ' - '  end 
+	 as doc_info	,x1.c_payment_n ,x1.C_Charge_ID, case when x1.C_Charge_ID = 500307 then 'Y' else 'N' end transferencia,
+	 x1.c_charge_n 
+from
+	cop_paym_shopp_2 x1 left join COP_BPartnerType a on x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID 
+where
+	x1.DateAcct between $P{DateTrx1} and $P{DateTrx2} and 
+	(x1.C_BPartner_ID = $P{C_BPartner_ID} or  $P{C_BPartner_ID} is null) and 
+	(x1.cop_paygroup_id = $P{COP_PayGroup_ID} or  $P{COP_PayGroup_ID} is null) and 
+	(x1.COP_BPartnerType_ID = $P{COP_BPartnerType_ID} or  $P{COP_BPartnerType_ID} is null) and   
+	(x1.C_currency_ID = $P{C_Currency_ID} or $P{C_Currency_ID} is null)
+	 and case when $P{NoTransfers} = 'N' then 1=1 else (x1.c_charge_id is null or x1.c_charge_id != 500307) end
+group by x1.c_bpartner_id ,
+	x1.cop_paygroup_n ,
+	x1.cop_paygroup_id ,
+	x1.COP_BPartnerType_ID , a.name,
+	x1.c_bpartner_n ,
+	x1.taxid, x1.C_currency_ID,x1.currency_payment,x1.c_payment_n,x1.C_Charge_ID,x1.c_charge_n,x1.dateacct,x1.group_parent
+	having sum(x1.mount_ved_payment)  > 0
+	order by x1.group_parent,a.name , x1.cop_paygroup_n,x1.c_bpartner_n ) x2
+	order by x2.group_parent, x2.cop_paygroup_n,x2.COP_BPartnerType_n ,x2.c_bpartner_n]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

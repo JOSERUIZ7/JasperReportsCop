@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Rpt_N_Best_Customers" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6710f1b2-084e-48b2-8f72-2db6ab8d746a">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="DateInvoiced1" class="java.sql.Date"/>
+	<parameter name="DateInvoiced2" class="java.sql.Date"/>
+	<parameter name="RESOURCE_DIR" class="java.lang.String"/>
+	<parameter name="cantidad" class="java.math.BigDecimal"/>
+	<parameter name="C_Currency_ID" class="java.lang.Integer"/>
+	<queryString language="SQL">
+		<![CDATA[select * from 
+(
+select 
+x.c_bpartner_n || '   ' ||  substring(coalesce(round(x.linenetamt / (sum(x.linenetamt) over () ),4) * 100,0)::text,1,5) || ' %' as c_bpartner_n ,
+x.linenetamt ,
+sum(x.linenetamt) over () total, 
+ROW_NUMBER() over () cant,
+coalesce(round(x.linenetamt / (sum(x.linenetamt) over () ),4) * 100,0)::text as porc,
+'DESDE: ' || SUBSTR($P{DateInvoiced1},9,2) || '/' || SUBSTR($P{DateInvoiced1},6,2) || '/' 
+	 || SUBSTR($P{DateInvoiced1},1,4) || ' - HASTA:' || SUBSTR($P{DateInvoiced2},9,2) 
+	 || '/' || SUBSTR($P{DateInvoiced2},6,2) || '/' || SUBSTR($P{DateInvoiced2},1,4) || 
+	 ' Montos Expresados en: ' || x.ISO_Code as NAME 
+from 
+(
+select b.name c_bpartner_n ,
+round(sum(currencyconvert(a.linenetamt,a.c_currency_id ,$P{C_Currency_ID},a.dateinvoiced ,a.C_ConversionType_ID , a.ad_client_id,a.ad_org_id)),2) linenetamt,
+c.ISO_Code 
+from cop_rv_c_invoiceline a  
+join c_bpartner b on a.c_bpartner_id = b.c_bpartner_id 
+join C_Currency c on c.c_currency_id  = $P{C_Currency_ID}
+where
+	a.DateInvoiced between $P{DateInvoiced1} and $P{DateInvoiced2}
+	and a.issotrx = 'Y' and a.m_product_id is not null 
+	group by
+	b.name,c.ISO_Code
+	order  by
+	linenetamt desc) x order by linenetamt desc ) as y 	
+	where cant <= 20
+	order by y.linenetamt desc]]>
+	</queryString>
+	<field name="c_bpartner_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="c_bpartner_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_bpartner_n"/>
+	</field>
+	<field name="linenetamt" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="linenetamt"/>
+		<property name="com.jaspersoft.studio.field.label" value="linenetamt"/>
+	</field>
+	<field name="total" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="total"/>
+		<property name="com.jaspersoft.studio.field.label" value="total"/>
+	</field>
+	<field name="cant" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="cant"/>
+		<property name="com.jaspersoft.studio.field.label" value="cant"/>
+	</field>
+	<field name="porc" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="porc"/>
+		<property name="com.jaspersoft.studio.field.label" value="porc"/>
+	</field>
+	<field name="name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="name"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="387" splitType="Stretch">
+			<image>
+				<reportElement x="0" y="1" width="180" height="59" uuid="768fffc3-c430-4220-884e-e6336629ddd1"/>
+				<imageExpression><![CDATA[$P{RESOURCE_DIR} + "logo.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="190" y="45" width="530" height="12" uuid="fcf04f41-f84a-4770-9365-74a5f266561f">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="281" y="373" width="100" height="14" uuid="cbfcbab2-6044-4581-a3a0-f301d57c758d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Venta]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="60" y="373" width="221" height="14" uuid="98f10b3b-89cf-4f5a-8a3a-e9e1c7a8b31a">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Organizacion]]></text>
+			</staticText>
+			<bar3DChart>
+				<chart evaluationTime="Report">
+					<reportElement x="-1" y="63" width="800" height="308" uuid="592bbf69-ee6b-40ef-a777-3ab2477d7589"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset resetType="Report"/>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{c_bpartner_n}]]></seriesExpression>
+						<categoryExpression><![CDATA[0]]></categoryExpression>
+						<valueExpression><![CDATA[$F{linenetamt}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<bar3DPlot>
+					<plot/>
+					<itemLabel/>
+					<categoryAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</valueAxisFormat>
+				</bar3DPlot>
+			</bar3DChart>
+			<textField>
+				<reportElement x="190" y="15" width="530" height="30" uuid="7b022372-6ff3-4337-888c-c66c08195274"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{cantidad}  + " N Mejores Clientes (Ventas) "]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="13">
+			<textField>
+				<reportElement x="61" y="0" width="220" height="13" uuid="415b13e5-53d2-4174-93e5-bcd1cfe35f29">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Top"/>
+				<textFieldExpression><![CDATA[$F{c_bpartner_n}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##;-#,##0.##">
+				<reportElement x="281" y="0" width="100" height="13" uuid="97c9c95f-e4d3-41e3-86d6-52babc69484b">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Top"/>
+				<textFieldExpression><![CDATA[$F{linenetamt}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##;-#,##0.##">
+				<reportElement x="14" y="0" width="40" height="13" uuid="ec410b9c-8717-4ed7-a814-7cfb469d2103">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Top"/>
+				<textFieldExpression><![CDATA[$F{cant}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="17" splitType="Stretch">
+			<textField pattern="#,##0.##;-#,##0.##">
+				<reportElement x="281" y="0" width="100" height="14" uuid="bbab3ff7-0333-4eee-9e73-289fa4a272b7">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

@@ -1,0 +1,683 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT_Daily_Cash_Flow" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="32d50429-1e43-45ab-9af5-06087f3559ed">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<parameter name="DateTrx" class="java.sql.Date"/>
+	<parameter name="RESOURCE_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["/"]]></defaultValueExpression>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[select 
+
+ "name"	  ,
+ SUM(amount1) as amount1	  ,
+ SUM(amount2) as amount2	  , 
+ SUM(amount3) as amount3	  ,
+ SUM(amount4) as amount4	  ,  
+ to_char( ($P{DateTrx}::date   + CAST('0 days' AS INTERVAL))::date , 'DD/MM/YYYY') as COL1,
+ to_char( ($P{DateTrx}::date   + CAST('1 days' AS INTERVAL))::date , 'DD/MM/YYYY') as COL2,
+ to_char( ($P{DateTrx}::date   + CAST('2 days' AS INTERVAL))::date , 'DD/MM/YYYY') as COL3,
+ to_char( ($P{DateTrx}::date   + CAST('3 days' AS INTERVAL))::date , 'DD/MM/YYYY') as COL4
+
+,
+ case
+		when name = 'Tipo de Cambio' then
+ (SUM(amount1) +
+ SUM(amount2) + 
+ SUM(amount3) +
+ SUM(amount4) ) / 4 
+	else 
+  SUM(amount1) +
+ SUM(amount2) + 
+ SUM(amount3) +
+ SUM(amount4)
+end as SUMA ,
+
+	case
+		when name = 'Tipo de Cambio' then 1.00
+		when name = 'Saldo inicial de caja' then 2.00
+		when name = 'Cobranzas' then 3.00
+		when name = 'Consumo Masivo' then 4.00
+		when name = 'Ventas Industriales' then 5.00
+		when name = 'INGRESOS' then 6.00
+		when name = 'EGRESOS' then 9.01
+		
+		else 9.00
+	end orden, 
+	
+	case
+		when name = 'Tipo de Cambio' then ''
+		when name = 'Saldo inicial de caja' then ''
+		when name = 'Cobranzas' then ''
+		when name = 'Consumo Masivo' then ''
+		when name = 'Ventas Industriales' then ''
+		when name = 'INGRESOS' then 'B'
+		when name = 'EGRESOS' then 'B'
+		
+		else ''
+	end bold
+	
+	
+
+	from
+((select
+	 to_char(a.datetrx, 'DD/MM/YYYY') datetrx ,ar.name,a.amount   as amount1, null amount2, null amount3, null amount4 
+from
+	COP_DailyOpeningBalance a join ad_ref_list ar on ar.ad_reference_id = 1000176 and a.incometype= ar.value
+	
+where
+	a.DateTrx between $P{DateTrx} and $P{DateTrx} and a.isactive = 'Y' 
+	union
+	(
+	select
+	  to_char(a.datetrx, 'DD/MM/YYYY') datetrx ,  'INGRESOS' as name, SUM(a.amount) amount1, 0::numeric as amount2,  0::numeric as amount3, 0::numeric   amount4 
+from
+	COP_DailyOpeningBalance a join ad_ref_list ar on ar.ad_reference_id = 1000176 and a.incometype= ar.value
+	
+where
+	a.DateTrx between ($P{DateTrx}::date   + CAST('0 days' AS INTERVAL))::date and ($P{DateTrx}::date   + CAST('0 days' AS INTERVAL))::date and a.isactive = 'Y'
+	group by 1
+	)
+	
+union 	
+	select to_char( $P{DateTrx}::date , 'DD/MM/YYYY') datetrx ,'Tipo de Cambio' as name,
+	currencyrate(100,1000001,$P{DateTrx},null,1000000,0) amount1, 0::numeric amount2  , 0::numeric amount3 , 0::numeric amount4)
+
+	union
+
+(select
+	  to_char(a.datetrx, 'DD/MM/YYYY') datetrx ,ar.name, 0::numeric amount1,a.amount as amount2,  0::numeric amount3,  0::numeric amount4 
+from
+	COP_DailyOpeningBalance a join ad_ref_list ar on ar.ad_reference_id = 1000176 and a.incometype= ar.value
+	
+where
+	a.DateTrx between ($P{DateTrx}::date   + CAST('1 days' AS INTERVAL))::date and ($P{DateTrx}::date   + CAST('1 days' AS INTERVAL))::date and a.isactive = 'Y'
+	
+	union 
+	(
+	select
+	  to_char(a.datetrx, 'DD/MM/YYYY') datetrx ,  'INGRESOS' as name, 0::numeric amount1,SUM(a.amount) as amount2,  0::numeric amount3,  0::numeric amount4 
+from
+	COP_DailyOpeningBalance a join ad_ref_list ar on ar.ad_reference_id = 1000176 and a.incometype= ar.value
+	
+where
+	a.DateTrx between ($P{DateTrx}::date   + CAST('1 days' AS INTERVAL))::date and ($P{DateTrx}::date   + CAST('1 days' AS INTERVAL))::date and a.isactive = 'Y'
+	group by 1
+	)
+	
+	
+union 	
+	select to_char( ($P{DateTrx}::date   + CAST('1 days' AS INTERVAL))::date , 'DD/MM/YYYY') datetrx ,'Tipo de Cambio' as name,
+	0::numeric amount1  ,
+	currencyrate(100,1000001,($P{DateTrx}::date   + CAST('1 days' AS INTERVAL))::date,null,1000000,0) amount2,
+	 0::numeric amount3 , 0::numeric amount4)
+	 
+	union
+	
+	(select
+	  to_char(a.datetrx, 'DD/MM/YYYY') datetrx ,ar.name, 0::numeric amount1, 0::numeric amount2,a.amount as amount3,   0::numeric amount4 
+from
+	COP_DailyOpeningBalance a join ad_ref_list ar on ar.ad_reference_id = 1000176 and a.incometype= ar.value
+	
+where
+	a.DateTrx between ($P{DateTrx}::date   + CAST('2 days' AS INTERVAL))::date and ($P{DateTrx}::date   + CAST('2 days' AS INTERVAL))::date and a.isactive = 'Y'
+	
+	union 
+	(
+	select
+	  to_char(a.datetrx, 'DD/MM/YYYY') datetrx ,  'INGRESOS' as name, 0::numeric amount1, 0::numeric as amount2,  SUM(a.amount) as amount3,  0::numeric amount4 
+from
+	COP_DailyOpeningBalance a join ad_ref_list ar on ar.ad_reference_id = 1000176 and a.incometype= ar.value
+	
+where
+	a.DateTrx between ($P{DateTrx}::date   + CAST('2 days' AS INTERVAL))::date and ($P{DateTrx}::date   + CAST('2 days' AS INTERVAL))::date and a.isactive = 'Y'
+	group by 1
+	)	
+	union 	
+	select to_char( ($P{DateTrx}::date   + CAST('2 days' AS INTERVAL))::date , 'DD/MM/YYYY') datetrx ,'Tipo de Cambio' as name,
+	0::numeric amount1  ,0::numeric amount2 , 
+	currencyrate(100,1000001,($P{DateTrx}::date   + CAST('2 days' AS INTERVAL))::date,null,1000000,0) amount3,
+	 0::numeric amount4)
+	 
+union
+
+(select
+	  to_char(a.datetrx, 'DD/MM/YYYY') datetrx ,ar.name, 0::numeric amount1, 0::numeric amount2, 0::numeric amount3,a.amount as amount4 
+from
+	COP_DailyOpeningBalance a join ad_ref_list ar on ar.ad_reference_id = 1000176 and a.incometype= ar.value
+	
+where
+	a.DateTrx between ($P{DateTrx}::date   + CAST('3 days' AS INTERVAL))::date and ($P{DateTrx}::date   + CAST('3 days' AS INTERVAL))::date and a.isactive = 'Y'
+union	
+	
+(
+	select
+	  to_char(a.datetrx, 'DD/MM/YYYY') datetrx ,  'INGRESOS' as name, 0::numeric amount1, 0::numeric as amount2,  0::numeric as amount3,  SUM(a.amount)  amount4 
+from
+	COP_DailyOpeningBalance a join ad_ref_list ar on ar.ad_reference_id = 1000176 and a.incometype= ar.value
+	
+where
+	a.DateTrx between ($P{DateTrx}::date   + CAST('3 days' AS INTERVAL))::date and ($P{DateTrx}::date   + CAST('3 days' AS INTERVAL))::date and a.isactive = 'Y'
+	group by 1
+	)
+	
+	
+	
+union 	
+	select to_char( ($P{DateTrx}::date   + CAST('3 days' AS INTERVAL))::date , 'DD/MM/YYYY') datetrx ,'Tipo de Cambio' as name,
+	0::numeric amount1  ,0::numeric amount2 , 0::numeric amount3, 
+	currencyrate(100,1000001,($P{DateTrx}::date   + CAST('3 days' AS INTERVAL))::date,null,1000000,0) amount4
+	)
+	 
+union 
+
+select datetrx	  , "name"	  , sum(amount1) amount1	  , sum(amount2) amount2	  , sum(amount3) amount3	  , sum(amount4) amount4 from 
+(
+select
+to_char( $P{DateTrx}::date , 'DD/MM/YYYY') datetrx,	 
+x1.cop_paygroup_n as name,	 
+	currencyconvert(sum(x1.mount_ved_payment),x1.C_currency_ID,1000001,$P{DateTrx}::date,1000000,1000000,0 )* -1 as amount1  
+	,0::numeric as amount2,  0::numeric amount3,  0::numeric amount4 
+from
+	cop_paym_shopp x1 left join COP_BPartnerType a on x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID 
+where
+	x1.DateAcct between $P{DateTrx} and $P{DateTrx}
+group by 
+x1.C_currency_ID,
+x1.cop_paygroup_n
+	having sum(x1.mount_ved_payment)  > 0
+	order by x1.cop_paygroup_n 
+) as A1 	
+group by datetrx,NAME 
+
+union 
+
+select datetrx	  , "name"	  , sum(amount1) amount1	  , sum(amount2) amount2	  , sum(amount3) amount3	  , sum(amount4) amount4 from 
+(
+select
+to_char( ($P{DateTrx}::date   + CAST('1 days' AS INTERVAL))::date , 'DD/MM/YYYY') datetrx,	 
+x1.cop_paygroup_n as name,
+	0::numeric as amount1,
+	currencyconvert(sum(x1.mount_ved_payment),x1.C_currency_ID,1000001,$P{DateTrx}::date,1000000,1000000,0 ) * -1 as amount2  
+	, 0::numeric amount3,  0::numeric amount4 
+from
+	cop_paym_shopp x1 left join COP_BPartnerType a on x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID 
+where
+	x1.DateAcct between ($P{DateTrx}::date   + CAST('1 days' AS INTERVAL))::date and ($P{DateTrx}::date   + CAST('1 days' AS INTERVAL))::date
+group by 
+x1.C_currency_ID,
+x1.cop_paygroup_n
+	having sum(x1.mount_ved_payment)  > 0
+	order by x1.cop_paygroup_n 
+) as A1 	
+group by datetrx,NAME 
+
+union 
+select datetrx	  , "name"	  , sum(amount1) amount1	  , sum(amount2) amount2	  , sum(amount3) amount3	  , sum(amount4) amount4 from 
+(
+select
+to_char( ($P{DateTrx}::date   + CAST('2 days' AS INTERVAL))::date , 'DD/MM/YYYY') datetrx,	 
+x1.cop_paygroup_n as name,
+	0::numeric as amount1,
+	0::numeric as amount2,
+	currencyconvert(sum(x1.mount_ved_payment),x1.C_currency_ID,1000001,$P{DateTrx}::date,1000000,1000000,0 ) * -1 as amount3  
+	, 0::numeric amount4 
+from
+	cop_paym_shopp x1 left join COP_BPartnerType a on x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID 
+where
+	x1.DateAcct between ($P{DateTrx}::date   + CAST('2 days' AS INTERVAL))::date and ($P{DateTrx}::date   + CAST('2 days' AS INTERVAL))::date
+group by 
+x1.C_currency_ID,
+x1.cop_paygroup_n
+	having sum(x1.mount_ved_payment)  > 0
+	order by x1.cop_paygroup_n 
+) as A1 	
+group by datetrx,NAME 
+
+union 
+
+(
+SELECT
+datetrx	  , 'EGRESOS' as name	  , SUM(amount1) as amount1	  , 0::numeric as amount2	  ,   0::numeric  as amount3	  ,   0::numeric  amount4 from 
+(
+select
+to_char( ($P{DateTrx}::date   + CAST('0 days' AS INTERVAL))::date , 'DD/MM/YYYY') datetrx,	 
+x1.cop_paygroup_n as name,
+	currencyconvert(sum(x1.mount_ved_payment),x1.C_currency_ID,1000001,$P{DateTrx}::date,1000000,1000000,0 ) * -1 as amount1 ,  
+	0::numeric as amount2,
+	0::numeric as amount3,
+	0::numeric as amount4
+from
+	cop_paym_shopp x1 left join COP_BPartnerType a on x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID 
+where
+	x1.DateAcct between ($P{DateTrx}::date   + CAST('0 days' AS INTERVAL))::date and ($P{DateTrx}::date   + CAST('0 days' AS INTERVAL))::date
+group by 
+x1.C_currency_ID,
+x1.cop_paygroup_n
+	having sum(x1.mount_ved_payment)  > 0
+	order by x1.cop_paygroup_n 
+) as XQ
+group by datetrx
+)
+
+
+
+union 
+
+(
+SELECT
+datetrx	  , 'EGRESOS' as name	  , 0::numeric as amount1	  ,  SUM(amount2) as amount2	  ,  0::numeric  as amount3	  ,   0::numeric  amount4 from 
+(
+select
+to_char( ($P{DateTrx}::date   + CAST('1 days' AS INTERVAL))::date , 'DD/MM/YYYY') datetrx,	 
+x1.cop_paygroup_n as name,
+	0::numeric as amount1,
+	currencyconvert(sum(x1.mount_ved_payment),x1.C_currency_ID,1000001,$P{DateTrx}::date,1000000,1000000,0 ) * -1 as amount2 ,  
+	0::numeric as amount3,
+	0::numeric as amount4
+from
+	cop_paym_shopp x1 left join COP_BPartnerType a on x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID 
+where
+	x1.DateAcct between ($P{DateTrx}::date   + CAST('1 days' AS INTERVAL))::date and ($P{DateTrx}::date   + CAST('1 days' AS INTERVAL))::date
+group by 
+x1.C_currency_ID,
+x1.cop_paygroup_n
+	having sum(x1.mount_ved_payment)  > 0
+	order by x1.cop_paygroup_n 
+) as XQ
+group by datetrx
+)
+
+
+union 
+
+(
+SELECT
+datetrx	  , 'EGRESOS' as name	  , 0::numeric as amount1	  ,  0::numeric as amount2	  ,SUM(amount3) as amount3	  ,   0::numeric  amount4 from 
+(
+select
+to_char( ($P{DateTrx}::date   + CAST('2 days' AS INTERVAL))::date , 'DD/MM/YYYY') datetrx,	 
+x1.cop_paygroup_n as name,
+	0::numeric as amount1,
+	0::numeric as amount2,
+	currencyconvert(sum(x1.mount_ved_payment),x1.C_currency_ID,1000001,$P{DateTrx}::date,1000000,1000000,0 ) * -1 as amount3 ,  
+	0::numeric as amount4
+from
+	cop_paym_shopp x1 left join COP_BPartnerType a on x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID 
+where
+	x1.DateAcct between ($P{DateTrx}::date   + CAST('2 days' AS INTERVAL))::date and ($P{DateTrx}::date   + CAST('2 days' AS INTERVAL))::date
+group by 
+x1.C_currency_ID,
+x1.cop_paygroup_n
+	having sum(x1.mount_ved_payment)  > 0
+	order by x1.cop_paygroup_n 
+) as XQ
+group by datetrx
+)
+
+
+
+union 
+
+(
+
+SELECT
+datetrx	  , 'EGRESOS' as name	  , 0::numeric as amount1	  ,  0::numeric as amount2	  ,0::numeric as amount3	  , SUM(amount4)  amount4 from 
+(
+select
+to_char( ($P{DateTrx}::date   + CAST('3 days' AS INTERVAL))::date , 'DD/MM/YYYY') datetrx,	 
+x1.cop_paygroup_n as name,
+	0::numeric as amount1,
+	0::numeric as amount2,
+	0::numeric as amount3,
+	currencyconvert(sum(x1.mount_ved_payment),x1.C_currency_ID,1000001,$P{DateTrx}::date,1000000,1000000,0 ) * -1 as amount4  
+from
+	cop_paym_shopp x1 left join COP_BPartnerType a on x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID 
+where
+	x1.DateAcct between ($P{DateTrx}::date   + CAST('3 days' AS INTERVAL))::date and ($P{DateTrx}::date   + CAST('3 days' AS INTERVAL))::date
+group by 
+x1.C_currency_ID,
+x1.cop_paygroup_n
+	having sum(x1.mount_ved_payment)  > 0
+	order by x1.cop_paygroup_n 
+) as XQ
+group by datetrx
+)
+
+
+
+
+union 
+select datetrx	  , "name"	  , sum(amount1) amount1	  , sum(amount2) amount2	  , sum(amount3) amount3	  , sum(amount4) amount4 from 
+(
+select
+to_char( ($P{DateTrx}::date   + CAST('3 days' AS INTERVAL))::date , 'DD/MM/YYYY') datetrx,	 
+x1.cop_paygroup_n as name,
+	0::numeric as amount1,
+	0::numeric as amount2,
+	0::numeric as amount3,
+	currencyconvert(sum(x1.mount_ved_payment),x1.C_currency_ID,1000001,$P{DateTrx}::date,1000000,1000000,0 ) * -1 as amount4  
+from
+	cop_paym_shopp x1 left join COP_BPartnerType a on x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID 
+where
+	x1.DateAcct between ($P{DateTrx}::date   + CAST('3 days' AS INTERVAL))::date and ($P{DateTrx}::date   + CAST('3 days' AS INTERVAL))::date
+group by 
+x1.C_currency_ID,
+x1.cop_paygroup_n
+	having sum(x1.mount_ved_payment)  > 0
+	order by x1.cop_paygroup_n 
+) as A1 	
+group by datetrx,NAME ) as X
+group by X.NAME 
+order by ORDEN ,NAME]]>
+	</queryString>
+	<field name="name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="name"/>
+	</field>
+	<field name="amount1" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="amount1"/>
+		<property name="com.jaspersoft.studio.field.label" value="amount1"/>
+	</field>
+	<field name="amount2" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="amount2"/>
+		<property name="com.jaspersoft.studio.field.label" value="amount2"/>
+	</field>
+	<field name="amount3" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="amount3"/>
+		<property name="com.jaspersoft.studio.field.label" value="amount3"/>
+	</field>
+	<field name="amount4" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="amount4"/>
+		<property name="com.jaspersoft.studio.field.label" value="amount4"/>
+	</field>
+	<field name="col1" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="col1"/>
+		<property name="com.jaspersoft.studio.field.label" value="col1"/>
+	</field>
+	<field name="col2" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="col2"/>
+		<property name="com.jaspersoft.studio.field.label" value="col2"/>
+	</field>
+	<field name="col3" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="col3"/>
+		<property name="com.jaspersoft.studio.field.label" value="col3"/>
+	</field>
+	<field name="col4" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="col4"/>
+		<property name="com.jaspersoft.studio.field.label" value="col4"/>
+	</field>
+	<field name="suma" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="suma"/>
+		<property name="com.jaspersoft.studio.field.label" value="suma"/>
+	</field>
+	<field name="orden" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="orden"/>
+		<property name="com.jaspersoft.studio.field.label" value="orden"/>
+	</field>
+	<field name="bold" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="bold"/>
+		<property name="com.jaspersoft.studio.field.label" value="bold"/>
+	</field>
+	<variable name="v_amount1_4" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{amount4}]]></variableExpression>
+	</variable>
+	<variable name="v_amount1_1" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{amount1}]]></variableExpression>
+	</variable>
+	<variable name="v_amount1_2" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{amount2}]]></variableExpression>
+	</variable>
+	<variable name="v_amount1_3" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{amount3}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="41" splitType="Stretch">
+			<textField>
+				<reportElement x="110" y="10" width="540" height="31" uuid="4f10224f-ad8d-42e5-9dfd-ab84e155fe62">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Flujo de Caja Real "]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="0" y="2" width="110" height="39" uuid="9b328073-6e6c-439b-b204-35931cbfcc3b"/>
+				<imageExpression><![CDATA[$P{RESOURCE_DIR} + "logo.png"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="7" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="13" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="210" height="13" uuid="e62f794f-06e1-4633-b6a0-74c52e4acd2a">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="1a1d3ec5-5a8e-4ee2-8e82-a89409b1dfb5"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="0.75"/>
+				</box>
+				<textElement>
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<text><![CDATA[Concepto]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="211" y="0" width="80" height="13" uuid="ca75ed85-cb37-4402-b165-03511984e0c5">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{col1}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="291" y="0" width="80" height="13" uuid="b8fafeac-1209-414c-811f-1577d424ecf0">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{col2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="371" y="0" width="80" height="13" uuid="550ad914-76d3-41aa-8abe-3924f53027cc">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{col3}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="451" y="0" width="80" height="13" uuid="41d49dd8-0f38-436c-a520-a58115a6fb73">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{col4}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="531" y="0" width="80" height="13" uuid="09f59189-a5c8-47ea-a6c3-231fd9a4b758">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="0.75"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[" "]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<printWhenExpression><![CDATA[$F{bold}.equals( "" )]]></printWhenExpression>
+			<textField>
+				<reportElement x="0" y="0" width="210" height="12" uuid="1a980d93-4cee-4064-b28e-0ee37eccee8f">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="1a1d3ec5-5a8e-4ee2-8e82-a89409b1dfb5"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font fontName="Serif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##;(#,##0.##)">
+				<reportElement x="211" y="0" width="80" height="12" uuid="17fc9e96-19d3-40f0-bffc-61b984cd9ec7">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4cb89160-dd86-4b9a-8a0e-ba71823f97bf"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Serif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{amount1}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##;(#,##0.##)">
+				<reportElement x="291" y="0" width="80" height="12" uuid="c0ca0104-afba-45b3-b1e5-84767e9595a4">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7caec795-459e-4584-9c2e-e42fa27df109"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Serif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{amount2}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##;(#,##0.##)">
+				<reportElement x="371" y="0" width="80" height="12" uuid="7219204c-94d1-455c-aac6-980abe08b558">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="40eaf7c3-e54b-48fc-a096-2780084bcc81"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Serif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{amount3}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##;(#,##0.##)">
+				<reportElement x="451" y="0" width="80" height="12" uuid="777670d2-12dc-4aec-98d0-92b139f5c5dc">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="01ade976-7536-4b9c-88cf-3ae07c5b2ca2"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Serif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{amount4}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##;(#,##0.##)">
+				<reportElement x="531" y="0" width="80" height="12" uuid="41fde4f4-973e-4fcc-8e6e-cee404a92b72">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="01ade976-7536-4b9c-88cf-3ae07c5b2ca2"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Serif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{suma}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="50">
+			<printWhenExpression><![CDATA[$F{bold}.equals( "B" )]]></printWhenExpression>
+			<textField pattern="#,##0.##;(#,##0.##)">
+				<reportElement x="211" y="11" width="80" height="12" uuid="6a518428-276e-44d4-b37a-2119e1850e86">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4cb89160-dd86-4b9a-8a0e-ba71823f97bf"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Serif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{amount1}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##;(#,##0.##)">
+				<reportElement x="531" y="11" width="80" height="12" uuid="c19c73b5-8541-4f81-805f-36e2a5fdb7ba">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="01ade976-7536-4b9c-88cf-3ae07c5b2ca2"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Serif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{suma}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##;(#,##0.##)">
+				<reportElement x="371" y="11" width="80" height="12" uuid="51e6e243-2338-4e01-89a4-a879193efe72">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="40eaf7c3-e54b-48fc-a096-2780084bcc81"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Serif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{amount3}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##;(#,##0.##)">
+				<reportElement x="291" y="11" width="80" height="12" uuid="acc6e5f2-d55b-4d4d-8777-57ac203c5947">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7caec795-459e-4584-9c2e-e42fa27df109"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Serif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{amount2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="11" width="210" height="12" uuid="ab82a31e-77d7-4350-a170-73c8c620f7a8">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="1a1d3ec5-5a8e-4ee2-8e82-a89409b1dfb5"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font fontName="Serif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##;(#,##0.##)">
+				<reportElement x="451" y="11" width="80" height="12" uuid="3acad2ff-8027-4d06-9392-183b2fc45ec4">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="01ade976-7536-4b9c-88cf-3ae07c5b2ca2"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="Serif" size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{amount4}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="17" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="9" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
