@@ -1,0 +1,630 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT_org_product_onHand" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6c673fc6-3870-45f2-8b2c-c26a0f9879fb">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="55"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="934"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<style name="Crosstab_CH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab_CG" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab_CT" mode="Opaque" backcolor="#005FB3">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab_CD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="RESOURCE_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DateTo" class="java.sql.Timestamp">
+		<defaultValueExpression><![CDATA[NOW()]]></defaultValueExpression>
+	</parameter>
+	<parameter name="AD_Org_ID" class="java.lang.Integer"/>
+	<parameter name="M_Product_ID" class="java.lang.Integer"/>
+	<queryString language="plsql">
+		<![CDATA[select * from ( (select *, (existencia * prom) as monto , 1 as NIVEL from
+	(select 
+		case when b.IsUnFit  = 'Y' then '094 - Cantidad No Aptos' 
+			 when b.IsUnFit = 'N'  and b.ad_org_id     in (1000009,1000010) then '092 - ' || trim(b.ad_org_v) || ' - ' || trim(b.ad_org_n) 
+			 when b.IsUnFit = 'N'  and b.ad_org_id not in (1000009,1000010) then ''   || trim(b.ad_org_v) || ' - ' || trim(b.ad_org_n) 
+			 end  as organizacion , 
+			b.ubicacion,trim(a.value) || '-' || trim(a.name) producto ,
+			 stock_prod_locator_to_date(a.m_product_id, 
+			 $P{DateTo}::timestamp 	
+			,a.ad_client_id,	b.ad_org_id ,b.m_locator_id) as existencia ,
+			a.ad_client_id ,
+			b.ad_org_id ,b.ad_org_n,
+			b.m_locator_id ,
+			a.m_product_id 
+			,b.IsUnFit ,b.IsInTransit 
+			,'Inventario Disponible Para La Venta A La Fecha ' as name 
+			, to_char($P{DateTo}::timestamp , 'DD/MM/YYYY HH24:MI:SS')|| CHR(13) || '  Productos Aptos y No Aptos' as tapto, cp.StartDate , cp.EndDate, 0 as prom
+		from
+			m_product a left join (
+					select a.ad_org_id ,a.name as ad_org_n,a.value ad_org_v
+						,b.m_locator_id, b.Value ubicacion  ,coalesce(c.isunfit,'N') isunfit  ,mw.IsInTransit
+						from ad_org a 
+						join  M_Locator b on b.ad_org_id = a.ad_org_id
+						left join M_LocatorType c on b.m_locatortype_id = c.m_locatortype_id 
+						left join m_warehouse mw on mw.m_warehouse_id = b.m_warehouse_id 
+						where a.ad_org_id  in (1000000, 1000001, 1000002, 1000003, 1000004, 1000005, 1000006, 1000009, 1000010)
+					) as b 
+			on 1=1	
+			left join C_Period cp on  $P{DateTo}::timestamp between cp.StartDate and cp.EndDate
+		where
+			a.M_Product_Category_ID in (1000044, 1000042)
+			and (a.m_product_id = $P{M_Product_ID} or $P{M_Product_ID} is null)
+			and b.IsInTransit = 'N'
+			and stock_prod_locator_to_date(a.m_product_id, 
+			 $P{DateTo}::timestamp 	
+			,a.ad_client_id,	b.ad_org_id ,b.m_locator_id) <> 0) as x1
+			order by x1.organizacion ,x1.ubicacion,x1.producto
+			)
+			
+			union 
+			(
+			select 
+					organizacion ,
+					ubicacion ,
+					producto ,
+					(existencia * prom) existencia ,
+					ad_client_id ,
+					ad_org_id ,
+					ad_org_n ,
+					m_locator_id ,
+					m_product_id ,
+					isunfit ,
+					isintransit ,
+					"name" ,
+					tapto ,
+					startdate ,
+					enddate ,
+					prom ,
+					(existencia * prom) as monto , 2 as NIVEL
+					from (select
+		case when b.IsUnFit  = 'Y' then '096 - Monto No Aptos' 
+--			 when b.IsUnFit = 'N'  and b.ad_org_id     in (1000009,1000010) then 'precio 092-' || trim(b.ad_org_v) || '-' || trim(b.ad_org_n) 
+--			 when b.IsUnFit = 'N'  and b.ad_org_id not in (1000009,1000010) then 'precio '   || trim(b.ad_org_v) || '-' || trim(b.ad_org_n) 
+			 when b.IsUnFit = 'N'  then '096 - Monto Aptos'    
+			 end  as organizacion , 
+			b.ubicacion,trim(a.value) || '-' || trim(a.name) producto ,
+			 stock_prod_locator_to_date(a.m_product_id, 
+			 $P{DateTo}::timestamp 	
+			,a.ad_client_id,	b.ad_org_id ,b.m_locator_id) as existencia ,
+			a.ad_client_id ,
+			b.ad_org_id ,b.ad_org_n,
+			b.m_locator_id ,
+			a.m_product_id 
+			,b.IsUnFit ,b.IsInTransit
+			,'Inventario Disponible Para La Venta A La Fecha ' as name 
+			, to_char($P{DateTo}::timestamp , 'DD/MM/YYYY HH24:MI:SS')|| CHR(13) || '  Productos Aptos y No Aptos' as tapto, cp.StartDate , cp.EndDate,
+			prom_vta_product_to_date(a.m_product_id ,100,cp.StartDate , cp.EndDate,a.ad_client_id) prom
+		from
+			m_product a left join (
+					select a.ad_org_id ,a.name as ad_org_n,a.value ad_org_v
+						,b.m_locator_id, b.Value ubicacion  ,coalesce(c.isunfit,'N') isunfit  ,mw.IsInTransit
+						from ad_org a 
+						join  M_Locator b on b.ad_org_id = a.ad_org_id
+						left join M_LocatorType c on b.m_locatortype_id = c.m_locatortype_id 
+						left join m_warehouse mw on mw.m_warehouse_id = b.m_warehouse_id 
+						where a.ad_org_id  in (1000000, 1000001, 1000002, 1000003, 1000004, 1000005, 1000006, 1000009, 1000010)
+					) as b 
+			on 1=1	
+			left join C_Period cp on  $P{DateTo}::timestamp between cp.StartDate and cp.EndDate
+		where
+			a.M_Product_Category_ID in (1000044, 1000042)
+			and (a.m_product_id = $P{M_Product_ID} or $P{M_Product_ID} is null)
+			and b.IsInTransit = 'N'
+			and stock_prod_locator_to_date(a.m_product_id, 
+			 $P{DateTo}::timestamp 	
+			,a.ad_client_id,	b.ad_org_id ,b.m_locator_id) <> 0) as x1
+			order by x1.organizacion ,x1.ubicacion,x1.producto
+			)
+			union 
+						(
+			select 
+					organizacion ,
+					ubicacion ,
+					producto ,
+					(existencia) existencia ,
+					ad_client_id ,
+					ad_org_id ,
+					ad_org_n ,
+					m_locator_id ,
+					m_product_id ,
+					isunfit ,
+					isintransit ,
+					"name" ,
+					tapto ,
+					startdate ,
+					enddate ,
+					prom ,
+					(existencia * prom) as monto , 3 as NIVEL
+					from (select
+		case when  b.IsUnFit = 'N'  then '093- Cantidad Aptos'    
+			 end  as organizacion , 
+			b.ubicacion,trim(a.value) || '-' || trim(a.name) producto ,
+			 stock_prod_locator_to_date(a.m_product_id, 
+			 $P{DateTo}::timestamp 	
+			,a.ad_client_id,	b.ad_org_id ,b.m_locator_id) as existencia ,
+			a.ad_client_id ,
+			b.ad_org_id ,b.ad_org_n,
+			b.m_locator_id ,
+			a.m_product_id 
+			,b.IsUnFit ,b.IsInTransit
+			,'Inventario Disponible Para La Venta A La Fecha ' as name 
+			, to_char($P{DateTo}::timestamp , 'DD/MM/YYYY HH24:MI:SS')|| CHR(13) || '  Productos Aptos y No Aptos' as tapto, cp.StartDate , cp.EndDate,
+			prom_vta_product_to_date(a.m_product_id ,100,cp.StartDate , cp.EndDate,a.ad_client_id) prom
+		from
+			m_product a left join (
+					select a.ad_org_id ,a.name as ad_org_n,a.value ad_org_v
+						,b.m_locator_id, b.Value ubicacion  ,coalesce(c.isunfit,'N') isunfit  ,mw.IsInTransit
+						from ad_org a 
+						join  M_Locator b on b.ad_org_id = a.ad_org_id
+						left join M_LocatorType c on b.m_locatortype_id = c.m_locatortype_id 
+						left join m_warehouse mw on mw.m_warehouse_id = b.m_warehouse_id 
+						where a.ad_org_id  in (1000000, 1000001, 1000002, 1000003, 1000004, 1000005, 1000006, 1000009, 1000010)
+					) as b 
+			on 1=1	
+			left join C_Period cp on  $P{DateTo}::timestamp between cp.StartDate and cp.EndDate
+		where
+			a.M_Product_Category_ID in (1000044, 1000042)
+			and (a.m_product_id = $P{M_Product_ID} or $P{M_Product_ID} is null)
+			and b.IsInTransit = 'N'
+			and b.IsUnFit = 'N'
+			and stock_prod_locator_to_date(a.m_product_id, 
+			 $P{DateTo}::timestamp 	
+			,a.ad_client_id,	b.ad_org_id ,b.m_locator_id) <> 0) as x1
+			order by x1.organizacion ,x1.ubicacion,x1.producto
+			)
+			union 
+			(select 
+			'095 - Precio Promedio' as organizacion , 
+			'' ubicacion, 
+			trim(a.value) || '-' || trim(a.name) producto ,
+			prom_vta_product_to_date(a.m_product_id ,
+	100,
+	cp.StartDate ,
+	cp.EndDate,
+	a.ad_client_id) as existencia ,
+			a.ad_client_id ,
+			0 ad_org_id ,
+			'' ad_org_n,
+			0 m_locator_id ,
+			a.m_product_id 
+			,
+	'F' IsUnFit ,
+	'F' IsInTransit , 
+			'' as name, 
+			'' as tapto,
+	cp.StartDate ,
+	cp.EndDate,
+	0 as prom   ,0 monto	  , 4 nivel
+
+from
+			m_product a
+left join C_Period cp on
+	$P{DateTo}::timestamp between cp.StartDate and cp.EndDate
+where
+			a.M_Product_Category_ID in (1000044, 1000042)
+	and (a.m_product_id = $P{M_Product_ID}
+		or $P{M_Product_ID} is null)
+			)
+
+			) as xt order by xt.organizacion ,xt.ubicacion,xt.producto
+			
+			]]>
+	</queryString>
+	<field name="organizacion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="organizacion"/>
+		<property name="com.jaspersoft.studio.field.label" value="organizacion"/>
+	</field>
+	<field name="ubicacion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ubicacion"/>
+		<property name="com.jaspersoft.studio.field.label" value="ubicacion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_locator"/>
+	</field>
+	<field name="producto" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="producto"/>
+		<property name="com.jaspersoft.studio.field.label" value="producto"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_product"/>
+	</field>
+	<field name="existencia" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="existencia"/>
+		<property name="com.jaspersoft.studio.field.label" value="existencia"/>
+	</field>
+	<field name="ad_client_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ad_client_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="ad_client_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_product"/>
+	</field>
+	<field name="ad_org_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ad_org_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="ad_org_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org"/>
+	</field>
+	<field name="ad_org_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ad_org_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="ad_org_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org"/>
+	</field>
+	<field name="m_locator_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="m_locator_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_locator_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_locator"/>
+	</field>
+	<field name="m_product_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="m_product_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_product_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_product"/>
+	</field>
+	<field name="isunfit" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="isunfit"/>
+		<property name="com.jaspersoft.studio.field.label" value="isunfit"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_locatortype"/>
+	</field>
+	<field name="isintransit" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="isintransit"/>
+		<property name="com.jaspersoft.studio.field.label" value="isintransit"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_warehouse"/>
+	</field>
+	<field name="name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_product_category"/>
+	</field>
+	<field name="tapto" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="tapto"/>
+		<property name="com.jaspersoft.studio.field.label" value="tapto"/>
+	</field>
+	<field name="startdate" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="startdate"/>
+		<property name="com.jaspersoft.studio.field.label" value="startdate"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_period"/>
+	</field>
+	<field name="enddate" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="enddate"/>
+		<property name="com.jaspersoft.studio.field.label" value="enddate"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_period"/>
+	</field>
+	<field name="prom" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="prom"/>
+		<property name="com.jaspersoft.studio.field.label" value="prom"/>
+	</field>
+	<field name="monto" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="monto"/>
+		<property name="com.jaspersoft.studio.field.label" value="monto"/>
+	</field>
+	<field name="nivel" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="nivel"/>
+		<property name="com.jaspersoft.studio.field.label" value="nivel"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="55" splitType="Stretch">
+			<image>
+				<reportElement x="0" y="0" width="110" height="39" uuid="a021246b-3bdb-4dbc-be05-a5255350b1f3"/>
+				<imageExpression><![CDATA[$P{RESOURCE_DIR} + "logo.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="195" y="17" width="364" height="12" uuid="f4bcf599-0e97-4387-8b28-63ac1e664dd4">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="653" y="6" width="36" height="11" uuid="c4a6a89b-1049-4459-a51a-ce08a46e4422">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Página:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="653" y="17" width="36" height="11" uuid="3e6cd65e-0b36-4ea8-8877-61f548d54504">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="653" y="28" width="36" height="11" uuid="475b0b46-f913-4227-8232-c62a68687bc5">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora:]]></text>
+			</staticText>
+			<textField pattern="HH:mm" isBlankWhenNull="true">
+				<reportElement x="688" y="28" width="49" height="11" uuid="b1236a90-fd53-47ae-97fa-83ebaf8f8776">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("h:mm a").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="688" y="17" width="49" height="11" uuid="f9a249b9-ca64-4cda-8753-97b39e63b1fa">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" isBlankWhenNull="true">
+				<reportElement x="716" y="6" width="21" height="11" uuid="8f157c0b-8df4-4f20-ad0c-e878cfa56ca3">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="702" y="6" width="10" height="11" uuid="cb7fdd8a-f1d3-425b-a0b7-76e0957320a4">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[de:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="690" y="6" width="11" height="11" uuid="d2894c59-0b77-494f-81b4-882a19203196">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="195" y="0" width="363" height="16" uuid="0dd8cb2d-e92c-410a-bed2-a7e532bc93ad"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Inventario General por Distribuidora]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="196" y="27" width="364" height="28" uuid="c535aa91-3e26-43d7-abdf-bdea599df930">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tapto}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<summary>
+		<band height="106" splitType="Stretch">
+			<frame>
+				<reportElement x="0" y="13" width="752" height="80" uuid="ff74b5ec-f7a4-4844-a7b6-f15d06cf552a"/>
+				<frame>
+					<reportElement x="0" y="0" width="752" height="80" uuid="d43b29f2-3ddb-4223-8a02-43546b08be1a"/>
+					<crosstab>
+						<reportElement x="0" y="0" width="752" height="80" uuid="d9ac430b-fbd3-400c-962c-ac7db7cdc1bf">
+							<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+							<property name="com.jaspersoft.studio.crosstab.style.header" value="Crosstab_CH"/>
+							<property name="com.jaspersoft.studio.crosstab.style.group" value="Crosstab_CG"/>
+							<property name="com.jaspersoft.studio.crosstab.style.total" value="Crosstab_CT"/>
+							<property name="com.jaspersoft.studio.crosstab.style.detail" value="Crosstab_CD"/>
+						</reportElement>
+						<crosstabDataset>
+							<dataset resetType="Report"/>
+						</crosstabDataset>
+						<rowGroup name="producto" width="200" totalPosition="End">
+							<bucket class="java.lang.String">
+								<bucketExpression><![CDATA[$F{producto}]]></bucketExpression>
+							</bucket>
+							<crosstabRowHeader>
+								<cellContents mode="Opaque" style="Crosstab_CH">
+									<textField>
+										<reportElement x="0" y="0" width="200" height="10" uuid="21359e7e-061e-40f1-aae3-2bfc9e272dd4">
+											<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+											<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+											<property name="com.jaspersoft.studio.unit.spacingAfter" value="px"/>
+											<property name="com.jaspersoft.studio.unit.spacingBefore" value="px"/>
+											<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+										</reportElement>
+										<textElement textAlignment="Left" verticalAlignment="Middle">
+											<font size="6"/>
+											<paragraph leftIndent="2" rightIndent="0" spacingBefore="0" spacingAfter="1"/>
+										</textElement>
+										<textFieldExpression><![CDATA[$V{producto}]]></textFieldExpression>
+									</textField>
+								</cellContents>
+							</crosstabRowHeader>
+							<crosstabTotalRowHeader>
+								<cellContents mode="Opaque" style="Crosstab_CT">
+									<staticText>
+										<reportElement x="0" y="0" width="200" height="20" forecolor="#FFFFFF" uuid="e1b68eca-bf09-403a-ae45-a98597a2c5d7">
+											<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+										</reportElement>
+										<textElement textAlignment="Left" verticalAlignment="Middle">
+											<font size="8"/>
+											<paragraph leftIndent="2"/>
+										</textElement>
+										<text><![CDATA[Total producto]]></text>
+									</staticText>
+								</cellContents>
+							</crosstabTotalRowHeader>
+						</rowGroup>
+						<columnGroup name="organizacion" height="40" totalPosition="End">
+							<bucket class="java.lang.String">
+								<bucketExpression><![CDATA[$F{organizacion}]]></bucketExpression>
+							</bucket>
+							<crosstabColumnHeader>
+								<cellContents mode="Opaque" style="Crosstab_CH">
+									<textField>
+										<reportElement x="0" y="0" width="40" height="40" uuid="5c621085-7146-4d8c-8800-4079aa17a27f"/>
+										<textElement textAlignment="Center" verticalAlignment="Middle">
+											<font size="5" isBold="true"/>
+										</textElement>
+										<textFieldExpression><![CDATA[$V{organizacion}]]></textFieldExpression>
+									</textField>
+								</cellContents>
+							</crosstabColumnHeader>
+							<crosstabTotalColumnHeader>
+								<cellContents mode="Opaque" style="Crosstab_CT">
+									<staticText>
+										<reportElement mode="Opaque" x="0" y="0" width="10" height="40" forecolor="#FFFFFF" uuid="1802bdae-5179-4d2f-9846-d818fa488908">
+											<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+										</reportElement>
+										<box>
+											<pen lineWidth="0.0" lineColor="rgba(255, 255, 255, 0.0)"/>
+											<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+											<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+											<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+											<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+										</box>
+										<textElement textAlignment="Center" verticalAlignment="Middle">
+											<font size="6" isBold="true"/>
+										</textElement>
+										<text><![CDATA[Total organizacion]]></text>
+									</staticText>
+								</cellContents>
+							</crosstabTotalColumnHeader>
+						</columnGroup>
+						<measure name="existencia_MEASURE" class="java.math.BigDecimal" calculation="Sum">
+							<measureExpression><![CDATA[$F{existencia}]]></measureExpression>
+						</measure>
+						<crosstabCell width="40" height="10">
+							<cellContents mode="Opaque" style="Crosstab_CD">
+								<textField pattern="#,##0.###;(#,##0.###-)">
+									<reportElement style="Crosstab_CD" x="0" y="0" width="40" height="10" uuid="e2343756-71f1-4971-a4c5-4dcd46e0402d">
+										<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+										<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+									</reportElement>
+									<textElement textAlignment="Right" verticalAlignment="Middle">
+										<font size="6"/>
+										<paragraph rightIndent="3"/>
+									</textElement>
+									<textFieldExpression><![CDATA[$V{existencia_MEASURE}]]></textFieldExpression>
+								</textField>
+							</cellContents>
+						</crosstabCell>
+						<crosstabCell width="10" height="10" columnTotalGroup="organizacion">
+							<cellContents mode="Opaque" style="Crosstab_CT">
+								<textField pattern="#,##0.###;(#,##0.###-)">
+									<reportElement mode="Opaque" x="0" y="0" width="10" height="10" forecolor="#FFFFFF" uuid="ca36a77a-2613-4bef-8e09-f485da5ebd10">
+										<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+									</reportElement>
+									<box>
+										<pen lineWidth="1.0" lineStyle="Dotted" lineColor="rgba(255, 255, 255, 0.0)"/>
+										<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+										<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+										<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+										<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+									</box>
+									<textElement textAlignment="Right" verticalAlignment="Middle">
+										<font size="6"/>
+										<paragraph rightIndent="3"/>
+									</textElement>
+									<textFieldExpression><![CDATA[$V{existencia_MEASURE}]]></textFieldExpression>
+								</textField>
+							</cellContents>
+						</crosstabCell>
+						<crosstabCell width="40" height="20" rowTotalGroup="producto">
+							<cellContents mode="Opaque" style="Crosstab_CT">
+								<textField pattern="#,##0.###;(#,##0.###-)">
+									<reportElement x="0" y="0" width="40" height="20" forecolor="#FFFFFF" uuid="34385fe3-5ac9-4681-846e-87fe073d0f1c">
+										<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+										<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+										<property name="com.jaspersoft.studio.unit.height" value="px"/>
+									</reportElement>
+									<textElement textAlignment="Right" verticalAlignment="Middle">
+										<font size="6"/>
+										<paragraph rightIndent="3"/>
+									</textElement>
+									<textFieldExpression><![CDATA[$V{existencia_MEASURE}]]></textFieldExpression>
+								</textField>
+							</cellContents>
+						</crosstabCell>
+						<crosstabCell width="10" height="20" rowTotalGroup="producto" columnTotalGroup="organizacion">
+							<cellContents mode="Opaque" style="Crosstab_CT">
+								<textField pattern="#,##0.###;(#,##0.###-)">
+									<reportElement mode="Opaque" x="0" y="0" width="10" height="20" forecolor="#FFFFFF" uuid="f32f8765-0139-485f-87e6-25c113dac8c8">
+										<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+										<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+									</reportElement>
+									<box>
+										<pen lineColor="rgba(255, 255, 255, 0.0)"/>
+										<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+										<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+										<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+										<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+									</box>
+									<textElement textAlignment="Right" verticalAlignment="Middle">
+										<font size="6"/>
+										<paragraph rightIndent="3"/>
+									</textElement>
+									<textFieldExpression><![CDATA[$V{existencia_MEASURE}]]></textFieldExpression>
+								</textField>
+							</cellContents>
+						</crosstabCell>
+					</crosstab>
+				</frame>
+			</frame>
+		</band>
+	</summary>
+</jasperReport>

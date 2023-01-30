@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<section name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog">
-		<item key="dialogX" value="1440"/>
-		<item key="dialogY" value="40"/>
+		<item key="dialogX" value="0"/>
+		<item key="dialogY" value="0"/>
 		<item key="dialogWidth" value="1440"/>
-		<item key="dialogHeight" value="860"/>
-		<item key="DIALOG_X_ORIGIN" value="1448"/>
-		<item key="DIALOG_Y_ORIGIN" value="48"/>
+		<item key="dialogHeight" value="852"/>
+		<item key="DIALOG_X_ORIGIN" value="9"/>
+		<item key="DIALOG_Y_ORIGIN" value="9"/>
 		<item key="DIALOG_WIDTH" value="1440"/>
-		<item key="DIALOG_HEIGHT" value="860"/>
-		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>
+		<item key="DIALOG_HEIGHT" value="852"/>
+		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-15|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>
 	</section>
 	<section name="com.jaspersoft.studio.property.descriptor.expression.dialog.JRExpressionEditor">
-		<item key="DIALOG_X_ORIGIN" value="353"/>
-		<item key="DIALOG_Y_ORIGIN" value="8"/>
+		<item key="DIALOG_X_ORIGIN" value="354"/>
+		<item key="DIALOG_Y_ORIGIN" value="9"/>
 		<item key="DIALOG_WIDTH" value="750"/>
 		<item key="DIALOG_HEIGHT" value="680"/>
-		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>
+		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-15|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>
 		<item key="dialogX" value="345"/>
 		<item key="dialogY" value="0"/>
 		<item key="dialogWidth" value="750"/>
@@ -27,11 +27,11 @@
 		<item key="dialogY" value="97"/>
 		<item key="dialogWidth" value="600"/>
 		<item key="dialogHeight" value="500"/>
-		<item key="DIALOG_X_ORIGIN" value="-1012"/>
-		<item key="DIALOG_Y_ORIGIN" value="105"/>
+		<item key="DIALOG_X_ORIGIN" value="429"/>
+		<item key="DIALOG_Y_ORIGIN" value="106"/>
 		<item key="DIALOG_WIDTH" value="600"/>
 		<item key="DIALOG_HEIGHT" value="500"/>
-		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>
+		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-15|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>
 	</section>
 	<section name="com.jaspersoft.studio.model.image.command.dialog.ImageCreationDialog">
 		<item key="dialogX" value="464"/>
@@ -47,13 +47,13 @@
 	<section name="com.jaspersoft.studio.jface.dialogs.ImageSelectionDialog">
 		<item key="dialogX" value="464"/>
 		<item key="dialogY" value="48"/>
-		<item key="dialogWidth" value="513"/>
-		<item key="dialogHeight" value="574"/>
-		<item key="DIALOG_X_ORIGIN" value="472"/>
-		<item key="DIALOG_Y_ORIGIN" value="56"/>
-		<item key="DIALOG_WIDTH" value="513"/>
-		<item key="DIALOG_HEIGHT" value="574"/>
-		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>
+		<item key="dialogWidth" value="631"/>
+		<item key="dialogHeight" value="644"/>
+		<item key="DIALOG_X_ORIGIN" value="473"/>
+		<item key="DIALOG_Y_ORIGIN" value="57"/>
+		<item key="DIALOG_WIDTH" value="631"/>
+		<item key="DIALOG_HEIGHT" value="644"/>
+		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-15|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>
 	</section>
 	<section name="com.jaspersoft.studio.server.publish.wizard.Publish2ServerWizard">
 		<item key="dialogX" value="292"/>
@@ -69,12 +69,12 @@
 	<section name="com.jaspersoft.studio.jface.dialogs.SubreportSelectionDialog">
 		<item key="dialogX" value="459"/>
 		<item key="dialogY" value="196"/>
-		<item key="dialogWidth" value="523"/>
-		<item key="dialogHeight" value="351"/>
-		<item key="DIALOG_X_ORIGIN" value="1"/>
-		<item key="DIALOG_Y_ORIGIN" value="164"/>
-		<item key="DIALOG_WIDTH" value="523"/>
-		<item key="DIALOG_HEIGHT" value="351"/>
-		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-12|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>
+		<item key="dialogWidth" value="648"/>
+		<item key="dialogHeight" value="416"/>
+		<item key="DIALOG_X_ORIGIN" value="89"/>
+		<item key="DIALOG_Y_ORIGIN" value="174"/>
+		<item key="DIALOG_WIDTH" value="648"/>
+		<item key="DIALOG_HEIGHT" value="416"/>
+		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-15|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>
 	</section>
 </section>

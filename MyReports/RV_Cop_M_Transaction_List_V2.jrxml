@@ -53,6 +53,7 @@ where
 	and (e.ad_org_id = $P{AD_Org_ID}
 		or $P{AD_Org_ID} is null)
 	and b.MovementDate between '2019/01/01' and ($P{DateTo}  ||  ' 11:59:59')::timestamp
+	and B.isactive = 'Y'
 group by
 	F.VALUE,F.NAME,g.UOMSymbol,
 	E.NAME ,h.value ,
@@ -117,6 +118,9 @@ order by
 		<variableExpression><![CDATA[$F{movementqty}]]></variableExpression>
 	</variable>
 	<variable name="movementqty 0_1" class="java.math.BigDecimal" resetType="Group" resetGroup="ad_org" calculation="Sum">
+		<variableExpression><![CDATA[$F{movementqty}]]></variableExpression>
+	</variable>
+	<variable name="movementqty 00_1" class="java.math.BigDecimal" resetType="Group" resetGroup="locator_n" calculation="Sum">
 		<variableExpression><![CDATA[$F{movementqty}]]></variableExpression>
 	</variable>
 	<group name="m_product">
@@ -186,6 +190,38 @@ order by
 						<paragraph spacingBefore="1"/>
 					</textElement>
 					<textFieldExpression><![CDATA[$V{movementqty 0_1}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="locator_n">
+		<groupExpression><![CDATA[$F{locator_n}]]></groupExpression>
+		<groupHeader>
+			<band/>
+		</groupHeader>
+		<groupFooter>
+			<band height="14">
+				<printWhenExpression><![CDATA[$P{ShowHeader}.equals( "Y" )]]></printWhenExpression>
+				<textField pattern="#,##0.##">
+					<reportElement x="511" y="1" width="61" height="8" uuid="4e3735b7-b35a-441b-b35b-95603ed87033">
+						<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="b39bc82d-8a6d-4153-b09f-bfe961181946"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.spacingBefore" value="px"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Top">
+						<font size="5" isBold="true" isItalic="true"/>
+						<paragraph spacingBefore="1"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{movementqty 00_1}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupFooter>

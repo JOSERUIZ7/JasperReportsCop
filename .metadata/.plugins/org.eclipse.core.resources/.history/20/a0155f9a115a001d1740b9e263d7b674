@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT_ReceiptsPerBank" pageWidth="1008" pageHeight="612" orientation="Landscape" columnWidth="968" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="20e3b00e-0780-4f19-bc5a-ab5a3c6cddd4">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="idempiereProd"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="220"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="773"/>
+	<parameter name="DateTo" class="java.sql.Timestamp"/>
+	<parameter name="DateFrom" class="java.sql.Timestamp"/>
+	<queryString language="SQL">
+		<![CDATA[select  
+trim (b.name) || ' - ' || trim (cb.name) as bankname2,
+b.name as bankname, cb.name,
+cb.accountno,
+		coalesce((select  sum(currencyconvert(cp.payamt, cp.c_currency_id, 1000000::numeric, cp.datetrx::timestamp with time zone, cp.c_conversiontype_id, cp.ad_client_id, cp.ad_org_id))
+       from c_payment cp WHERE cp.isreceipt = 'Y'::bpchar AND cp.docstatus = 'CO'::bpchar and cp.ad_client_id = 1000000 and cp.ad_orgtrx_id = 1000006 and cp.c_bankaccount_id =cpa.c_bankaccount_id and cp.datetrx between $P{DateFrom} and $P{DateTo}),0) as Industriales,
+        coalesce((select  sum(currencyconvert(cp.payamt, cp.c_currency_id, 1000000::numeric, cp.datetrx::timestamp with time zone, cp.c_conversiontype_id, cp.ad_client_id, cp.ad_org_id))
+       from c_payment cp WHERE cp.isreceipt = 'Y'::bpchar AND cp.docstatus = 'CO'::bpchar and cp.ad_client_id = 1000000 and cp.ad_orgtrx_id = 1000000 and cp.c_bankaccount_id =cpa.c_bankaccount_id and cp.datetrx between $P{DateFrom} and $P{DateTo}),0) as Oriente,
+        coalesce((select  sum(currencyconvert(cp.payamt, cp.c_currency_id, 1000000::numeric, cp.datetrx::timestamp with time zone, cp.c_conversiontype_id, cp.ad_client_id, cp.ad_org_id))
+       from c_payment cp WHERE cp.isreceipt = 'Y'::bpchar AND cp.docstatus = 'CO'::bpchar and cp.ad_client_id = 1000000 and cp.ad_orgtrx_id = 1000001 and cp.c_bankaccount_id =cpa.c_bankaccount_id and cp.datetrx between $P{DateFrom} and $P{DateTo}),0) as Occidente,
+       coalesce((select  sum(currencyconvert(cp.payamt, cp.c_currency_id, 1000000::numeric, cp.datetrx::timestamp with time zone, cp.c_conversiontype_id, cp.ad_client_id, cp.ad_org_id))
+       from c_payment cp WHERE cp.isreceipt = 'Y'::bpchar AND cp.docstatus = 'CO'::bpchar and cp.ad_client_id = 1000000 and cp.ad_orgtrx_id = 1000002 and cp.c_bankaccount_id =cpa.c_bankaccount_id and cp.datetrx between $P{DateFrom} and $P{DateTo}),0) as Andina,
+       coalesce((select  sum(currencyconvert(cp.payamt, cp.c_currency_id, 1000000::numeric, cp.datetrx::timestamp with time zone, cp.c_conversiontype_id, cp.ad_client_id, cp.ad_org_id))
+       from c_payment cp WHERE cp.isreceipt = 'Y'::bpchar AND cp.docstatus = 'CO'::bpchar and cp.ad_client_id = 1000000 and cp.ad_orgtrx_id = 1000003 and cp.c_bankaccount_id =cpa.c_bankaccount_id and cp.datetrx between $P{DateFrom} and $P{DateTo}),0) as CentroOccidente,
+       coalesce((select  sum(currencyconvert(cp.payamt, cp.c_currency_id, 1000000::numeric, cp.datetrx::timestamp with time zone, cp.c_conversiontype_id, cp.ad_client_id, cp.ad_org_id))
+       from c_payment cp WHERE cp.isreceipt = 'Y'::bpchar AND cp.docstatus = 'CO'::bpchar and cp.ad_client_id = 1000000 and cp.ad_orgtrx_id = 1000004 and cp.c_bankaccount_id =cpa.c_bankaccount_id and cp.datetrx between $P{DateFrom} and $P{DateTo}),0) as Centro,
+       coalesce((select  sum(currencyconvert(cp.payamt, cp.c_currency_id, 1000000::numeric, cp.datetrx::timestamp with time zone, cp.c_conversiontype_id, cp.ad_client_id, cp.ad_org_id))
+       from c_payment cp WHERE cp.isreceipt = 'Y'::bpchar AND cp.docstatus = 'CO'::bpchar and cp.ad_client_id = 1000000 and cp.ad_orgtrx_id = 1000005 and cp.c_bankaccount_id =cpa.c_bankaccount_id and cp.datetrx between $P{DateFrom} and $P{DateTo}),0)  as Capital,
+       max($P{DateFrom})::date as DateFrom,
+       max($P{DateTo})::date as DateTo
+       from c_payment cpa 
+       join c_bankaccount cb on cpa.c_bankaccount_id = cb.c_bankaccount_id 
+       join c_bank b on cb.c_bank_id = b.c_bank_id            
+       WHERE cpa.isreceipt = 'Y'::bpchar AND cpa.docstatus = 'CO'::bpchar and b.c_bank_id != 1000047 and cpa.ad_client_id = 1000000 and cpa.datetrx between $P{DateFrom} and $P{DateTo}
+       group by bankname, cb.name, cb.accountno,cpa.c_bankaccount_id;]]>
+	</queryString>
+	<field name="bankname2" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="bankname2"/>
+		<property name="com.jaspersoft.studio.field.label" value="bankname2"/>
+	</field>
+	<field name="bankname" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="bankname"/>
+		<property name="com.jaspersoft.studio.field.label" value="bankname"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_bank"/>
+	</field>
+	<field name="name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_bankaccount"/>
+	</field>
+	<field name="accountno" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="accountno"/>
+		<property name="com.jaspersoft.studio.field.label" value="accountno"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_bankaccount"/>
+	</field>
+	<field name="industriales" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="industriales"/>
+		<property name="com.jaspersoft.studio.field.label" value="industriales"/>
+	</field>
+	<field name="oriente" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="oriente"/>
+		<property name="com.jaspersoft.studio.field.label" value="oriente"/>
+	</field>
+	<field name="occidente" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="occidente"/>
+		<property name="com.jaspersoft.studio.field.label" value="occidente"/>
+	</field>
+	<field name="andina" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="andina"/>
+		<property name="com.jaspersoft.studio.field.label" value="andina"/>
+	</field>
+	<field name="centrooccidente" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="centrooccidente"/>
+		<property name="com.jaspersoft.studio.field.label" value="centrooccidente"/>
+	</field>
+	<field name="centro" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="centro"/>
+		<property name="com.jaspersoft.studio.field.label" value="centro"/>
+	</field>
+	<field name="capital" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="capital"/>
+		<property name="com.jaspersoft.studio.field.label" value="capital"/>
+	</field>
+	<field name="datefrom" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="datefrom"/>
+		<property name="com.jaspersoft.studio.field.label" value="datefrom"/>
+	</field>
+	<field name="dateto" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="dateto"/>
+		<property name="com.jaspersoft.studio.field.label" value="dateto"/>
+	</field>
+	<variable name="OrienteTotal" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{oriente}]]></variableExpression>
+	</variable>
+	<variable name="occidenteTotal" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{occidente}]]></variableExpression>
+	</variable>
+	<variable name="andinaTotal" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{andina}]]></variableExpression>
+	</variable>
+	<variable name="centroTotal" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{centro}]]></variableExpression>
+	</variable>
+	<variable name="indistrialesTotal" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{industriales}]]></variableExpression>
+	</variable>
+	<variable name="centroOccidenteTotal" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{centrooccidente}]]></variableExpression>
+	</variable>
+	<variable name="CapitalTotal" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{capital}]]></variableExpression>
+	</variable>
+	<variable name="TotalTotal" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[(((((($F{industriales}.add($F{oriente} )).add($F{occidente})).add($F{andina})).add($F{centrooccidente})).add( $F{centro})).add($F{capital}))]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="59" splitType="Stretch">
+			<staticText>
+				<reportElement x="400" y="0" width="156" height="20" uuid="ddee5c42-0cbd-4150-b59a-3a67c2fe5ac3"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cobranzas Por Banco]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="280" y="20" width="80" height="20" uuid="7536ed01-d8a5-49ea-be45-267af06effc4"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Desde:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="476" y="20" width="80" height="20" uuid="58759191-7c7a-4bad-aae1-b196f459b858"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hasta:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="360" y="20" width="120" height="20" uuid="6ab92a04-3b4e-4cb5-b8f6-6487e277275f"/>
+				<textFieldExpression><![CDATA[$F{datefrom}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="560" y="20" width="120" height="20" uuid="7851ebb3-be81-4fb7-96ad-8fda13d687b1"/>
+				<textFieldExpression><![CDATA[$F{dateto}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="927" y="5" width="10" height="11" uuid="9329ec02-3f3f-4517-b852-d86969e76edc">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[de:]]></text>
+			</staticText>
+			<textField pattern="HH:mm" isBlankWhenNull="true">
+				<reportElement x="913" y="27" width="49" height="11" uuid="68312492-38d6-480d-8e12-673ba066c9b4">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("h:mm a").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="878" y="27" width="36" height="11" uuid="9b4ef2e6-ccd5-4e3c-a60f-a45965c6617c">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="878" y="5" width="36" height="11" uuid="6c111f89-2e39-4d49-b000-3c9f95348a8a">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Página:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="878" y="16" width="36" height="11" uuid="6a109031-4575-4db6-a274-8cb83fa500c3">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="915" y="5" width="11" height="11" uuid="5c4f3609-ce1c-436c-97ef-13f4b243d099">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" isBlankWhenNull="true">
+				<reportElement x="941" y="5" width="21" height="11" uuid="badf20ca-b970-4b03-b1bb-beb90cd76aba">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="913" y="16" width="49" height="11" uuid="3e246a8f-0b5e-4c81-9ba5-88fec699379c">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="false" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="19" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<staticText>
+				<reportElement x="0" y="0" width="80" height="19" uuid="84d45cba-0aae-4527-a4c5-e64ef901fcf7"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Banco]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="80" y="0" width="80" height="19" uuid="eca60756-c3ec-4036-9fa1-1b1027a6a569"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cuenta Bancaria]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="160" y="0" width="100" height="19" uuid="e0450ff9-f2f6-44f1-b919-904717dcc37a">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Oriente]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="260" y="0" width="100" height="19" uuid="3b2e497d-2494-479d-bc18-8c9739905933">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Occidente]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="360" y="0" width="100" height="19" uuid="a9e7dd10-4a67-478a-8b28-a3df83e30ba6">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Andina]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="460" y="0" width="100" height="19" uuid="0c7248ca-e902-4dcf-a5bc-5a304a82ed14">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Centro Occidente]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="560" y="0" width="100" height="19" uuid="832873fa-41b0-43f7-b84e-4dc595ab47f8">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Centro]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="660" y="0" width="100" height="19" uuid="ef1d0db0-9ecd-49a5-90cc-6be6b6d17965">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Capital]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="760" y="0" width="100" height="19" uuid="baad123e-01cb-40c3-bfb9-7b3e09d667f9">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Coposa Planta]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="860" y="0" width="100" height="19" uuid="dce06dd3-e008-4819-a3fb-76d92af87632">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Totales]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField>
+				<reportElement x="0" y="0" width="80" height="20" uuid="a62c932c-8adc-44b0-8ec9-74b7555125b8"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bankname2}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="80" y="0" width="80" height="20" uuid="b1a43e02-e3e0-4323-b5cd-993d0650278f"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{accountno}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="160" y="0" width="100" height="20" uuid="254a3183-ddd0-4ed0-91c8-670bd5df7a4a"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{oriente}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="260" y="0" width="100" height="20" uuid="ca843013-3479-4543-9fae-e99efeabd769"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{occidente}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="360" y="0" width="100" height="20" uuid="fd7b5eb4-34b2-4287-b4bd-8821a760d719"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{andina}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="460" y="0" width="100" height="20" uuid="466d3dbb-1fd0-4c30-88da-01801f9d770d"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{centrooccidente}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="560" y="0" width="100" height="20" uuid="69e52196-f061-4a66-853a-6d0becf46d11"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{centro}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="660" y="0" width="100" height="20" uuid="e6d79e7c-f7b9-4aa5-8f45-fcbeae4263e9"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{capital}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="760" y="0" width="100" height="20" uuid="e7bb275a-1baf-4594-96c1-e359fe8d8a08"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{industriales}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="860" y="0" width="100" height="20" uuid="961a9398-76c5-4b6e-9c1d-f04807e265aa"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[(((((($F{industriales}.add($F{oriente} )).add($F{occidente})).add($F{andina})).add($F{centrooccidente})).add( $F{centro})).add($F{capital}))]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band height="22" splitType="Stretch">
+			<textField pattern="#,##0.00#">
+				<reportElement x="80" y="0" width="110" height="19" uuid="4ed8b793-5b25-4690-9be3-37300fc9d4ac"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{OrienteTotal}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="190" y="0" width="110" height="20" uuid="cdadb0c1-e0fb-4bed-867f-3950b524ad0e"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{occidenteTotal}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="300" y="0" width="110" height="20" uuid="c497ea6d-5c9a-45c9-9586-031f0b30453e"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{andinaTotal}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="520" y="1" width="110" height="20" uuid="9856aaac-89e3-4ae6-a91c-516babc46939"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{centroTotal}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="410" y="-1" width="110" height="20" uuid="79f94ac1-7fe6-4d62-b8f9-546b82b5f43c"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{centroOccidenteTotal}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="630" y="0" width="110" height="20" uuid="40ee5bee-ba88-42ce-9818-6d23e7d0bae3"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{CapitalTotal}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="740" y="0" width="110" height="20" uuid="5806df74-cf5a-4dbb-8283-4344cfaa3f55"/>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{indistrialesTotal}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#">
+				<reportElement x="850" y="0" width="110" height="20" uuid="4388e8b3-9c3e-4bb1-9e6b-bc5d4c86607b">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TotalTotal}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="70" height="19" uuid="4c316f6a-1c08-40df-af63-80ecdf629eee"/>
+				<textElement>
+					<font size="7" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Totales:]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

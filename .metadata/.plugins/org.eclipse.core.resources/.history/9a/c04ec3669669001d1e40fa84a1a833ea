@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MGR_sUPPLYrEPORT2" pageWidth="700" pageHeight="1000" orientation="Landscape" columnWidth="698" leftMargin="1" rightMargin="1" topMargin="1" bottomMargin="1" uuid="7a3182b0-f43b-4774-ba71-59e6fc9dfa30">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.report.description" value=""/>
+	<parameter name="M_Product_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1018800]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Resume" class="java.lang.String">
+		<defaultValueExpression><![CDATA["Y"]]></defaultValueExpression>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[select
+--	a.m_product_id ,
+	c.value,
+	c.name,
+	e.value M_Warehouse_n,
+	b.Value  m_locator_n ,
+	d.description M_AttributeSetInstance_n ,
+--	a.m_locator_id ,
+--	a.M_AttributeSetInstance_ID, 
+	sum(a.qtyonhand) qtyonhand
+from
+	M_Storage a join m_locator b on a.m_locator_id = b.m_locator_id
+	join m_product c on c.m_product_id = a.m_product_id 
+	join M_AttributeSetInstance d on d.m_attributesetinstance_id = a.M_AttributeSetInstance_ID
+	join M_Warehouse e on e.M_Warehouse_id = b.m_warehouse_id 
+where
+	a.M_Product_ID = $P{M_Product_ID}
+group by
+	c.name,c.value,e.value,
+	b.Value  ,
+	d.description 
+--  a.m_product_id,
+--	a.m_locator_id,
+--	a.M_AttributeSetInstance_ID
+--	, c.name,c.value
+having
+	sum(a.qtyonhand) > 0
+order by
+	qtyonhand desc]]>
+	</queryString>
+	<field name="value" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="value"/>
+		<property name="com.jaspersoft.studio.field.label" value="value"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_product"/>
+	</field>
+	<field name="name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_product"/>
+	</field>
+	<field name="m_warehouse_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="m_warehouse_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_warehouse_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_warehouse"/>
+	</field>
+	<field name="m_locator_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="m_locator_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_locator_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_locator"/>
+	</field>
+	<field name="m_attributesetinstance_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="m_attributesetinstance_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_attributesetinstance_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_attributesetinstance"/>
+	</field>
+	<field name="qtyonhand" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="qtyonhand"/>
+		<property name="com.jaspersoft.studio.field.label" value="qtyonhand"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<summary>
+		<band height="500" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<stackedAreaChart>
+				<chart evaluationTime="Report">
+					<reportElement x="12" y="6" width="668" height="364" uuid="c9b8acae-8bbd-4cab-bea5-41ddb32a9344"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset resetType="Report"/>
+					<categorySeries>
+						<seriesExpression><![CDATA["SERIES 1"]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{m_locator_n}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{qtyonhand}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<areaPlot>
+					<plot labelRotation="39.0"/>
+					<categoryAxisFormat labelRotation="39.0">
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000">
+							<tickLabelFont>
+								<font size="8" isBold="true"/>
+							</tickLabelFont>
+						</axisFormat>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat labelColor="#000000" tickLabelColor="#000000" axisLineColor="#000000"/>
+					</valueAxisFormat>
+				</areaPlot>
+			</stackedAreaChart>
+		</band>
+	</summary>
+</jasperReport>

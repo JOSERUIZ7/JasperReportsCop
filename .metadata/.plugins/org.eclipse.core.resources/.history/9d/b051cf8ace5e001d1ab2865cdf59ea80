@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MGR_sUPPLYrEPORT3" pageWidth="595" pageHeight="842" columnWidth="593" leftMargin="1" rightMargin="1" topMargin="1" bottomMargin="1" uuid="7a3182b0-f43b-4774-ba71-59e6fc9dfa30">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.report.description" value=""/>
+	<parameter name="C_Period_ID" class="java.lang.Integer"/>
+	<parameter name="Resume" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[select
+	c.name C_Activity_n,
+	m2.name as M_Product_Category_n,
+	b.name c_bpartner_n,
+	coalesce(m.name, a.c_orderline_description) as m_product_n,
+	sum(a.QtyReserved) QtyReserved
+from
+	rv_orderdetail a
+	join c_bpartner b on	b.c_bpartner_id = a.c_bpartner_id
+	join C_Activity c on	c.C_Activity_ID = a.C_Activity_ID
+	left join m_product m on	m.m_product_id = a.m_product_id
+	left join M_Product_Category m2 on	m2.M_Product_Category_ID = m.M_Product_Category_ID
+where
+	a.issotrx = 'N'
+	and docstatus = 'CO'
+	and a.c_period_id = $P{C_Period_ID}
+	and a.QtyReserved > 0
+group by
+	b.name ,m2.name ,coalesce(m.name, a.c_orderline_description),c.name
+order by	1,	2,	3]]>
+	</queryString>
+	<field name="c_activity_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="c_activity_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_activity_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_activity"/>
+	</field>
+	<field name="m_product_category_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="m_product_category_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_product_category_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_product_category"/>
+	</field>
+	<field name="c_bpartner_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="c_bpartner_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_bpartner_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_bpartner"/>
+	</field>
+	<field name="m_product_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="m_product_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_product_n"/>
+	</field>
+	<field name="qtyreserved" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="qtyreserved"/>
+		<property name="com.jaspersoft.studio.field.label" value="qtyreserved"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<columnHeader>
+		<band height="9">
+			<staticText>
+				<reportElement x="2" y="0" width="34" height="9" uuid="13db2c0e-7e07-400b-819f-19ffd64c1014">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="cc855b3b-a9c8-45d2-a2a6-becf20488fb8"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="4" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Actividad]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="37" y="0" width="50" height="9" uuid="86e1b994-2c0b-447e-8545-f9adb1b932f3">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="9e7e59c7-fb43-4e89-b9de-a2043d27ad99"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="4" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Categoria]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="87" y="0" width="110" height="9" uuid="7e7345b2-e8a7-451f-8a03-21d7c1b5c549">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="078e2f02-344d-4859-aff8-096e68f2e04a"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="4" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Tercero]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="197" y="0" width="100" height="9" uuid="d63e535f-e07a-4b87-befa-97923d70606b">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="8ba21dcf-03c9-4584-9e94-109bde00c713"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="4" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Producto Servicio]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="297" y="0" width="23" height="9" uuid="b95c76b9-463d-49ba-8af5-ecb229a2fa92">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="8304d2de-6dde-4f5b-af02-f2a6a053fcbb"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="4" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Por Entregar]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="7">
+			<textField>
+				<reportElement x="2" y="0" width="34" height="7" uuid="beed4c6a-7fa8-44dd-aff5-58b8af40c47d">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="cc855b3b-a9c8-45d2-a2a6-becf20488fb8"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+				</box>
+				<textElement>
+					<font size="4"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{c_activity_n}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="37" y="0" width="50" height="7" uuid="61b703ba-a463-4f85-ae32-4d9ea535b511">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="9e7e59c7-fb43-4e89-b9de-a2043d27ad99"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+				</box>
+				<textElement>
+					<font size="4"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{m_product_category_n}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="87" y="0" width="110" height="7" uuid="1bf7ec46-d411-41cc-8873-d968ca6cb4c7">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="078e2f02-344d-4859-aff8-096e68f2e04a"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+				</box>
+				<textElement>
+					<font size="4"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{c_bpartner_n}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="197" y="0" width="100" height="7" uuid="41fcb8f5-6b9b-4d3b-9f88-9323f5a55b8c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="8ba21dcf-03c9-4584-9e94-109bde00c713"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+				</box>
+				<textElement>
+					<font size="4"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{m_product_n}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.###;(#,##0.###-)">
+				<reportElement x="297" y="0" width="23" height="7" uuid="2344b7c7-b5f9-4255-8cce-4fcc74e252f5">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="8304d2de-6dde-4f5b-af02-f2a6a053fcbb"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.25"/>
+					<rightPen lineWidth="0.25"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font size="4"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{qtyreserved}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

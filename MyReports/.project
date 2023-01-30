@@ -15,10 +15,16 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.babel.editor.rbeBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>net.sf.jasperreports.nature</nature>
+		<nature>com.jaspersoft.studio.babel.editor.rbeNature</nature>
 	</natures>
 	<linkedResources>
 		<link>
@@ -32,9 +38,19 @@
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/Bill_of_Lading_CrossTab_origen.jrxml</location>
 		</link>
 		<link>
+			<name>COP_RV_Print_Requisition.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/COP_RV_Print_Requisition.jasper</location>
+		</link>
+		<link>
 			<name>COP_RV_Print_Requisition.jrxml</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/COP_RV_Print_Requisition.jrxml</location>
+		</link>
+		<link>
+			<name>COP_RV_Print_Requisition_1.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/COP_RV_Print_Requisition.jasper</location>
 		</link>
 		<link>
 			<name>COP_RV_Print_Requisition_1.jrxml</name>
@@ -62,6 +78,16 @@
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/COP_RV_RecordWeight_V1 (1).jrxml</location>
 		</link>
 		<link>
+			<name>COP_RV_RecordWeight_V1 (2).jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/COP_RV_RecordWeight_V1 (2).jasper</location>
+		</link>
+		<link>
+			<name>COP_RV_RecordWeight_V1 (2).jrxml</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/COP_RV_RecordWeight_V1 (2).jrxml</location>
+		</link>
+		<link>
 			<name>Checking_Balance.jasper</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/Checking_Balance.jasper</location>
@@ -72,9 +98,19 @@
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/Checking_Balance.jrxml</location>
 		</link>
 		<link>
+			<name>Estatus_requisicion2.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/Estatus_requisicion2.jasper</location>
+		</link>
+		<link>
 			<name>Estatus_requisicion2.jrxml</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/Estatus_requisicion2.jrxml</location>
+		</link>
+		<link>
+			<name>FLUJO_CAJA_TABLE.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/FLUJO_CAJA_TABLE.jasper</location>
 		</link>
 		<link>
 			<name>FLUJO_CAJA_TABLE.jrxml</name>
@@ -82,9 +118,19 @@
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/FLUJO_CAJA_TABLE.jrxml</location>
 		</link>
 		<link>
+			<name>FLUJO_CAJA_TABLEV2.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/FLUJO_CAJA_TABLEV2.jasper</location>
+		</link>
+		<link>
 			<name>FLUJO_CAJA_TABLEV2.jrxml</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/FLUJO_CAJA_TABLEV2.jrxml</location>
+		</link>
+		<link>
+			<name>FLUJO_CAJA_TABLEV2_1.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/FLUJO_CAJA_TABLEV2.jasper</location>
 		</link>
 		<link>
 			<name>FLUJO_CAJA_TABLEV2_1.jrxml</name>
@@ -132,9 +178,19 @@
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_ARCV_Withholdings(FTU).jrxml</location>
 		</link>
 		<link>
+			<name>RPT_Account_Status_Report_toDate.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Account_Status_Report_toDate.jasper</location>
+		</link>
+		<link>
 			<name>RPT_Account_Status_Report_toDate.jrxml</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Account_Status_Report_toDate.jrxml</location>
+		</link>
+		<link>
+			<name>RPT_Account_Status_Report_toDate_1.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Account_Status_Report_toDate.jasper</location>
 		</link>
 		<link>
 			<name>RPT_Account_Status_Report_toDate_1.jrxml</name>
@@ -142,9 +198,19 @@
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Account_Status_Report_toDate.jrxml</location>
 		</link>
 		<link>
+			<name>RPT_Account_Status_Report_toDate_2.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Account_Status_Report_toDate.jasper</location>
+		</link>
+		<link>
 			<name>RPT_Account_Status_Report_toDate_2.jrxml</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Account_Status_Report_toDate.jrxml</location>
+		</link>
+		<link>
+			<name>RPT_Account_Status_Report_toDate_3.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Account_Status_Report_toDate.jasper</location>
 		</link>
 		<link>
 			<name>RPT_Account_Status_Report_toDate_3.jrxml</name>
@@ -152,9 +218,19 @@
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Account_Status_Report_toDate.jrxml</location>
 		</link>
 		<link>
+			<name>RPT_Daily_Cash_Flow.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Daily_Cash_Flow.jasper</location>
+		</link>
+		<link>
 			<name>RPT_Daily_Cash_Flow.jrxml</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Daily_Cash_Flow.jrxml</location>
+		</link>
+		<link>
+			<name>RPT_Daily_Cash_Flow_1.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Daily_Cash_Flow.jasper</location>
 		</link>
 		<link>
 			<name>RPT_Daily_Cash_Flow_1.jrxml</name>
@@ -162,9 +238,19 @@
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Daily_Cash_Flow.jrxml</location>
 		</link>
 		<link>
+			<name>RPT_Daily_Cash_Flow_2.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Daily_Cash_Flow.jasper</location>
+		</link>
+		<link>
 			<name>RPT_Daily_Cash_Flow_2.jrxml</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Daily_Cash_Flow.jrxml</location>
+		</link>
+		<link>
+			<name>RPT_Daily_Cash_Flow_3.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Daily_Cash_Flow.jasper</location>
 		</link>
 		<link>
 			<name>RPT_Daily_Cash_Flow_3.jrxml</name>
@@ -172,9 +258,19 @@
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Daily_Cash_Flow.jrxml</location>
 		</link>
 		<link>
+			<name>RPT_Invoice_product.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Desktop/RPT_Invoice_product.jasper</location>
+		</link>
+		<link>
 			<name>RPT_Invoice_product.jrxml</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Desktop/RPT_Invoice_product.jrxml</location>
+		</link>
+		<link>
+			<name>RPT_Invoice_productDetallV1.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Invoice_productDetallV1.jasper</location>
 		</link>
 		<link>
 			<name>RPT_Invoice_productDetallV1.jrxml</name>
@@ -182,9 +278,19 @@
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Invoice_productDetallV1.jrxml</location>
 		</link>
 		<link>
+			<name>RPT_Invoice_productV2 (1).jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Invoice_productV2 (1).jasper</location>
+		</link>
+		<link>
 			<name>RPT_Invoice_productV2 (1).jrxml</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Invoice_productV2 (1).jrxml</location>
+		</link>
+		<link>
+			<name>RPT_Invoice_productV2.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Invoice_productV2.jasper</location>
 		</link>
 		<link>
 			<name>RPT_Invoice_productV2.jrxml</name>
@@ -192,9 +298,19 @@
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Invoice_productV2.jrxml</location>
 		</link>
 		<link>
+			<name>RPT_ProductionORG_Documento_Consumo (1).jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_ProductionORG_Documento_Consumo (1).jasper</location>
+		</link>
+		<link>
 			<name>RPT_ProductionORG_Documento_Consumo (1).jrxml</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_ProductionORG_Documento_Consumo (1).jrxml</location>
+		</link>
+		<link>
+			<name>RPT_ProductionORG_Documento_Consumo (1)_1.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_ProductionORG_Documento_Consumo (1).jasper</location>
 		</link>
 		<link>
 			<name>RPT_ProductionORG_Documento_Consumo (1)_1.jrxml</name>
@@ -202,9 +318,19 @@
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_ProductionORG_Documento_Consumo (1).jrxml</location>
 		</link>
 		<link>
+			<name>RPT_ProductionORG_Documento_Consumo (1)_2.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_ProductionORG_Documento_Consumo (1).jasper</location>
+		</link>
+		<link>
 			<name>RPT_ProductionORG_Documento_Consumo (1)_2.jrxml</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_ProductionORG_Documento_Consumo (1).jrxml</location>
+		</link>
+		<link>
+			<name>RPT_ProductionORG_Documento_Consumo-Total-EDITADO.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_ProductionORG_Documento_Consumo-Total-EDITADO.jasper</location>
 		</link>
 		<link>
 			<name>RPT_ProductionORG_Documento_Consumo-Total-EDITADO.jrxml</name>
@@ -212,9 +338,19 @@
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_ProductionORG_Documento_Consumo-Total-EDITADO.jrxml</location>
 		</link>
 		<link>
+			<name>RPT_ProductionORG_Documento_Consumo-Total-EDITADO_1.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_ProductionORG_Documento_Consumo-Total-EDITADO.jasper</location>
+		</link>
+		<link>
 			<name>RPT_ProductionORG_Documento_Consumo-Total-EDITADO_1.jrxml</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_ProductionORG_Documento_Consumo-Total-EDITADO.jrxml</location>
+		</link>
+		<link>
+			<name>RPT_ProductionORG_Documento_Consumo.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_ProductionORG_Documento_Consumo.jasper</location>
 		</link>
 		<link>
 			<name>RPT_ProductionORG_Documento_Consumo.jrxml</name>
@@ -222,14 +358,49 @@
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_ProductionORG_Documento_Consumo.jrxml</location>
 		</link>
 		<link>
+			<name>RPT_ReceiptsPerBank.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_ReceiptsPerBank.jasper</location>
+		</link>
+		<link>
+			<name>RPT_ReceiptsPerBank.jrxml</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_ReceiptsPerBank.jrxml</location>
+		</link>
+		<link>
+			<name>RPT_ReceiptsPerBank_1.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_ReceiptsPerBank.jasper</location>
+		</link>
+		<link>
+			<name>RPT_ReceiptsPerBank_1.jrxml</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_ReceiptsPerBank.jrxml</location>
+		</link>
+		<link>
+			<name>RPT__Accountstatement.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT__Accountstatement.jasper</location>
+		</link>
+		<link>
 			<name>RPT__Accountstatement.jrxml</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT__Accountstatement.jrxml</location>
 		</link>
 		<link>
+			<name>RPT__Accountstatement_1.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT__Accountstatement.jasper</location>
+		</link>
+		<link>
 			<name>RPT__Accountstatement_1.jrxml</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT__Accountstatement.jrxml</location>
+		</link>
+		<link>
+			<name>RPT__Accountstatement_2.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT__Accountstatement.jasper</location>
 		</link>
 		<link>
 			<name>RPT__Accountstatement_2.jrxml</name>
@@ -252,9 +423,24 @@
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/Rpt_Inventory_General_Distributor_N_Suit.jrxml</location>
 		</link>
 		<link>
+			<name>Rpt_Inventory_General_Distributor_VtoDateV2.jrxml</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/Rpt_Inventory_General_Distributor_VtoDateV2.jrxml</location>
+		</link>
+		<link>
+			<name>Voucher_WithholdingimaeCopo.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/Voucher_WithholdingimaeCopo.jasper</location>
+		</link>
+		<link>
 			<name>Voucher_WithholdingimaeCopo.jrxml</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/Voucher_WithholdingimaeCopo.jrxml</location>
+		</link>
+		<link>
+			<name>Voucher_WithholdingimaeCopo_1.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/Voucher_WithholdingimaeCopo.jasper</location>
 		</link>
 		<link>
 			<name>Voucher_WithholdingimaeCopo_1.jrxml</name>

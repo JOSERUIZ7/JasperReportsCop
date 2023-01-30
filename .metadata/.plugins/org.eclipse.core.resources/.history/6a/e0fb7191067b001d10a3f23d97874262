@@ -1,0 +1,602 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT_Production_Trace.jrxml" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e87ac7bf-7f6f-4bee-820b-0f7e8a425c18">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.report.description" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="275"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="714"/>
+	<parameter name="RESOURCE_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="M_Product_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1000233]]></defaultValueExpression>
+	</parameter>
+	<parameter name="QtyToReturn" class="java.math.BigDecimal"/>
+	<parameter name="M_AttributeSetInstance_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1001657]]></defaultValueExpression>
+	</parameter>
+	<parameter name="M_Production_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1001657]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select * from ( 
+select 	
+produccion,line,tipo,m_transaction_id ,
+ROW_NUMBER() OVER(PARTITION BY produccion,line,tipo
+       ORDER BY produccion,line,tipo,m_transaction_id desc ) AS numero, 
+
+* from 
+(select
+	A1.produccion ,
+	mpt1.value,
+	mpt1.name,
+	att.description lote,
+	ml.value m_locator_n,
+	A1.movementdate ,
+	--A1.m_production_id ,
+	A1.m_attributesetinstance_id ,
+	A1.movementqty ,
+	A1.m_locator_id,
+	b1.line,
+	B1.m_product_id,
+	mpt2.value value2,
+	mpt2.name name2,
+	C1.M_AttributeSetInstance_ID,
+	att2.description lote2 ,
+	C1.MovementQty MovementQty2 ,
+	coalesce(mp1.documentno, mi1.documentno, miO1.DOCUMENTNO) DOCUMENTNO,
+	case
+		when mp1.documentno is not null then 'PRODUCCION'
+		when mi1.documentno is not null then 'INVENTARIO FISICO'
+		when mio1.documentno is not null then 'RECEPCION'
+	end TIPO ,
+	coalesce(mp1.MovementDate, mi1.MovementDate, miO1.MovementDate) datedoc,
+	COR.DOCUMENTNO as C_ORDER_N,
+	CBP.NAME c_bpartner_n,
+	mIO2.C_OrderLine_ID ,
+	--C1.M_ProductionLine_ID,
+	mt.movementtype,
+	mt.m_transaction_id,
+	mt.m_inventoryline_id ,
+	mt.m_movementline_id ,
+	mt.m_inoutline_id,
+	mt.m_productionline_id,
+	'Análisis de Trazabilidad de Producción' as reponame,
+	case when $P{M_AttributeSetInstance_ID} is null then '' else 'Lote: ' ||  att.description end  
+	|| case when $P{M_Production_ID} is null then '' else 'Produccion:' || A1.produccion end
+	doc_info
+from 
+				(select
+					A.documentno PRODUCCION,
+					a.m_product_id,
+					a.MovementDate,
+					A.m_production_id,
+					B.m_productionline_id ,
+					B.M_AttributeSetInstance_ID, 
+							B.MovementQty,
+							B.M_Locator_ID
+				from
+							M_PRODUCTION A
+				join m_productionline B
+						on
+							A.m_production_id = B.m_production_id
+				where
+					(a.m_production_id = $P{M_Production_ID} or $P{M_Production_ID} is null) 
+					and ((B.M_Product_ID = $P{M_Product_ID} and M_AttributeSetInstance_ID = $P{M_AttributeSetInstance_ID}) or $P{M_Product_ID}  is null )
+					and B.isactive = 'Y'
+					and A.docstatus = 'CO'
+					and B.isendproduct = 'Y') as A1
+	left join m_productionline B1 on B1.m_production_id = A1.m_production_id
+		and B1.isactive = 'Y' and B1.isendproduct = 'N' and B1.isactive = 'Y' and B1.QtyUsed <> 0
+	left join M_ProductionLineMA C1 on C1.m_productionline_id = B1.m_productionline_id
+	left join 
+	(select	* from	m_transaction ) mt
+	on mt.M_Product_ID = B1.m_product_id and mt.m_attributesetinstance_id = C1.M_AttributeSetInstance_ID
+	and substring(mt.movementtype, 2, 1) = '+' and substring(mt.movementtype, 1, 1) in ('P', 'I', 'V') and mt.MovementDate <= a1.MovementDate
+	
+	left join m_inventoryline mi2 on mi2.m_inventoryline_id = mt.m_inventoryline_id
+	left join m_inventory mi1 on mi1.m_inventory_id = mi2.m_inventory_id
+	
+			left join (select * from m_productionline) mp2 on mp2.m_productionline_id = mt.m_productionline_id
+			left join m_production  mp1 on mp1.m_production_id = mp2.m_production_id 
+	
+	left join m_inoutline mIO2 on mIO2.m_inoutline_id = mt.m_inoutline_id
+	left join m_inout miO1 on mIO1.m_INOUT_id = mio2.m_INOUT_id
+	
+	join m_product mpt1 on mpt1.m_product_id = a1.m_product_id
+	left join m_attributesetinstance att on	att.m_attributesetinstance_id = A1.m_attributesetinstance_id
+	join m_locator ml on ml.m_locator_id = a1.m_locator_id
+	join m_product mpt2 on	mpt2.m_product_id = b1.m_product_id
+	left join m_attributesetinstance att2 on att2.m_attributesetinstance_id = C1.m_attributesetinstance_id
+	left join C_OrderLine COL on COL.C_OrderLine_ID = mIO2.C_OrderLine_ID
+	left join C_ORDER COR on COR.c_order_id = COL.c_order_id
+	left join C_BPARTNER CBP on	CBP.c_bpartner_id = COR.c_bpartner_id
+order by
+	A1.produccion ,	b1.line,tipo, m_transaction_id desc) xt 
+	order by produccion,line,tipo,m_transaction_id desc
+	
+) xt1	
+
+where case when $P{QtyToReturn} >0 then  numero <= $P{QtyToReturn} else 1=1 end]]>
+	</queryString>
+	<field name="produccion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="produccion"/>
+		<property name="com.jaspersoft.studio.field.label" value="produccion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_production"/>
+	</field>
+	<field name="line" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="line"/>
+		<property name="com.jaspersoft.studio.field.label" value="line"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_productionline"/>
+	</field>
+	<field name="tipo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="tipo"/>
+		<property name="com.jaspersoft.studio.field.label" value="tipo"/>
+	</field>
+	<field name="m_transaction_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="m_transaction_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_transaction_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_transaction"/>
+	</field>
+	<field name="numero" class="java.lang.Long">
+		<property name="com.jaspersoft.studio.field.name" value="numero"/>
+		<property name="com.jaspersoft.studio.field.label" value="numero"/>
+	</field>
+	<field name="COLUMN_6" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="produccion"/>
+		<property name="com.jaspersoft.studio.field.label" value="produccion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_production"/>
+	</field>
+	<field name="value" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="value"/>
+		<property name="com.jaspersoft.studio.field.label" value="value"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_product"/>
+	</field>
+	<field name="name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_product"/>
+	</field>
+	<field name="lote" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="lote"/>
+		<property name="com.jaspersoft.studio.field.label" value="lote"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_attributesetinstance"/>
+	</field>
+	<field name="m_locator_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="m_locator_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_locator_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_locator"/>
+	</field>
+	<field name="movementdate" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="movementdate"/>
+		<property name="com.jaspersoft.studio.field.label" value="movementdate"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_production"/>
+	</field>
+	<field name="m_attributesetinstance_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="m_attributesetinstance_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_attributesetinstance_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_productionline"/>
+	</field>
+	<field name="movementqty" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="movementqty"/>
+		<property name="com.jaspersoft.studio.field.label" value="movementqty"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_productionline"/>
+	</field>
+	<field name="m_locator_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="m_locator_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_locator_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_productionline"/>
+	</field>
+	<field name="COLUMN_15" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="line"/>
+		<property name="com.jaspersoft.studio.field.label" value="line"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_productionline"/>
+	</field>
+	<field name="m_product_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="m_product_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_product_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_productionline"/>
+	</field>
+	<field name="value2" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="value2"/>
+		<property name="com.jaspersoft.studio.field.label" value="value2"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_product"/>
+	</field>
+	<field name="name2" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name2"/>
+		<property name="com.jaspersoft.studio.field.label" value="name2"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_product"/>
+	</field>
+	<field name="COLUMN_19" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="m_attributesetinstance_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_attributesetinstance_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_productionlinema"/>
+	</field>
+	<field name="lote2" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="lote2"/>
+		<property name="com.jaspersoft.studio.field.label" value="lote2"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_attributesetinstance"/>
+	</field>
+	<field name="movementqty2" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="movementqty2"/>
+		<property name="com.jaspersoft.studio.field.label" value="movementqty2"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_productionlinema"/>
+	</field>
+	<field name="documentno" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="documentno"/>
+		<property name="com.jaspersoft.studio.field.label" value="documentno"/>
+	</field>
+	<field name="COLUMN_23" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="tipo"/>
+		<property name="com.jaspersoft.studio.field.label" value="tipo"/>
+	</field>
+	<field name="datedoc" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="datedoc"/>
+		<property name="com.jaspersoft.studio.field.label" value="datedoc"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ftu_recordweight"/>
+	</field>
+	<field name="c_order_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="c_order_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_order_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_order"/>
+	</field>
+	<field name="c_bpartner_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="c_bpartner_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_bpartner_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_bpartner"/>
+	</field>
+	<field name="c_orderline_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="c_orderline_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_orderline_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_inoutline"/>
+	</field>
+	<field name="movementtype" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="movementtype"/>
+		<property name="com.jaspersoft.studio.field.label" value="movementtype"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_transaction"/>
+	</field>
+	<field name="COLUMN_29" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="m_transaction_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_transaction_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_transaction"/>
+	</field>
+	<field name="m_inventoryline_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="m_inventoryline_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_inventoryline_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_transaction"/>
+	</field>
+	<field name="m_movementline_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="m_movementline_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_movementline_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_transaction"/>
+	</field>
+	<field name="m_inoutline_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="m_inoutline_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_inoutline_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_transaction"/>
+	</field>
+	<field name="m_productionline_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="m_productionline_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_productionline_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_transaction"/>
+	</field>
+	<field name="reponame" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="reponame"/>
+		<property name="com.jaspersoft.studio.field.label" value="reponame"/>
+	</field>
+	<field name="doc_info" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="doc_info"/>
+		<property name="com.jaspersoft.studio.field.label" value="doc_info"/>
+	</field>
+	<group name="produccion" isStartNewPage="true">
+		<groupExpression><![CDATA[$F{produccion}]]></groupExpression>
+		<groupHeader>
+			<band height="12">
+				<textField isBlankWhenNull="true">
+					<reportElement x="0" y="0" width="50" height="11" isRemoveLineWhenBlank="true" uuid="da509349-1b34-45f1-9c5d-7663739615c8">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{produccion}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="52" y="1" width="286" height="11" isRemoveLineWhenBlank="true" uuid="db504d04-8245-4aa3-999b-b75138df95f4"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{value} +" - " + $F{name}  + " - " + $F{lote}]]></textFieldExpression>
+				</textField>
+				<textField pattern="dd/MM/yy" isBlankWhenNull="true">
+					<reportElement x="338" y="1" width="50" height="11" isRemoveLineWhenBlank="true" uuid="e1ef5038-7c41-4c5b-87d1-7fbbd08f4fef"/>
+					<textElement>
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{movementdate}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.##" isBlankWhenNull="true">
+					<reportElement x="388" y="1" width="54" height="11" isRemoveLineWhenBlank="true" uuid="a5cac53a-3a99-4605-a3e3-a2a254164f12">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Right">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{movementqty}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="13"/>
+		</groupFooter>
+	</group>
+	<group name="line">
+		<groupExpression><![CDATA[$F{line}]]></groupExpression>
+		<groupHeader>
+			<band height="18">
+				<textField isBlankWhenNull="true">
+					<reportElement x="81" y="1" width="256" height="8" isRemoveLineWhenBlank="true" uuid="689dbcc3-db7d-46b7-8148-489fece8c50c">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement>
+						<font size="6" isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{value2} +" - " + $F{name2}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0" isBlankWhenNull="true">
+					<reportElement x="336" y="1" width="48" height="8" isRemoveLineWhenBlank="true" uuid="e3e71166-a1b6-4c9b-b3f9-6654d44509e7">
+						<property name="com.jaspersoft.studio.unit.y" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<textElement textAlignment="Right">
+						<font size="6" isBold="true" isItalic="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{movementqty2}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement x="114" y="9" width="222" height="8" isRemoveLineWhenBlank="true" uuid="7148c31b-859d-4fde-a0d4-4f99021de692">
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						<printWhenExpression><![CDATA[($F{lote2} == null) == false]]></printWhenExpression>
+					</reportElement>
+					<textElement>
+						<font size="6" isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{lote2}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="2"/>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="85" splitType="Stretch">
+			<staticText>
+				<reportElement x="523" y="5" width="10" height="11" uuid="2c110026-261d-467d-9b16-cb4f625186ff">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[de:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="110" y="2" width="364" height="13" uuid="fecb3801-3ccf-4849-a650-729e5b419028">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{reponame}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" isBlankWhenNull="true">
+				<reportElement x="537" y="5" width="21" height="11" uuid="33cb3ce7-1deb-41b1-9048-543107b7cd46">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="511" y="5" width="11" height="11" uuid="27507d02-ea68-4a27-b241-918b7f80ade7">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="474" y="5" width="36" height="11" uuid="a2c3e9f2-648c-452e-93c8-952132d6f2b9">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Página:]]></text>
+			</staticText>
+			<image>
+				<reportElement x="0" y="0" width="110" height="39" uuid="75f1250b-9f84-4522-893d-7a2b3a88f0bd"/>
+				<imageExpression><![CDATA[$P{RESOURCE_DIR} + "logo.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="474" y="16" width="36" height="11" uuid="b5e1d2b6-8da2-4b42-8192-818aeba0ba5e">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="509" y="16" width="49" height="11" uuid="11725dfe-0279-4a13-8b47-46596d53bedd">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="474" y="27" width="36" height="11" uuid="bbcaa597-121e-4d50-8d5c-5e58ddbf9081">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora:]]></text>
+			</staticText>
+			<textField pattern="HH:mm" isBlankWhenNull="true">
+				<reportElement x="509" y="27" width="49" height="11" uuid="c56701e8-29bf-4cf8-a759-3bdaa3605982">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("h:mm a").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="110" y="17" width="364" height="43" uuid="ce801d77-9b36-4437-b1f3-8edfac7a8538">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{doc_info}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="74" width="50" height="8" uuid="401bbf7f-0aec-4839-ab90-fbf2d1556283"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Produccion"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="50" y="74" width="288" height="8" uuid="d1ac4dac-f2a3-4d38-8634-ca3e4844fea0">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Producto"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="338" y="74" width="50" height="8" uuid="2f99abf7-5b68-4621-91eb-a9afa9185d52">
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["F.Produccion"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="388" y="63" width="54" height="19" uuid="6ed95bd8-b45a-40c1-84b8-446295e6c9d2">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font size="6" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Cantidad Producida"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="10" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="114" y="0" width="74" height="10" isRemoveLineWhenBlank="true" uuid="5e12188a-2ba7-4062-a178-ee55417bd94f"/>
+				<textElement textAlignment="Right">
+					<font size="6" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="190" y="0" width="50" height="10" isRemoveLineWhenBlank="true" uuid="d9622cc0-e765-4dec-9e45-967ffd9a4d96">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="6" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{documentno}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yy" isBlankWhenNull="true">
+				<reportElement x="240" y="0" width="50" height="10" isRemoveLineWhenBlank="true" uuid="3d51eee0-54a2-46a2-9cb9-e38c680873d8"/>
+				<textElement>
+					<font size="6" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{datedoc}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="290" y="0" width="50" height="10" isRemoveLineWhenBlank="true" uuid="a701676c-075e-4148-95ad-ab3225cf04c3">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<printWhenExpression><![CDATA[($F{c_order_n} == null) == false]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="6" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["O.C:" + ' ' + $F{c_order_n}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="339" y="0" width="142" height="10" isRemoveLineWhenBlank="true" uuid="113c2d2a-1f10-4b2b-9451-c02717daf054">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="6" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{c_bpartner_n}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="19" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</band>
+	</summary>
+</jasperReport>

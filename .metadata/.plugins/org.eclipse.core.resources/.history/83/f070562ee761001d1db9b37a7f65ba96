@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MGR_sUPPLYrEPORT2" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="840" leftMargin="1" rightMargin="1" topMargin="1" bottomMargin="1" uuid="7a3182b0-f43b-4774-ba71-59e6fc9dfa30">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.report.description" value=""/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<parameter name="C_Period_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1000076]]></defaultValueExpression>
+	</parameter>
+	<parameter name="Resume" class="java.lang.String">
+		<defaultValueExpression><![CDATA["Y"]]></defaultValueExpression>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[select
+	c_period_id ,
+	x4.group_parent_id ,
+	x4.group_parent ,
+	x4.orderp ,
+	x4.mount_usd_payment ,
+	x4.porc_usd
+from
+	(
+	select
+	x3.c_period_id ,
+	x3.group_parent_id ,
+	CONCAT((ROUND((x3.mount_usd_payment / (sum(x3.mount_usd_payment) over ( ))) * 100,2)::TEXT) , '% ' , x3.group_parent) AS  "group_parent" ,
+	x3.orderp ,
+	x3.mount_usd_payment,
+	(x3.mount_usd_payment / (sum(x3.mount_usd_payment) over ( ))) * 100  porc_usd
+from
+	(
+	select
+		X2.c_period_id,
+		x2.group_parent_id,
+		x2.group_parent ,
+		ORDERP,
+		sum(x2.mount_usd_payment) mount_usd_payment
+	from
+		(
+		select
+			MAX(X1.c_period_id) c_period_id ,
+			x1.c_bpartner_id ,
+			x1.group_parent_id ,
+			x1.cop_paygroup_n ,
+			x1.COP_PayGroup_ID ,
+			x1.COP_BPartnerType_ID,
+			a.name COP_BPartnerType_n,
+			x1.c_bpartner_n ,
+			x1.taxid,
+			x1.C_currency_ID,
+			sum(x1.mount_usd_payment) mount_usd_payment ,
+			sum(x1.mount_ved_payment) mount_ved_payment ,
+			x1.group_parent,
+			X1.ORDERP
+		from
+			cop_paym_shopp_2 x1
+		left join COP_BPartnerType a on	x1.COP_BPartnerType_ID = a.COP_BPartnerType_ID
+		where
+			x1.c_period_id = $P{C_Period_ID}
+			and (X1.group_parent_id in (
+			1000174, 1000016, 1000171,
+			1000009, 1000183, 1000157,
+			1000156, 1000028, 1000120,
+			1000153, 1000155, 1000160,
+			1000154, 1000180)
+ 		)
+		group by
+			group_parent,
+			x1.c_bpartner_id ,
+			x1.group_parent_id ,
+			x1.cop_paygroup_n ,
+			x1.cop_paygroup_id ,
+			x1.COP_BPartnerType_ID ,
+			a.name,
+			x1.c_bpartner_n ,
+			x1.taxid,
+			x1.C_currency_ID,
+			x1.currency_payment,
+			x1.c_payment_n,
+			x1.C_Charge_ID,
+			x1.c_charge_n,
+			X1.ORDERP
+		having
+			sum(x1.mount_ved_payment) > 0
+		order by
+			a.name ,
+			x1.cop_paygroup_n,
+			x1.c_bpartner_n ) x2
+	group by 
+		X2.c_period_id,
+		X2.group_parent_id ,
+		x2.group_parent
+		,
+		X2.ORDERP) x3) x4 
+	where  case when  $P{Resume} = 'Y' then x4.porc_usd > 1 else 1=1 end 
+	order by porc_usd DESC ]]>
+	</queryString>
+	<field name="c_period_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="c_period_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_period_id"/>
+	</field>
+	<field name="group_parent_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="group_parent_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="group_parent_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp_2"/>
+	</field>
+	<field name="group_parent" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="group_parent"/>
+		<property name="com.jaspersoft.studio.field.label" value="group_parent"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp_2"/>
+	</field>
+	<field name="orderp" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="orderp"/>
+		<property name="com.jaspersoft.studio.field.label" value="orderp"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_paym_shopp_2"/>
+	</field>
+	<field name="mount_usd_payment" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="mount_usd_payment"/>
+		<property name="com.jaspersoft.studio.field.label" value="mount_usd_payment"/>
+	</field>
+	<field name="porc_usd" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="porc_usd"/>
+		<property name="com.jaspersoft.studio.field.label" value="porc_usd"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<summary>
+		<band height="196" splitType="Stretch">
+			<pieChart>
+				<chart isShowLegend="false" evaluationTime="Report">
+					<reportElement x="0" y="0" width="390" height="190" uuid="9886101e-3b7f-4455-8c6e-2c020b8bba8a"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<pieDataset>
+					<dataset resetType="Report"/>
+					<keyExpression><![CDATA[$F{group_parent}]]></keyExpression>
+					<valueExpression><![CDATA[$F{porc_usd}]]></valueExpression>
+				</pieDataset>
+				<piePlot>
+					<plot/>
+					<itemLabel/>
+				</piePlot>
+			</pieChart>
+		</band>
+	</summary>
+</jasperReport>

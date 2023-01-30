@@ -1,0 +1,1034 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
+<!-- 2023-01-06T14:51:10 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Mayor-Detallado" pageWidth="1008" pageHeight="612" orientation="Landscape" columnWidth="968" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="bc6356ae-947e-4537-8168-82e9364f17e0">
+	<property name="net.sf.jasperreports.export.xls.white.page.background" value="false"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.ignore.cell.background" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.collapse.row.span" value="true"/>
+	<property name="com.jaspersoft.jrs.export.xls.paginated" value="false"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="pageHeader"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="DateAcct1" class="java.sql.Date"/>
+	<parameter name="DateAcct2" class="java.sql.Date"/>
+	<parameter name="AD_Org_ID" class="java.lang.Integer"/>
+	<parameter name="AD_Tree_Org_ID" class="java.lang.Integer"/>
+	<parameter name="AD_Client_ID" class="java.lang.Integer"/>
+	<parameter name="AccountNo1" class="java.lang.String"/>
+	<parameter name="AccountNo2" class="java.lang.String"/>
+	<parameter name="M_Product_Category_ID" class="java.lang.Integer"/>
+	<parameter name="M_Product_ID" class="java.lang.Integer"/>
+	<parameter name="C_BP_Group_ID" class="java.lang.Integer"/>
+	<parameter name="C_BPartner_ID" class="java.lang.Integer"/>
+	<parameter name="C_AcctSchema_ID" class="java.lang.Integer"/>
+	<parameter name="C_Activity_ID" class="java.lang.Integer"/>
+	<parameter name="User1_ID" class="java.lang.Integer"/>
+	<parameter name="C_Currency_ID_To" class="java.math.BigDecimal"/>
+	<parameter name="AD_Table_ID" class="java.lang.Integer"/>
+	<queryString language="SQL">
+		<![CDATA[select *, ad1.grupoempresarial AS grupo,
+		 ad1.taxid AS taxidgru
+	,B.VALUE as C_COSTO_V ,B."name" as C_COSTO_N
+	from (
+	select 
+		1 fact_acct_id ,
+       TO_CHAR($P{DateAcct1}::date,'DD-MM-YYYY') As StartDate,
+	   TO_CHAR($P{DateAcct2}::date,'DD-MM-YYYY') As EndDate,
+		 null AS Organizacion,
+		 null AS Rif_Organizacion,
+		($P{DateAcct1}::date - interval '1 day') dateacct ,
+		null documentno ,
+		null tipo ,
+		'Saldo Final  ' || lTrim(rTrim(EV.Name)) || ' al ' || to_char(($P{DateAcct1}::date - interval '1 day'), 'DD-MM-YYYY') description ,
+		EV.Value as Cuenta,
+		lTrim(rTrim(EV.Name)) as Nombre_Cuenta,
+		null bpartner ,
+		null product ,
+		null product_v ,
+		null cantidad ,
+		null debe ,
+		null haber ,
+--		SUM(currencyconvert(FA.AmtAcctDR, ca.c_currency_id, rc.c_currency_id, fa.datetrx, null, fa.ad_client_id, fa.ad_org_id)) -
+--	SUM(currencyconvert(FA.AmtAcctCR, ca.c_currency_id, rc.c_currency_id, fa.datetrx, null, fa.ad_client_id, fa.ad_org_id)) saldo ,
+		0 as saldo ,
+		SUM(currencyconvert(FA.AmtAcctDR, ca.c_currency_id, rc.c_currency_id, fa.datetrx, null, fa.ad_client_id, fa.ad_org_id)) as debe_acumulado,
+		SUM(currencyconvert(FA.AmtAcctCR, ca.c_currency_id, rc.c_currency_id, fa.datetrx, null, fa.ad_client_id, fa.ad_org_id)) as haber_acumulado,  
+		SUM(currencyconvert(FA.AmtAcctDR, ca.c_currency_id, rc.c_currency_id, fa.datetrx, null, fa.ad_client_id, fa.ad_org_id)) -
+		SUM(currencyconvert(FA.AmtAcctCR, ca.c_currency_id, rc.c_currency_id, fa.datetrx, null, fa.ad_client_id, fa.ad_org_id)) as saldo_acumulado,	  
+		null orgtrx ,
+	null user1_id
+from
+	fact_acct fa
+left join C_ElementValue EV on
+	FA.Account_ID = EV.C_ElementValue_Id
+left join C_BPartner bp on
+	FA.C_BPartner_ID = bp.C_BPartner_ID
+left join M_Product p on
+	FA.M_Product_ID = p.M_Product_ID
+join c_acctschema ca on
+	fa.c_acctschema_id = ca.c_acctschema_id,
+		ftu_reportcurrency rc
+where
+	FA.AD_Org_ID in (
+	select
+		distinct Node_ID
+	from getnodes(0,$P{AD_Tree_Org_ID},	$P{AD_Client_ID}) as N(Parent_ID numeric,Node_ID numeric)
+	where
+		Parent_ID = $P{AD_Org_ID}) and rc.C_Currency_ID = $P{C_Currency_ID_To} and (FA.C_Activity_ID = $P{C_Activity_ID}
+		or $P{C_Activity_ID} is null) and (FA.User1_ID = $P{User1_ID} or $P{User1_ID} is null)
+	and fa.AD_CLIENT_ID = $P{AD_Client_ID} and fa.ISACTIVE = 'Y' 
+	and (fa.c_acctschema_id = $P{C_AcctSchema_ID} or $P{C_AcctSchema_ID} is null)	
+	and FA.DateAcct < $P{DateAcct1}	and EV.Value between $P{AccountNo1} and $P{AccountNo2}
+	and (P.M_Product_Category_ID = $P{M_Product_Category_ID} or $P{M_Product_Category_ID} is null)
+	and (FA.M_Product_ID = $P{M_Product_ID} or $P{M_Product_ID} is null)
+	and (BP.C_BP_Group_ID = $P{C_BP_Group_ID} or $P{C_BP_Group_ID} is null)
+	and (FA.C_BPartner_ID = $P{C_BPartner_ID} or $P{C_BPartner_ID} is null)
+	AND (FA.ad_table_ID = $P{AD_Table_ID}  OR $P{AD_Table_ID} IS NULL)
+	and FA.IsActive = 'Y'
+group by
+	FA.Account_ID,EV.Value ,EV.name
+	
+	
+	
+	UNION ALL 
+	Select 
+		   FA.Fact_Acct_ID,
+	       TO_CHAR($P{DateAcct1}::date,'DD-MM-YYYY') As StartDate,
+		   TO_CHAR($P{DateAcct2}::date,'DD-MM-YYYY') As EndDate,
+		   AO.Name AS Organizacion,
+		   AO.TaxID AS Rif_Organizacion,
+		   FA.DateAcct,
+		   FA.DocumentNo,
+		   T.Name As Tipo,
+		   FA.DESCRIPTION,EV.Value As Cuenta,
+		   lTrim(rTrim(EV.Name)) As Nombre_Cuenta,
+		   lTrim(rTrim(bp.Name)) AS BPartner,
+		   lTrim(rTrim(p.Name)) AS Product,
+		   lTrim(rTrim(p.value)) AS Product_v,
+	   	   FA.Qty As Cantidad, 
+		   FA.AmtAcctDR As Debe,
+		   FA.AmtAcctCR As Haber,
+	   	   FA.AmtAcctDR-FA.AmtAcctCR As Saldo,
+		   0 As Debe_Acumulado,
+		   0 As Haber_Acumulado,
+		   0 As Saldo_Acumulado,
+		   Org.Name AS OrgTrx ,FA.User1_ID
+	From C_ElementValue EV 
+	Left Join (SELECT FA.Fact_Acct_ID,FA.DESCRIPTION,FA.Qty,FA.Account_ID,FA.AD_Client_ID,FA.C_BPartner_ID,FA.M_Product_ID,FA.AD_Table_ID,FA.DateAcct,FA.AD_Org_ID,FA.IsActive,
+		COALESCE( invoice.documentno, pay.documentno, mov.documentno, pr.documentno, ad.documentno, minv.documentno, ahdr.documentno, aa.documentno, ade.documentno, inv.documentno, glj.documentno, io.documentno) AS documentno,
+		currencyconvert(FA.AmtAcctDR,ca.c_currency_id,rc.c_currency_id,fa.datetrx,null,fa.ad_client_id,fa.ad_org_id) as AmtAcctDR,
+		currencyconvert(FA.AmtAcctCR,ca.c_currency_id,rc.c_currency_id,fa.datetrx,null,fa.ad_client_id,fa.ad_org_id) as AmtAcctCR
+		,fa.c_acctschema_id ,FA.User1_ID
+		FROM fact_acct fa 
+		join c_acctschema ca on fa.c_acctschema_id = ca.c_acctschema_id 
+	 LEFT JOIN c_cash cash ON fa.record_id = cash.c_cash_id AND fa.ad_table_id = 407::numeric
+	 LEFT JOIN c_invoice invoice ON fa.record_id = invoice.c_invoice_id AND fa.ad_table_id = 318::numeric
+	 LEFT JOIN c_payment pay ON fa.record_id = pay.c_payment_id AND fa.ad_table_id = 335::numeric
+	 LEFT JOIN m_movement mov ON fa.record_id = mov.m_movement_id AND fa.ad_table_id = 323::numeric
+	 LEFT JOIN m_production pr ON fa.record_id = pr.m_production_id AND fa.ad_table_id = 325::numeric
+	 LEFT JOIN a_asset_disposed ad ON fa.record_id = ad.a_asset_disposed_id AND fa.ad_table_id = 53127::numeric
+	 LEFT JOIN m_matchinv minv ON fa.record_id = minv.m_matchinv_id AND fa.ad_table_id = 472::numeric
+	 LEFT JOIN c_allocationhdr ahdr ON fa.record_id = ahdr.c_allocationhdr_id AND fa.ad_table_id = 735::numeric
+	 LEFT JOIN a_asset_addition aa ON fa.record_id = aa.a_asset_addition_id AND fa.ad_table_id = 53137::numeric
+	 LEFT JOIN a_depreciation_entry ade ON fa.record_id = ade.a_depreciation_entry_id AND fa.ad_table_id = 53121::numeric
+	 LEFT JOIN m_inventory inv ON fa.record_id = inv.m_inventory_id AND fa.ad_table_id = 321::numeric
+	 LEFT JOIN gl_journal glj ON fa.record_id = glj.gl_journal_id AND fa.ad_table_id = 224::numeric
+	 LEFT JOIN m_inout io ON fa.record_id = io.m_inout_id AND fa.ad_table_id = 319::numeric
+	 LEFT JOIN c_bankstatement bs ON fa.record_id = bs.c_bankstatement_id AND fa.ad_table_id = 392::numeric ,
+	 ftu_reportcurrency rc 
+	 WHERE rc.c_currency_id = $P{C_Currency_ID_To}
+	 and (FA.C_Activity_ID = $P{C_Activity_ID}  OR $P{C_Activity_ID} IS NULL)
+	 AND (FA.User1_ID = $P{User1_ID}  OR $P{User1_ID} IS NULL)) FA On FA.Account_ID = EV.C_ElementValue_Id
+	Left Join AD_Client AC ON FA.AD_Client_ID = AC.AD_Client_ID 
+	Left Join AD_Org Org ON FA.AD_Org_ID = Org.AD_Org_ID 
+	Left Join C_BPartner bp ON FA.C_BPartner_ID = bp.C_BPartner_ID 
+	Left Join M_Product p ON FA.M_Product_ID = p.M_Product_ID 
+	Left Join AD_Table_Trl T On FA.AD_Table_ID = T.AD_Table_ID AND T.AD_Language = AC.AD_Language
+	,(SELECT AO.Name,AO.TaxID,AO.AD_Org_ID FROM AD_Org_V AO WHERE AO.AD_Org_ID = $P{AD_Org_ID}) AO 
+	Where FA.AD_Org_ID IN (SELECT DISTINCT Node_ID FROM getnodes(0,$P{AD_Tree_Org_ID},$P{AD_Client_ID}) AS N(Parent_ID numeric,Node_ID numeric) WHERE Parent_ID = $P{AD_Org_ID}) 	
+	And EV.AD_CLIENT_ID=$P{AD_Client_ID} And EV.ISACTIVE='Y'
+	and (FA.c_acctschema_id = $P{C_AcctSchema_ID} or $P{C_AcctSchema_ID} is null)
+	And FA.DateAcct Between $P{DateAcct1} And $P{DateAcct2}   
+	And (EV.Value Between $P{AccountNo1} And $P{AccountNo2}) And FA.IsActive='Y'
+	AND (P.M_Product_Category_ID = $P{M_Product_Category_ID} OR $P{M_Product_Category_ID} IS NULL) 
+	AND (FA.M_Product_ID = $P{M_Product_ID}  OR $P{M_Product_ID} IS NULL) 
+	AND (BP.C_BP_Group_ID = $P{C_BP_Group_ID}  OR $P{C_BP_Group_ID} IS NULL)
+	AND (FA.C_BPartner_ID = $P{C_BPartner_ID}  OR $P{C_BPartner_ID} IS NULL)
+	AND (FA.ad_table_ID = $P{AD_Table_ID}  OR $P{AD_Table_ID} IS NULL)
+	Order By Cuenta,DateAcct,DocumentNo,Fact_Acct_ID) as a 
+	left join C_ElementValue B on A.User1_ID = B.c_elementvalue_id
+	join (select * from ad_org_v where ad_client_id = 1000000 limit 1) ad1 on ad1.ad_client_id = 1000000 
+	order by cuenta , DateAcct,DocumentNo,Fact_Acct_ID]]>
+	</queryString>
+	<field name="fact_acct_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="fact_acct_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="fact_acct_id"/>
+	</field>
+	<field name="startdate" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="startdate"/>
+		<property name="com.jaspersoft.studio.field.label" value="startdate"/>
+	</field>
+	<field name="enddate" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="enddate"/>
+		<property name="com.jaspersoft.studio.field.label" value="enddate"/>
+	</field>
+	<field name="organizacion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="organizacion"/>
+		<property name="com.jaspersoft.studio.field.label" value="organizacion"/>
+	</field>
+	<field name="rif_organizacion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="rif_organizacion"/>
+		<property name="com.jaspersoft.studio.field.label" value="rif_organizacion"/>
+	</field>
+	<field name="dateacct" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="dateacct"/>
+		<property name="com.jaspersoft.studio.field.label" value="dateacct"/>
+	</field>
+	<field name="documentno" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="documentno"/>
+		<property name="com.jaspersoft.studio.field.label" value="documentno"/>
+	</field>
+	<field name="tipo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="tipo"/>
+		<property name="com.jaspersoft.studio.field.label" value="tipo"/>
+	</field>
+	<field name="description" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="description"/>
+		<property name="com.jaspersoft.studio.field.label" value="description"/>
+	</field>
+	<field name="cuenta" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="cuenta"/>
+		<property name="com.jaspersoft.studio.field.label" value="cuenta"/>
+	</field>
+	<field name="nombre_cuenta" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nombre_cuenta"/>
+		<property name="com.jaspersoft.studio.field.label" value="nombre_cuenta"/>
+	</field>
+	<field name="bpartner" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="bpartner"/>
+		<property name="com.jaspersoft.studio.field.label" value="bpartner"/>
+	</field>
+	<field name="product" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="product"/>
+		<property name="com.jaspersoft.studio.field.label" value="product"/>
+	</field>
+	<field name="product_v" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="product_v"/>
+		<property name="com.jaspersoft.studio.field.label" value="product_v"/>
+	</field>
+	<field name="cantidad" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="cantidad"/>
+		<property name="com.jaspersoft.studio.field.label" value="cantidad"/>
+	</field>
+	<field name="debe" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="debe"/>
+		<property name="com.jaspersoft.studio.field.label" value="debe"/>
+	</field>
+	<field name="haber" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="haber"/>
+		<property name="com.jaspersoft.studio.field.label" value="haber"/>
+	</field>
+	<field name="saldo" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="saldo"/>
+		<property name="com.jaspersoft.studio.field.label" value="saldo"/>
+	</field>
+	<field name="debe_acumulado" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="debe_acumulado"/>
+		<property name="com.jaspersoft.studio.field.label" value="debe_acumulado"/>
+	</field>
+	<field name="haber_acumulado" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="haber_acumulado"/>
+		<property name="com.jaspersoft.studio.field.label" value="haber_acumulado"/>
+	</field>
+	<field name="saldo_acumulado" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="saldo_acumulado"/>
+		<property name="com.jaspersoft.studio.field.label" value="saldo_acumulado"/>
+	</field>
+	<field name="orgtrx" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="orgtrx"/>
+		<property name="com.jaspersoft.studio.field.label" value="orgtrx"/>
+	</field>
+	<field name="user1_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="user1_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="user1_id"/>
+	</field>
+	<field name="c_elementvalue_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="c_elementvalue_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_elementvalue_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="ad_client_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ad_client_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="ad_client_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="ad_org_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ad_org_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="ad_org_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="isactive" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="isactive"/>
+		<property name="com.jaspersoft.studio.field.label" value="isactive"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="created" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="created"/>
+		<property name="com.jaspersoft.studio.field.label" value="created"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="createdby" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="createdby"/>
+		<property name="com.jaspersoft.studio.field.label" value="createdby"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="updated" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="updated"/>
+		<property name="com.jaspersoft.studio.field.label" value="updated"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="updatedby" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="updatedby"/>
+		<property name="com.jaspersoft.studio.field.label" value="updatedby"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="value" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="value"/>
+		<property name="com.jaspersoft.studio.field.label" value="value"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="COLUMN_34" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="description"/>
+		<property name="com.jaspersoft.studio.field.label" value="description"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="accounttype" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="accounttype"/>
+		<property name="com.jaspersoft.studio.field.label" value="accounttype"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="accountsign" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="accountsign"/>
+		<property name="com.jaspersoft.studio.field.label" value="accountsign"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="isdoccontrolled" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="isdoccontrolled"/>
+		<property name="com.jaspersoft.studio.field.label" value="isdoccontrolled"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="c_element_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="c_element_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_element_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="issummary" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="issummary"/>
+		<property name="com.jaspersoft.studio.field.label" value="issummary"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="validfrom" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="validfrom"/>
+		<property name="com.jaspersoft.studio.field.label" value="validfrom"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="validto" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="validto"/>
+		<property name="com.jaspersoft.studio.field.label" value="validto"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="postactual" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="postactual"/>
+		<property name="com.jaspersoft.studio.field.label" value="postactual"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="postbudget" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="postbudget"/>
+		<property name="com.jaspersoft.studio.field.label" value="postbudget"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="postencumbrance" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="postencumbrance"/>
+		<property name="com.jaspersoft.studio.field.label" value="postencumbrance"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="poststatistical" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="poststatistical"/>
+		<property name="com.jaspersoft.studio.field.label" value="poststatistical"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="isbankaccount" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="isbankaccount"/>
+		<property name="com.jaspersoft.studio.field.label" value="isbankaccount"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="c_bankaccount_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="c_bankaccount_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_bankaccount_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="isforeigncurrency" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="isforeigncurrency"/>
+		<property name="com.jaspersoft.studio.field.label" value="isforeigncurrency"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="c_currency_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="c_currency_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_currency_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="c_elementvalue_uu" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="c_elementvalue_uu"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_elementvalue_uu"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="isdetailbpartner" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="isdetailbpartner"/>
+		<property name="com.jaspersoft.studio.field.label" value="isdetailbpartner"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="isdetailproduct" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="isdetailproduct"/>
+		<property name="com.jaspersoft.studio.field.label" value="isdetailproduct"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="bpartnertype" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="bpartnertype"/>
+		<property name="com.jaspersoft.studio.field.label" value="bpartnertype"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="COLUMN_54" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ad_client_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="ad_client_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="COLUMN_55" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ad_org_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="ad_org_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="COLUMN_56" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="isactive"/>
+		<property name="com.jaspersoft.studio.field.label" value="isactive"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="COLUMN_57" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="created"/>
+		<property name="com.jaspersoft.studio.field.label" value="created"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="COLUMN_58" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="createdby"/>
+		<property name="com.jaspersoft.studio.field.label" value="createdby"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="COLUMN_59" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="updated"/>
+		<property name="com.jaspersoft.studio.field.label" value="updated"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="COLUMN_60" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="updatedby"/>
+		<property name="com.jaspersoft.studio.field.label" value="updatedby"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="COLUMN_61" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="value"/>
+		<property name="com.jaspersoft.studio.field.label" value="value"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="COLUMN_62" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="COLUMN_63" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="description"/>
+		<property name="com.jaspersoft.studio.field.label" value="description"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="COLUMN_64" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="issummary"/>
+		<property name="com.jaspersoft.studio.field.label" value="issummary"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="c_location_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="c_location_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_location_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="duns" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="duns"/>
+		<property name="com.jaspersoft.studio.field.label" value="duns"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="taxid" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="taxid"/>
+		<property name="com.jaspersoft.studio.field.label" value="taxid"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="supervisor_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="supervisor_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="supervisor_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="parent_org_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="parent_org_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="parent_org_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="ad_orgtype_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="ad_orgtype_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="ad_orgtype_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="m_warehouse_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="m_warehouse_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_warehouse_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="c_bpartner_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="c_bpartner_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_bpartner_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="address" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="address"/>
+		<property name="com.jaspersoft.studio.field.label" value="address"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="lve_authorizedofficer_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="lve_authorizedofficer_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="lve_authorizedofficer_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="logo_id" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="logo_id"/>
+		<property name="com.jaspersoft.studio.field.label" value="logo_id"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="phone" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="phone"/>
+		<property name="com.jaspersoft.studio.field.label" value="phone"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="phone2" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="phone2"/>
+		<property name="com.jaspersoft.studio.field.label" value="phone2"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="email" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="email"/>
+		<property name="com.jaspersoft.studio.field.label" value="email"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="grupoempresarial" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="grupoempresarial"/>
+		<property name="com.jaspersoft.studio.field.label" value="grupoempresarial"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="a_license_no" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="a_license_no"/>
+		<property name="com.jaspersoft.studio.field.label" value="a_license_no"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="fax" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="fax"/>
+		<property name="com.jaspersoft.studio.field.label" value="fax"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="parent_address" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="parent_address"/>
+		<property name="com.jaspersoft.studio.field.label" value="parent_address"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="parent" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="parent"/>
+		<property name="com.jaspersoft.studio.field.label" value="parent"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="grupo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="grupo"/>
+		<property name="com.jaspersoft.studio.field.label" value="grupo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="taxidgru" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="taxidgru"/>
+		<property name="com.jaspersoft.studio.field.label" value="taxidgru"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org_v"/>
+	</field>
+	<field name="c_costo_v" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="c_costo_v"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_costo_v"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<field name="c_costo_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="c_costo_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_costo_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_elementvalue"/>
+	</field>
+	<variable name="sumtotaldebe" class="java.lang.Double" resetType="Group" resetGroup="Group Cuenta" calculation="Sum">
+		<variableExpression><![CDATA[$F{debe}]]></variableExpression>
+	</variable>
+	<variable name="sumtotalhaber" class="java.lang.Double" resetType="Group" resetGroup="Group Cuenta" calculation="Sum">
+		<variableExpression><![CDATA[$F{haber}]]></variableExpression>
+	</variable>
+	<variable name="saldomesorganizacion" class="java.lang.Double" resetType="Group" resetGroup="Group total organizacion">
+		<variableExpression><![CDATA[$V{sumtotaldebe}.doubleValue()-$V{sumtotalhaber}.doubleValue()]]></variableExpression>
+	</variable>
+	<variable name="totaldebeacumuladoorganizacion" class="java.lang.Double" resetType="Group" resetGroup="Group total organizacion" calculation="Sum">
+		<variableExpression><![CDATA[$F{debe_acumulado}]]></variableExpression>
+	</variable>
+	<variable name="totalhaberacumuladoorganizacion" class="java.lang.Double" resetType="Group" resetGroup="Group total organizacion" calculation="Sum">
+		<variableExpression><![CDATA[$F{haber_acumulado}]]></variableExpression>
+	</variable>
+	<variable name="sumtotalsaldoacumuladoorganizacion" class="java.lang.Double" resetType="Group" resetGroup="Group total organizacion">
+		<variableExpression><![CDATA[$V{totaldebeacumuladoorganizacion}.doubleValue()-$V{totalhaberacumuladoorganizacion}.doubleValue()]]></variableExpression>
+	</variable>
+	<variable name="sumsaldototalorganizacion" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{saldomesorganizacion}.doubleValue()+$V{sumtotalsaldoacumuladoorganizacion}.doubleValue()]]></variableExpression>
+	</variable>
+	<variable name="sumtotaldebegeneral" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{debe}]]></variableExpression>
+	</variable>
+	<variable name="sumtotalhabergeneral" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{haber}]]></variableExpression>
+	</variable>
+	<variable name="sumtotalsaldomesgeneral" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{sumtotaldebegeneral}.doubleValue()-$V{sumtotalhabergeneral}.doubleValue()]]></variableExpression>
+	</variable>
+	<variable name="sumtotaldebeacumuladogeneral" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{debe_acumulado}]]></variableExpression>
+	</variable>
+	<variable name="sumtotalsaldomesgeneral2" class="java.lang.Double" resetType="Group" resetGroup="Group Cuenta" calculation="Sum">
+		<variableExpression><![CDATA[$V{sumtotalsaldomesgeneral}]]></variableExpression>
+	</variable>
+	<variable name="suntotalhabercumuladogeneral" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{haber_acumulado}]]></variableExpression>
+	</variable>
+	<variable name="restdebeyhabergeneral" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{totaldebeacumuladoorganizacion2}.doubleValue()-$V{totalhaberacumuladoorganizacion2}.doubleValue()]]></variableExpression>
+	</variable>
+	<variable name="sumresdebeyhabergeneral" class="java.lang.Double" resetType="Group" resetGroup="Group Cuenta" calculation="Sum">
+		<variableExpression><![CDATA[$V{restdebeyhabergeneral}]]></variableExpression>
+	</variable>
+	<variable name="sumtotalsaldogeneral" class="java.lang.Double">
+		<variableExpression><![CDATA[$V{sumtotalsaldomesgeneral}+$V{restdebeyhabergeneral}]]></variableExpression>
+	</variable>
+	<variable name="totaldebeacumuladoorganizacion2" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{debe_acumulado}]]></variableExpression>
+	</variable>
+	<variable name="totalhaberacumuladoorganizacion2" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{haber_acumulado}]]></variableExpression>
+	</variable>
+	<variable name="totalacumuladoxcuenta" class="java.math.BigDecimal" resetType="Group" resetGroup="Group Cuenta" calculation="Sum">
+		<variableExpression><![CDATA[$F{saldo_acumulado}]]></variableExpression>
+	</variable>
+	<variable name="sumtotalsaldo" class="java.math.BigDecimal" resetType="Group" resetGroup="Group Cuenta" calculation="Sum">
+		<variableExpression><![CDATA[$F{saldo}]]></variableExpression>
+	</variable>
+	<variable name="sumcantidad" class="java.lang.Double" resetType="Group" resetGroup="Group Cuenta" calculation="Sum">
+		<variableExpression><![CDATA[$F{cantidad}]]></variableExpression>
+	</variable>
+	<group name="Group Total General"/>
+	<group name="Group total organizacion">
+		<groupExpression><![CDATA[$F{cuenta}]]></groupExpression>
+		<groupFooter>
+			<band height="17">
+				<staticText>
+					<reportElement x="0" y="0" width="643" height="12" uuid="365aa392-9e33-4303-afa7-8714570be1a9"/>
+					<box>
+						<bottomPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="true" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Total:]]></text>
+				</staticText>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="693" y="0" width="91" height="12" uuid="de8216fb-5edc-466d-b4f9-88922b5fafaa"/>
+					<box>
+						<bottomPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{sumtotaldebe}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00">
+					<reportElement x="784" y="0" width="91" height="12" uuid="0d606861-e818-4494-ade4-a1e632b928e1"/>
+					<box>
+						<bottomPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{sumtotalhaber}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement x="643" y="0" width="50" height="12" uuid="b3747b7b-0788-4507-89ba-f6a54375bd35"/>
+					<box>
+						<bottomPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="7" isBold="true" isItalic="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{sumcantidad}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<group name="Group Cuenta">
+		<groupExpression><![CDATA[$F{cuenta}]]></groupExpression>
+		<groupHeader>
+			<band height="13">
+				<textField>
+					<reportElement x="0" y="0" width="134" height="13" uuid="13b5135c-04cf-4904-8938-0fc7a21fdb90"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="true" isItalic="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{cuenta}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.00" isBlankWhenNull="true">
+					<reportElement stretchType="RelativeToTallestObject" x="880" y="0" width="88" height="13" isPrintWhenDetailOverflows="true" forecolor="#FF0099" uuid="80a03581-bf52-4e22-9264-2d24acb1c3da"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="7"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{totalacumuladoxcuenta}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="134" y="0" width="764" height="13" uuid="f6a75a2d-d07e-4df6-b4ae-e1703c1c3aaa"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="true" isItalic="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nombre_cuenta}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="68">
+			<staticText>
+				<reportElement x="0" y="0" width="968" height="25" uuid="c5779e30-3768-44b7-8f7f-d60b91bc6851"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MAYOR ANALÍTICO DETALLADO]]></text>
+			</staticText>
+			<textField evaluationTime="Report">
+				<reportElement x="898" y="0" width="70" height="12" uuid="c21942cd-73ac-4c36-b91c-4277b8148e5d"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="828" y="12" width="70" height="13" uuid="63610a33-45e8-419b-91c9-724b1e967416"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="828" y="0" width="70" height="12" uuid="9cd5fa1a-ef8c-4fd5-b691-0e9817567c4f"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Página:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="828" y="25" width="70" height="13" uuid="a8df1749-8041-4b0a-9ef2-ecb131357f1b"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora:]]></text>
+			</staticText>
+			<textField pattern="HH:mm aa">
+				<reportElement x="898" y="25" width="70" height="13" uuid="a67036d0-8da5-4da8-8cd4-6c07f058f938"/>
+				<textElement>
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("h:mm a").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="898" y="0" width="70" height="12" uuid="750306b1-2aa3-499b-9faa-c9d01bccf6d0"/>
+				<textElement>
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="898" y="0" width="70" height="12" uuid="3e297e98-746e-4959-bda8-1bb7aabad589"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<text><![CDATA[de:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="693" y="51" width="91" height="12" uuid="cd99698a-b629-4f75-a014-70027637f9bb"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Debe]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="784" y="51" width="91" height="12" uuid="cdee07ea-0a80-4e48-9d12-ac5203c32b89"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Haber]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="51" width="30" height="12" uuid="b6957337-978c-4f23-91db-eec81bfca929"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Fecha]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="0" y="25" width="968" height="13" uuid="436f2870-e6c9-47a0-b1f6-20d753b60975"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Periodo desde: "+$F{startdate}+" hasta: "+$F{enddate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="146" y="51" width="54" height="12" uuid="1d473f35-4f49-48dd-ae4d-5d5e860cad85"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Número]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="200" y="51" width="60" height="12" uuid="c6789668-cf0b-4a0f-9d15-74bb149d08f3"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Tipo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="260" y="51" width="133" height="12" uuid="5933783e-9abb-4526-b64c-e268707523d8"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Descripción]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="875" y="51" width="93" height="12" uuid="9f0130b1-377f-47e2-ac5f-4869d0cfc008"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Saldo]]></text>
+			</staticText>
+			<textField pattern="MMMMM dd, yyyy">
+				<reportElement x="0" y="0" width="250" height="13" uuid="09a03ebb-0843-4e81-88b0-6e14dd5ded1a"/>
+				<textElement>
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{grupo}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MMMMM dd, yyyy">
+				<reportElement x="0" y="13" width="134" height="12" uuid="b02fdd06-fe78-4fa4-8438-bc22ea961ad7"/>
+				<textElement>
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{taxidgru}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="898" y="12" width="70" height="13" uuid="91ed2a50-e685-4f52-874f-874bc25f1798"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="643" y="51" width="50" height="12" uuid="763b9ca5-1a66-4e0a-a794-fecbcb16263c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Cant.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="393" y="51" width="100" height="12" uuid="ef4fe266-a2d5-4ff4-a025-e8fc0f887a74"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Tercero]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="493" y="51" width="150" height="12" uuid="968dba52-45dc-4e43-b6bc-cb5d6d536eab"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Producto]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="30" y="51" width="40" height="12" uuid="e2f6d9d3-4a91-4fec-9532-a9b4d0c3380f"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="6" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Organización]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="70" y="51" width="76" height="12" uuid="921d078a-5cb9-4105-8b51-3f41ee13b0bb"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="6" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[C . Costo]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="12">
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="30" height="12" uuid="c6a17410-9f13-4175-acf6-808e7437cdbc"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dateacct}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="146" y="0" width="54" height="12" uuid="abeb383c-0d57-4851-9780-1bc3f6e32b99"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{documentno}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="200" y="0" width="60" height="12" uuid="f3a81c7d-c985-4181-b05a-e5233ee7cce4"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="260" y="0" width="133" height="12" uuid="9574ed65-b6f0-408c-a41a-bef17eaa012e"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{description}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="693" y="0" width="91" height="12" uuid="7d2fb78a-3416-4d9f-99f3-379c0e1b580c"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{debe}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="784" y="0" width="91" height="12" uuid="70f9cfcd-87b9-46f6-ba15-b2aa15074582"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{haber}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="875" y="0" width="93" height="12" uuid="45d9ca6d-3365-4784-81f5-d617795e0e24"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalacumuladoxcuenta}.add( $V{sumtotalsaldo} )]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00#" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="643" y="0" width="50" height="12" uuid="6d5ddf57-7756-49bf-bfd8-fea1bc7eee71"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="393" y="0" width="100" height="12" uuid="f3424f0d-c282-40d3-b47d-6fb96115fc1e"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{bpartner}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="540" y="0" width="103" height="12" uuid="f8924ce3-2e23-4574-94b7-e4b7aa11076b"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{product}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="30" y="0" width="40" height="12" uuid="fda10fa6-82bc-4399-beec-5f08e826cfc5"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{orgtrx}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="70" y="0" width="76" height="12" uuid="12c652aa-531d-4370-8ea4-6fdebd3fcbee">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<printWhenExpression><![CDATA[($F{c_costo_v} == null) == false]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{c_costo_v} + '-' + $F{c_costo_n}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="493" y="0" width="47" height="12" uuid="05c887d0-2687-4259-8af9-9c57ae8d4014"/>
+				<box>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{product_v}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="70" y="12" width="76" height="0" uuid="f0396f94-0c8f-4270-8050-986bcd5cbedf">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<graphicElement>
+					<pen lineWidth="0.3"/>
+				</graphicElement>
+			</rectangle>
+		</band>
+	</detail>
+</jasperReport>

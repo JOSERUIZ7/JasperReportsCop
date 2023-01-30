@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="MGR_sUPPLYrEPORT2" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="00609866-ad4c-4b65-b3ee-023bce23f9c2">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<parameter name="C_Period_ID" class="java.lang.String"/>
+	<queryString language="SQL">
+		<![CDATA[select
+	sum(qtyentered) qtyentered	  ,    sum(qtydelivered) qtydelivered	   
+from
+	rv_orderdetail a
+where  
+a.issotrx = 'N' and docstatus = 'CO'
+and a.c_period_id = 1000026
+and a.m_product_id = 1000895]]>
+	</queryString>
+	<field name="qtyentered" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="qtyentered"/>
+		<property name="com.jaspersoft.studio.field.label" value="qtyentered"/>
+	</field>
+	<field name="qtydelivered" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="qtydelivered"/>
+		<property name="com.jaspersoft.studio.field.label" value="qtydelivered"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<summary>
+		<band height="47" splitType="Stretch">
+			<textField pattern="#,##0.##">
+				<reportElement x="127" y="2" width="100" height="18" uuid="f5195e0c-6a05-4ea1-87ae-73e90134c01a">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{qtyentered}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##">
+				<reportElement x="127" y="28" width="100" height="18" uuid="6259211f-b5b5-4806-8a93-adbf0033807c">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{qtydelivered}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="4" y="2" width="123" height="18" uuid="cf7ef2c1-525c-4bf5-a7e7-619fb5c2729f"/>
+				<textElement textAlignment="Right">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Ordenes de Compra: "]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="4" y="28" width="123" height="18" uuid="878fbf5e-a64a-46cb-92f5-1bed3d81e08a">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Recepciones: "]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

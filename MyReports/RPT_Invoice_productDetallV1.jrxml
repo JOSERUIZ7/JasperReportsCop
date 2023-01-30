@@ -104,23 +104,30 @@ where
 	and a.DateInvoiced between $P{DateInvoiced1} and $P{DateInvoiced2}
 	and a.issotrx = 'Y'
 
-	and 
+	  	and 
 case
 	when $P{IsDiscount} = 'N' and $P{IsEndowment} = 'N' and $P{IsDonation} = 'N'
-		then ( 'Y' not in (a.isdiscount,a.IsEndowment,a.isdonation))
+		then ( a.isdiscount = 'N' and a.IsEndowment  = 'N' and a.isdonation  = 'N' )
+		
 	when $P{IsDiscount} = 'Y' and $P{IsEndowment} = 'Y'	and $P{IsDonation} = 'Y'
 		then 1=1 
+		
 	when $P{IsDiscount} = 'Y' and $P{IsEndowment} = 'Y'	and $P{IsDonation} = 'N'
-		then ( 'Y' not in (A.isdonation))
+		then ( a.isdiscount = 'Y' and a.IsEndowment  = 'Y' and a.isdonation  = 'N' )
+		
 	when $P{IsDiscount} = 'Y' and $P{IsEndowment} = 'N' and $P{IsDonation} = 'N'
-		then ( 'Y' not in (a.IsEndowment,a.isdonation))
+		then ( a.isdiscount = 'Y' and a.IsEndowment  = 'N' and a.isdonation  = 'N' )
+		
 	when $P{IsDiscount} = 'N' and $P{IsEndowment} = 'N'	and $P{IsDonation} = 'Y'
-		then ( 'Y' not in (a.isdiscount,a.IsEndowment))   
+		then ( a.isdiscount = 'N' and a.IsEndowment  = 'N' and a.isdonation  = 'Y' )
+		
 	when $P{IsDiscount} = 'N' and $P{IsEndowment} = 'Y'	and $P{IsDonation} = 'Y'
-		then ( 'Y' not in (a.isdiscount))   
+		then ( a.isdiscount = 'N' and a.IsEndowment  = 'Y' and a.isdonation  = 'Y' )
+		
 	when $P{IsDiscount} = 'N' and $P{IsEndowment} = 'Y'	and $P{IsDonation} = 'N'
-		then ( 'Y' not in (a.isdiscount,a.isdonation))   
+		then ( a.isdiscount = 'N' and a.IsEndowment  = 'Y' and a.isdonation  = 'N')
 end
+	
 
 	and (a.C_BPartner_ID = $P{C_BPartner_ID} or $P{C_BPartner_ID} is null)
     and (a.AD_Org_ID = $P{AD_Org_ID} or $P{AD_Org_ID} is null)
@@ -168,24 +175,29 @@ where
 	and a.DateInvoiced between $P{DateInvoiced1} and $P{DateInvoiced2}
 	and a.issotrx = 'Y'
 
-	and 
+  	and 
 case
 	when $P{IsDiscount} = 'N' and $P{IsEndowment} = 'N' and $P{IsDonation} = 'N'
-		then ( 'Y' not in (a.isdiscount,a.IsEndowment,a.isdonation))
+		then ( a.isdiscount = 'N' and a.IsEndowment  = 'N' and a.isdonation  = 'N' )
+		
 	when $P{IsDiscount} = 'Y' and $P{IsEndowment} = 'Y'	and $P{IsDonation} = 'Y'
 		then 1=1 
+		
 	when $P{IsDiscount} = 'Y' and $P{IsEndowment} = 'Y'	and $P{IsDonation} = 'N'
-		then ( 'Y' not in (A.isdonation))
+		then ( a.isdiscount = 'Y' and a.IsEndowment  = 'Y' and a.isdonation  = 'N' )
+		
 	when $P{IsDiscount} = 'Y' and $P{IsEndowment} = 'N' and $P{IsDonation} = 'N'
-		then ( 'Y' not in (a.IsEndowment,a.isdonation))
+		then ( a.isdiscount = 'Y' and a.IsEndowment  = 'N' and a.isdonation  = 'N' )
+		
 	when $P{IsDiscount} = 'N' and $P{IsEndowment} = 'N'	and $P{IsDonation} = 'Y'
-		then ( 'Y' not in (a.isdiscount,a.IsEndowment))   
+		then ( a.isdiscount = 'N' and a.IsEndowment  = 'N' and a.isdonation  = 'Y' )
+		
 	when $P{IsDiscount} = 'N' and $P{IsEndowment} = 'Y'	and $P{IsDonation} = 'Y'
-		then ( 'Y' not in (a.isdiscount))   
+		then ( a.isdiscount = 'N' and a.IsEndowment  = 'Y' and a.isdonation  = 'Y' )
+		
 	when $P{IsDiscount} = 'N' and $P{IsEndowment} = 'Y'	and $P{IsDonation} = 'N'
-		then ( 'Y' not in (a.isdiscount,a.isdonation))   
+		then ( a.isdiscount = 'N' and a.IsEndowment  = 'Y' and a.isdonation  = 'N')
 end
-
 	
 	and (a.C_BPartner_ID = $P{C_BPartner_ID} or $P{C_BPartner_ID} is null)
     and (a.AD_Org_ID = $P{AD_Org_ID} or $P{AD_Org_ID} is null)
@@ -226,22 +238,28 @@ where
 	and a.DateInvoiced between $P{DateInvoiced1} and $P{DateInvoiced2}
 	and a.issotrx = 'Y'
 
-and 
+  	and 
 case
 	when $P{IsDiscount} = 'N' and $P{IsEndowment} = 'N' and $P{IsDonation} = 'N'
-		then ( 'Y' not in (a.isdiscount,a.IsEndowment,a.isdonation))
+		then ( a.isdiscount = 'N' and a.IsEndowment  = 'N' and a.isdonation  = 'N' )
+		
 	when $P{IsDiscount} = 'Y' and $P{IsEndowment} = 'Y'	and $P{IsDonation} = 'Y'
 		then 1=1 
+		
 	when $P{IsDiscount} = 'Y' and $P{IsEndowment} = 'Y'	and $P{IsDonation} = 'N'
-		then ( 'Y' not in (A.isdonation))
+		then ( a.isdiscount = 'Y' and a.IsEndowment  = 'Y' and a.isdonation  = 'N' )
+		
 	when $P{IsDiscount} = 'Y' and $P{IsEndowment} = 'N' and $P{IsDonation} = 'N'
-		then ( 'Y' not in (a.IsEndowment,a.isdonation))
+		then ( a.isdiscount = 'Y' and a.IsEndowment  = 'N' and a.isdonation  = 'N' )
+		
 	when $P{IsDiscount} = 'N' and $P{IsEndowment} = 'N'	and $P{IsDonation} = 'Y'
-		then ( 'Y' not in (a.isdiscount,a.IsEndowment))   
+		then ( a.isdiscount = 'N' and a.IsEndowment  = 'N' and a.isdonation  = 'Y' )
+		
 	when $P{IsDiscount} = 'N' and $P{IsEndowment} = 'Y'	and $P{IsDonation} = 'Y'
-		then ( 'Y' not in (a.isdiscount))   
+		then ( a.isdiscount = 'N' and a.IsEndowment  = 'Y' and a.isdonation  = 'Y' )
+		
 	when $P{IsDiscount} = 'N' and $P{IsEndowment} = 'Y'	and $P{IsDonation} = 'N'
-		then ( 'Y' not in (a.isdiscount,a.isdonation))   
+		then ( a.isdiscount = 'N' and a.IsEndowment  = 'Y' and a.isdonation  = 'N')
 end
 
 	and (a.C_BPartner_ID = $P{C_BPartner_ID} or $P{C_BPartner_ID} is null)
