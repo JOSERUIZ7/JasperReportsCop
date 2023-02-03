@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
+<!-- 2023-02-02T02:07:17 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ControlSalidaMateriales" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="99c24662-fda7-4632-972a-9e50945c3950">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
 	<parameter name="RESOURCE_DIR" class="java.lang.String"/>
 	<parameter name="RECORD_ID" class="java.lang.Integer"/>
 	<queryString language="plsql">
-		<![CDATA[select
+		<![CDATA[select m.COP_Reference_ID,he.NationalCode,
 ao.name as NombreOrg,
 m.documentno NroDocumento,
 cd."name" as NombreDocumento,
@@ -31,7 +32,6 @@ case
 		when m.docstatus = 'DR' then 'Borrador'
 	    when m.docstatus = 'VO' then 'Anulado'
 	    when m.docstatus = 'AP' then 'Aprobado'
-
 		else 'En Proceso' end as docstatus,
 ml.description,
 ml.brand,
@@ -51,11 +51,11 @@ hj2.name as CargoAprobador,
 hjco.name as CargoAprobadorCO,
 hjin.name as CargoConfirmarEntrada,
 hjout.name as CargoConfirmarSalida,
-cpv.name ||'- '|| cpv.name2 as vehículo,
-cpv.value as placa,
+cpv.name as vehículo,
+cpv.name as placa,
 m.a_name as entregado,
 cap.documentno as paseacceso,
-iom.DocumentNo as referenceDocNo,ca.Reason,cb2.name C_BPartner_N ,ca.M_Requisition_ID,re.documentno as requisition
+iom.DocumentNo as referenceDocNo,coalesce(ca.Reason,rea."name" ) reason ,coalesce(cb2.name,ebp.value||'- '||ebp."name" )C_BPartner_N ,ca.M_Requisition_ID,re.documentno as requisition
 from cop_inoutmaterial m
 left join cop_inoutmaterialline ml on m.cop_inoutmaterial_id = ml.cop_inoutmaterial_id
 left join ad_changelog ac on ac.record_id = m.cop_inoutmaterial_id and ac.ad_table_id = 1000171 and ac.ad_column_id = 1005209 and ac.newvalue = 'true'
@@ -81,227 +81,74 @@ left join c_bpartner cbco on auco.c_bpartner_id = cbco.c_bpartner_id
 left join c_bpartner cbin on auin.c_bpartner_id = cbin.c_bpartner_id
 left join c_bpartner cbout on auout.c_bpartner_id = cbout.c_bpartner_id
 left join hr_employee he2 on cb.c_bpartner_id = he2.c_bpartner_id and he2.isactive = 'Y'
-
 left join hr_employee heco on cbco.c_bpartner_id = heco.c_bpartner_id	and heco.isactive = 'Y'
 left join hr_employee hein on cbin.c_bpartner_id = hein.c_bpartner_id and hein.isactive = 'Y'
 left join hr_employee heout on cbout.c_bpartner_id = heout.c_bpartner_id and heout.isactive = 'Y'
-
-
 left join hr_job hj2 on he2.hr_job_id = hj2.hr_job_id 
 left join hr_job hjco on heco.hr_job_id = hjco.hr_job_id
 left join hr_job hjin on hein.hr_job_id = hjin.hr_job_id 
 left join hr_job hjout on heout.hr_job_id = hjout.hr_job_id 
 left join COP_InOutMaterialReason rea on m.COP_InOutMaterialReason_ID = rea.COP_InOutMaterialReason_ID
 left join cop_accesspass cap on m.cop_accesspass_id = cap.cop_accesspass_id
-left join cop_ppl_vehicle cpv on cap.cop_accesspass_id = cpv.cop_accesspass_id
+left join (select
+	cap.COP_AccessPass_ID, 
+	STRING_AGG((b.name||'- '|| b.value) , ';' ) as name
+from
+	cop_accesspass cap
+join cop_ppl_vehicle b on
+	cap.COP_AccessPass_ID = b.COP_AccessPass_ID
+group by
+	cap.COP_AccessPass_ID)  cpv on cap.cop_accesspass_id = cpv.cop_accesspass_id
+--left join cop_ppl_vehicle cpv on cap.cop_accesspass_id = cpv.cop_accesspass_id
 left join cop_inoutmaterial iom on m.COP_Reference_ID = iom.COP_InOutMaterial_ID
 left join c_bpartner cb2 on cb2.C_BPartner_ID = ca.C_BPartner_ID
 left join M_Requisition re on re.M_Requisition_ID = ca.M_Requisition_ID
 where m.cop_inoutmaterial_id = $P{RECORD_ID}]]>
 	</queryString>
-	<field name="nombreorg" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="nombreorg"/>
-		<property name="com.jaspersoft.studio.field.label" value="nombreorg"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org"/>
-	</field>
-	<field name="nrodocumento" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="nrodocumento"/>
-		<property name="com.jaspersoft.studio.field.label" value="nrodocumento"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_inoutmaterial"/>
-	</field>
-	<field name="nombredocumento" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="nombredocumento"/>
-		<property name="com.jaspersoft.studio.field.label" value="nombredocumento"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="c_doctype"/>
-	</field>
-	<field name="fechadocumento" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="fechadocumento"/>
-		<property name="com.jaspersoft.studio.field.label" value="fechadocumento"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_inoutmaterial"/>
-	</field>
-	<field name="nombredepartamento" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="nombredepartamento"/>
-		<property name="com.jaspersoft.studio.field.label" value="nombredepartamento"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="hr_department"/>
-	</field>
-	<field name="nombreempleado" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="nombreempleado"/>
-		<property name="com.jaspersoft.studio.field.label" value="nombreempleado"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="c_bpartner"/>
-	</field>
-	<field name="nombrecargo" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="nombrecargo"/>
-		<property name="com.jaspersoft.studio.field.label" value="nombrecargo"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="hr_job"/>
-	</field>
-	<field name="motivo" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="motivo"/>
-		<property name="com.jaspersoft.studio.field.label" value="motivo"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_inoutmaterialreason"/>
-	</field>
-	<field name="fechaentrada" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="fechaentrada"/>
-		<property name="com.jaspersoft.studio.field.label" value="fechaentrada"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_inoutmaterial"/>
-	</field>
-	<field name="fechasalida" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="fechasalida"/>
-		<property name="com.jaspersoft.studio.field.label" value="fechasalida"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_inoutmaterial"/>
-	</field>
-	<field name="observacion" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="observacion"/>
-		<property name="com.jaspersoft.studio.field.label" value="observacion"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_inoutmaterial"/>
-	</field>
-	<field name="issotrx" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="issotrx"/>
-		<property name="com.jaspersoft.studio.field.label" value="issotrx"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_inoutmaterial"/>
-	</field>
-	<field name="visitortype" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="visitortype"/>
-		<property name="com.jaspersoft.studio.field.label" value="visitortype"/>
-	</field>
-	<field name="cop_accesspass_id" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.name" value="cop_accesspass_id"/>
-		<property name="com.jaspersoft.studio.field.label" value="cop_accesspass_id"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_inoutmaterial"/>
-	</field>
-	<field name="docstatus" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="docstatus"/>
-		<property name="com.jaspersoft.studio.field.label" value="docstatus"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_inoutmaterial"/>
-	</field>
-	<field name="description" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="description"/>
-		<property name="com.jaspersoft.studio.field.label" value="description"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_inoutmaterialline"/>
-	</field>
-	<field name="brand" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="brand"/>
-		<property name="com.jaspersoft.studio.field.label" value="brand"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_inoutmaterialline"/>
-	</field>
-	<field name="serial" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="serial"/>
-		<property name="com.jaspersoft.studio.field.label" value="serial"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_inoutmaterialline"/>
-	</field>
-	<field name="uomname" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="uomname"/>
-		<property name="com.jaspersoft.studio.field.label" value="uomname"/>
-	</field>
-	<field name="movementqty" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.name" value="movementqty"/>
-		<property name="com.jaspersoft.studio.field.label" value="movementqty"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_inoutmaterialline"/>
-	</field>
-	<field name="nombreaprobador" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="nombreaprobador"/>
-		<property name="com.jaspersoft.studio.field.label" value="nombreaprobador"/>
-	</field>
-	<field name="nombreaprobadorcompletado" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="nombreaprobadorcompletado"/>
-		<property name="com.jaspersoft.studio.field.label" value="nombreaprobadorcompletado"/>
-	</field>
-	<field name="fechacreacionmovimiento" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="fechacreacionmovimiento"/>
-		<property name="com.jaspersoft.studio.field.label" value="fechacreacionmovimiento"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_inoutmaterial"/>
-	</field>
-	<field name="fechaaprobado" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="fechaaprobado"/>
-		<property name="com.jaspersoft.studio.field.label" value="fechaaprobado"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="ad_changelog"/>
-	</field>
-	<field name="fechaaprobadocompletado" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="fechaaprobadocompletado"/>
-		<property name="com.jaspersoft.studio.field.label" value="fechaaprobadocompletado"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="ad_changelog"/>
-	</field>
-	<field name="nombreconfirmadorentrada" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="nombreconfirmadorentrada"/>
-		<property name="com.jaspersoft.studio.field.label" value="nombreconfirmadorentrada"/>
-	</field>
-	<field name="fechaentradaconfirmada" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="fechaentradaconfirmada"/>
-		<property name="com.jaspersoft.studio.field.label" value="fechaentradaconfirmada"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="ad_changelog"/>
-	</field>
-	<field name="nombreconfirmadorsalida" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="nombreconfirmadorsalida"/>
-		<property name="com.jaspersoft.studio.field.label" value="nombreconfirmadorsalida"/>
-	</field>
-	<field name="fechasalidaconfirmada" class="java.sql.Timestamp">
-		<property name="com.jaspersoft.studio.field.name" value="fechasalidaconfirmada"/>
-		<property name="com.jaspersoft.studio.field.label" value="fechasalidaconfirmada"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="ad_changelog"/>
-	</field>
-	<field name="cargoaprobador" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="cargoaprobador"/>
-		<property name="com.jaspersoft.studio.field.label" value="cargoaprobador"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="hr_job"/>
-	</field>
-	<field name="cargoaprobadorco" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="cargoaprobadorco"/>
-		<property name="com.jaspersoft.studio.field.label" value="cargoaprobadorco"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="hr_job"/>
-	</field>
-	<field name="cargoconfirmarentrada" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="cargoconfirmarentrada"/>
-		<property name="com.jaspersoft.studio.field.label" value="cargoconfirmarentrada"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="hr_job"/>
-	</field>
-	<field name="cargoconfirmarsalida" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="cargoconfirmarsalida"/>
-		<property name="com.jaspersoft.studio.field.label" value="cargoconfirmarsalida"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="hr_job"/>
-	</field>
-	<field name="vehículo" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="vehículo"/>
-		<property name="com.jaspersoft.studio.field.label" value="vehículo"/>
-	</field>
-	<field name="placa" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="placa"/>
-		<property name="com.jaspersoft.studio.field.label" value="placa"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_ppl_vehicle"/>
-	</field>
-	<field name="entregado" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="entregado"/>
-		<property name="com.jaspersoft.studio.field.label" value="entregado"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_inoutmaterial"/>
-	</field>
-	<field name="paseacceso" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="paseacceso"/>
-		<property name="com.jaspersoft.studio.field.label" value="paseacceso"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_accesspass"/>
-	</field>
-	<field name="referencedocno" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="referencedocno"/>
-		<property name="com.jaspersoft.studio.field.label" value="referencedocno"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_inoutmaterial"/>
-	</field>
-	<field name="reason" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="reason"/>
-		<property name="com.jaspersoft.studio.field.label" value="reason"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_accesspass"/>
-	</field>
-	<field name="c_bpartner_n" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="c_bpartner_n"/>
-		<property name="com.jaspersoft.studio.field.label" value="c_bpartner_n"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="c_bpartner"/>
-	</field>
-	<field name="m_requisition_id" class="java.math.BigDecimal">
-		<property name="com.jaspersoft.studio.field.name" value="m_requisition_id"/>
-		<property name="com.jaspersoft.studio.field.label" value="m_requisition_id"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="cop_accesspass"/>
-	</field>
-	<field name="requisition" class="java.lang.String">
-		<property name="com.jaspersoft.studio.field.name" value="requisition"/>
-		<property name="com.jaspersoft.studio.field.label" value="requisition"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="m_requisition"/>
-	</field>
+	<field name="cop_reference_id" class="java.math.BigDecimal"/>
+	<field name="nationalcode" class="java.lang.String"/>
+	<field name="nombreorg" class="java.lang.String"/>
+	<field name="nrodocumento" class="java.lang.String"/>
+	<field name="nombredocumento" class="java.lang.String"/>
+	<field name="fechadocumento" class="java.sql.Timestamp"/>
+	<field name="nombredepartamento" class="java.lang.String"/>
+	<field name="nombreempleado" class="java.lang.String"/>
+	<field name="nombrecargo" class="java.lang.String"/>
+	<field name="motivo" class="java.lang.String"/>
+	<field name="fechaentrada" class="java.sql.Timestamp"/>
+	<field name="fechasalida" class="java.sql.Timestamp"/>
+	<field name="observacion" class="java.lang.String"/>
+	<field name="issotrx" class="java.lang.String"/>
+	<field name="visitortype" class="java.lang.String"/>
+	<field name="cop_accesspass_id" class="java.math.BigDecimal"/>
+	<field name="docstatus" class="java.lang.String"/>
+	<field name="description" class="java.lang.String"/>
+	<field name="brand" class="java.lang.String"/>
+	<field name="serial" class="java.lang.String"/>
+	<field name="uomname" class="java.lang.String"/>
+	<field name="movementqty" class="java.math.BigDecimal"/>
+	<field name="nombreaprobador" class="java.lang.String"/>
+	<field name="nombreaprobadorcompletado" class="java.lang.String"/>
+	<field name="fechacreacionmovimiento" class="java.sql.Timestamp"/>
+	<field name="fechaaprobado" class="java.sql.Timestamp"/>
+	<field name="fechaaprobadocompletado" class="java.sql.Timestamp"/>
+	<field name="nombreconfirmadorentrada" class="java.lang.String"/>
+	<field name="fechaentradaconfirmada" class="java.sql.Timestamp"/>
+	<field name="nombreconfirmadorsalida" class="java.lang.String"/>
+	<field name="fechasalidaconfirmada" class="java.sql.Timestamp"/>
+	<field name="cargoaprobador" class="java.lang.String"/>
+	<field name="cargoaprobadorco" class="java.lang.String"/>
+	<field name="cargoconfirmarentrada" class="java.lang.String"/>
+	<field name="cargoconfirmarsalida" class="java.lang.String"/>
+	<field name="vehículo" class="java.lang.String"/>
+	<field name="placa" class="java.lang.String"/>
+	<field name="entregado" class="java.lang.String"/>
+	<field name="paseacceso" class="java.lang.String"/>
+	<field name="referencedocno" class="java.lang.String"/>
+	<field name="reason" class="java.lang.String"/>
+	<field name="c_bpartner_n" class="java.lang.String"/>
+	<field name="m_requisition_id" class="java.math.BigDecimal"/>
+	<field name="requisition" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -1053,7 +900,7 @@ where m.cop_inoutmaterial_id = $P{RECORD_ID}]]>
 				<textFieldExpression><![CDATA[$F{issotrx}.equals("Y")?" Fecha Entrada:" : " Fecha de Salida:"]]></textFieldExpression>
 			</textField>
 			<image scaleImage="FillFrame">
-				<reportElement mode="Transparent" x="-1" y="19" width="558" height="271" uuid="1ff21b34-de20-4fc4-89cc-bce49358a17f">
+				<reportElement mode="Transparent" x="-1" y="13" width="558" height="275" uuid="1ff21b34-de20-4fc4-89cc-bce49358a17f">
 					<property name="com.jaspersoft.studio.unit.x" value="px"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -1062,6 +909,16 @@ where m.cop_inoutmaterial_id = $P{RECORD_ID}]]>
 				</reportElement>
 				<imageExpression><![CDATA[$P{RESOURCE_DIR}+"nulo.png"]]></imageExpression>
 			</image>
+			<textField>
+				<reportElement x="320" y="17" width="224" height="12" uuid="b7551a71-6948-4e83-806c-e1349d368c66">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box leftPadding="2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nationalcode}]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageHeader>
 	<columnHeader>
