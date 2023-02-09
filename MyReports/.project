@@ -263,11 +263,6 @@
 			<location>C:/Users/pc08.inf/Desktop/RPT_Invoice_product.jasper</location>
 		</link>
 		<link>
-			<name>RPT_Invoice_product.jrxml</name>
-			<type>1</type>
-			<location>C:/Users/pc08.inf/Desktop/RPT_Invoice_product.jrxml</location>
-		</link>
-		<link>
 			<name>RPT_Invoice_productDetallV1.jasper</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Invoice_productDetallV1.jasper</location>
