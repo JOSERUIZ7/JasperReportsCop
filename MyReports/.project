@@ -58,19 +58,9 @@
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/COP_RV_Print_Requisition.jrxml</location>
 		</link>
 		<link>
-			<name>COP_RV_RecordWeight_V1 (1).jasper</name>
-			<type>1</type>
-			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/COP_RV_RecordWeight_V1 (1).jasper</location>
-		</link>
-		<link>
 			<name>COP_RV_RecordWeight_V1 (1).jrxml</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/COP_RV_RecordWeight_V1 (1).jrxml</location>
-		</link>
-		<link>
-			<name>COP_RV_RecordWeight_V1 (1)_1.jasper</name>
-			<type>1</type>
-			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/COP_RV_RecordWeight_V1 (1).jasper</location>
 		</link>
 		<link>
 			<name>COP_RV_RecordWeight_V1 (1)_1.jrxml</name>
@@ -138,19 +128,9 @@
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/FLUJO_CAJA_TABLEV2.jrxml</location>
 		</link>
 		<link>
-			<name>LedgerDetailed (1).jasper</name>
-			<type>1</type>
-			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/LedgerDetailed (1).jasper</location>
-		</link>
-		<link>
 			<name>LedgerDetailed (1).jrxml</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/LedgerDetailed (1).jrxml</location>
-		</link>
-		<link>
-			<name>LedgerDetailedold.jasper</name>
-			<type>1</type>
-			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/LedgerDetailedold.jasper</location>
 		</link>
 		<link>
 			<name>LedgerDetailedold.jrxml</name>
@@ -373,6 +353,16 @@
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_ReceiptsPerBank.jrxml</location>
 		</link>
 		<link>
+			<name>RPT_Sales_Mass_Ind_tm_V3.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Sales_Mass_Ind_tm_V3.jasper</location>
+		</link>
+		<link>
+			<name>RPT_Sales_Mass_Ind_tm_V3.jrxml</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT_Sales_Mass_Ind_tm_V3.jrxml</location>
+		</link>
+		<link>
 			<name>RPT__Accountstatement.jasper</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT__Accountstatement.jasper</location>
@@ -403,6 +393,16 @@
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RPT__Accountstatement.jrxml</location>
 		</link>
 		<link>
+			<name>RV_Cop_M_Kardex1.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Desktop/RV_Cop_M_Kardex1.jasper</location>
+		</link>
+		<link>
+			<name>RV_Cop_M_Kardex1.jrxml</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Desktop/RV_Cop_M_Kardex1.jrxml</location>
+		</link>
+		<link>
 			<name>RV_Cop_M_Transaction_Cost_Listftu.jrxml</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/RV_Cop_M_Transaction_Cost_Listftu.jrxml</location>
@@ -416,6 +416,11 @@
 			<name>Rpt_Inventory_General_Distributor_N_Suit.jrxml</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/Rpt_Inventory_General_Distributor_N_Suit.jrxml</location>
+		</link>
+		<link>
+			<name>Rpt_Inventory_General_Distributor_VtoDateV2.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/Rpt_Inventory_General_Distributor_VtoDateV2.jasper</location>
 		</link>
 		<link>
 			<name>Rpt_Inventory_General_Distributor_VtoDateV2.jrxml</name>

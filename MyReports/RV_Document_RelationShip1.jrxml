@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
+<!-- 2023-08-23T11:32:57 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RV_Document_RelationShip.jrxml_1" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="fb4152cb-2c28-46e8-990d-424c002eef5c">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<parameter name="RESOURCE_DIR" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA["/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="parameter" class="java.lang.String"/>
+	<parameter name="Type" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select now() a,  $P{parameter} parameter ,  $P{Type} tipo, *  from 
+cop_document_relationship
+WHERE 	case
+			when $P{Type} = 'REQUIRE' then cop_require_id = $P{parameter}::numeric
+			when $P{Type} = 'REQUISITION' then m_requisition_id = $P{parameter}::numeric
+			when $P{Type} = 'CORDER' then c_order_id = $P{parameter}::numeric
+			when $P{Type} = 'INVOICE' then c_invoice_id = $P{parameter}::numeric
+			when $P{Type} = 'RECEIPT' then m_inout_id = $P{parameter}::numeric
+			when $P{Type} = 'PAY' then C_Payment_ID = $P{parameter}::numeric
+			when $P{Type} = 'ASSIGNMENT' then c_allocationhdr_id = $P{parameter}::numeric
+		end
+]]>
+	</queryString>
+	<field name="a" class="java.sql.Timestamp"/>
+	<field name="parameter" class="java.lang.String"/>
+	<field name="tipo" class="java.lang.String"/>
+	<field name="require" class="java.lang.String"/>
+	<field name="requisition" class="java.lang.String"/>
+	<field name="c_order" class="java.lang.String"/>
+	<field name="invoice" class="java.lang.String"/>
+	<field name="receipt" class="java.lang.String"/>
+	<field name="pay" class="java.lang.String"/>
+	<field name="assignment" class="java.lang.String"/>
+	<field name="cop_require_id" class="java.math.BigDecimal"/>
+	<field name="m_requisition_id" class="java.math.BigDecimal"/>
+	<field name="c_order_id" class="java.math.BigDecimal"/>
+	<field name="c_invoice_id" class="java.math.BigDecimal"/>
+	<field name="m_inout_id" class="java.math.BigDecimal"/>
+	<field name="c_payment_id" class="java.math.BigDecimal"/>
+	<field name="c_allocationhdr_id" class="java.math.BigDecimal"/>
+	<field name="ad_client_id" class="java.math.BigDecimal"/>
+	<field name="ad_org_id" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="54" splitType="Stretch">
+			<image>
+				<reportElement x="4" y="3" width="110" height="40" uuid="cdde5811-4b0f-4f98-988b-67afab825503"/>
+				<imageExpression><![CDATA[$P{RESOURCE_DIR} + "logo.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="150" y="12" width="100" height="30" uuid="ab1b7f31-f000-47fb-a1f8-1d5ef967d8bd"/>
+				<textFieldExpression><![CDATA[$P{parameter}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="260" y="12" width="100" height="30" uuid="ac46a380-0e5d-4450-8344-cc2c1c1f2db0"/>
+				<textFieldExpression><![CDATA[$P{Type}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="74" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<textField>
+				<reportElement x="89" y="34" width="100" height="30" uuid="b5e75c6b-84e1-4776-9cc5-82a45abeafe2"/>
+				<textFieldExpression><![CDATA[$F{a}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="-11" y="34" width="100" height="30" uuid="44146710-5dba-4ef6-af31-4d001a46e452"/>
+				<text><![CDATA[a]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="231" y="38" width="100" height="30" uuid="1912d348-46da-438b-b249-7b059c9b4358"/>
+				<textFieldExpression><![CDATA[$F{parameter}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="382" y="44" width="100" height="30" uuid="a86e2915-8a6b-407c-afaf-f48e8a5eb814"/>
+				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="499" y="20" width="100" height="30" uuid="8b9bfeb5-ad7b-43d8-8229-83c0195eafea"/>
+				<textFieldExpression><![CDATA[$F{receipt}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="399" y="20" width="100" height="30" uuid="78185ff6-ff91-4e3d-9405-c66883f198e7"/>
+				<text><![CDATA[receipt]]></text>
+			</staticText>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

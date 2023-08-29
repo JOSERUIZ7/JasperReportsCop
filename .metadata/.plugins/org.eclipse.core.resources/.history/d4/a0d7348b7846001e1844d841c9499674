@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
+<!-- 2023-08-29T10:29:49 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Buy_Book" language="groovy" pageWidth="1184" pageHeight="752" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="1184" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isSummaryNewPage="true" isFloatColumnFooter="true" uuid="a0114db2-d81d-4461-9b9d-0f9a487ae3a3">
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="2502"/>
+	<property name="ireport.y" value="199"/>
+	<property name="ireport.callouts" value="##Wed Oct 26 11:53:05 VET 2011"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<style name="table_TH" mode="Opaque" backcolor="#73B0E6">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#CFDBE6">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab Data Text" hTextAlign="Center" hImageAlign="Center"/>
+	<style name="table">
+		<box>
+			<topPen lineWidth="1.0" lineColor="#000000"/>
+			<bottomPen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1">
+		<box>
+			<topPen lineWidth="1.0" lineColor="#000000"/>
+			<bottomPen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#EFF7FF"/>
+		</conditionalStyle>
+	</style>
+	<style name="table 2">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#EFF7FF"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="DateInvoiced1" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DateInvoiced2" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="RESOURCE_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["/"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT 
+a.c_invoice_id,
+a.dateinvoiced,    
+    c.datetrx AS datepay,
+
+    e.name AS c_bpartner_n,
+    e.taxid,
+    a.documentno AS c_invoice_n,a.issotrx,
+    dt.name AS c_doctype_n,
+    a.totallines,
+    a.grandtotal,
+    c.documentno AS c_payment_n,
+    d.overunderamt + d.amount AS amountpay,
+    currencyconvert(a.totallines, a.c_currency_id, 1000001::numeric, a.dateinvoiced::timestamp with time zone, a.c_conversiontype_id, a.ad_client_id, a.ad_org_id) AS totallines_ved,
+    currencyconvert(a.grandtotal, a.c_currency_id, 1000001::numeric, a.dateinvoiced::timestamp with time zone, a.c_conversiontype_id, a.ad_client_id, a.ad_org_id) AS grandtotal_ved,
+    currencyconvert(d.amount, c.c_currency_id, 1000001::numeric, c.datetrx::timestamp with time zone, c.c_conversiontype_id, c.ad_client_id, c.ad_org_id) AS amountpay_ved,
+    currencyconvert(d.overunderamt, c.c_currency_id, 1000001::numeric, c.datetrx::timestamp with time zone, c.c_conversiontype_id, c.ad_client_id, c.ad_org_id) AS overunderamt_ved
+
+    
+FROM c_invoice a
+     LEFT JOIN c_allocationline b ON b.c_invoice_id = a.c_invoice_id
+     LEFT JOIN c_payment c ON c.c_payment_id = b.c_payment_id
+     LEFT JOIN c_allocationline d ON d.c_payment_id = c.c_payment_id AND d.c_invoice_id = a.c_invoice_id
+     JOIN c_bpartner e ON e.c_bpartner_id = c.c_bpartner_id
+     JOIN c_doctype dt ON a.c_doctype_id = dt.c_doctype_id AND (dt.docbasetype = ANY (ARRAY['API'::bpchar, 'APC'::bpchar, 'APD'::bpchar, 'ARI'::bpchar, 'ARD'::bpchar, 'APC'::bpchar])) AND dt.isaffectedbook = 'Y'::bpchar
+  WHERE (a.issotrx = 'Y'
+  AND a.dateinvoiced between '2023-08-01' AND '2023-08-15')
+   or (a.issotrx = 'Y' and c.datetrx between '2023-08-01' AND '2023-08-15') 
+  ORDER BY a.dateinvoiced, a.documentno, c.datetrx]]>
+	</queryString>
+	<field name="c_invoice_id" class="java.math.BigDecimal"/>
+	<field name="dateinvoiced" class="java.sql.Timestamp"/>
+	<field name="datepay" class="java.sql.Timestamp"/>
+	<field name="c_bpartner_n" class="java.lang.String"/>
+	<field name="taxid" class="java.lang.String"/>
+	<field name="c_invoice_n" class="java.lang.String"/>
+	<field name="issotrx" class="java.lang.String"/>
+	<field name="c_doctype_n" class="java.lang.String"/>
+	<field name="totallines" class="java.math.BigDecimal"/>
+	<field name="grandtotal" class="java.math.BigDecimal"/>
+	<field name="c_payment_n" class="java.lang.String"/>
+	<field name="amountpay" class="java.math.BigDecimal"/>
+	<field name="totallines_ved" class="java.math.BigDecimal"/>
+	<field name="grandtotal_ved" class="java.math.BigDecimal"/>
+	<field name="amountpay_ved" class="java.math.BigDecimal"/>
+	<field name="overunderamt_ved" class="java.math.BigDecimal"/>
+	<title>
+		<band height="1" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="50"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="146" splitType="Stretch">
+			<textField>
+				<reportElement x="449" y="0" width="110" height="18" uuid="c748c49e-e9c2-410c-b21a-e1f6e4c3db65">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{c_invoice_n}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="9" y="0" width="100" height="18" uuid="cb6c872b-dcf1-4626-9f72-75c7eee10eee"/>
+				<textFieldExpression><![CDATA[$F{dateinvoiced}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="124" y="0" width="220" height="18" uuid="2e6ca004-2b54-4da2-b2fb-d16d36b7252b"/>
+				<textFieldExpression><![CDATA[$F{c_bpartner_n}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="554" y="0" width="100" height="18" uuid="54d2932f-35bb-47e2-8b87-7fc99fcce12a"/>
+				<textFieldExpression><![CDATA[$F{totallines_ved}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="654" y="0" width="100" height="18" uuid="3e35d3c7-71fb-4b5e-be1d-320665ed7fc2"/>
+				<textFieldExpression><![CDATA[$F{datepay}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="754" y="0" width="100" height="18" uuid="dfd9b78c-e5e7-49d0-92ee-a3fdf85c2062"/>
+				<textFieldExpression><![CDATA[$F{amountpay}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="854" y="0" width="125" height="18" uuid="cbef0395-51f1-499b-92d2-e872592872b1"/>
+				<textFieldExpression><![CDATA[$F{overunderamt_ved}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="349" y="0" width="100" height="18" uuid="77162d36-61a4-474c-ba32-f4d36b3f74d1">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{taxid}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="10"/>
+	</detail>
+</jasperReport>

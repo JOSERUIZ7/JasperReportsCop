@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
+<!-- 2023-07-03T14:50:35 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT_Cross_Inventory_RangeDate" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="83930a2c-255a-449a-82f0-87c741daa8de">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="AD_Client_ID" class="java.lang.Integer"/>
+	<parameter name="DateFrom" class="java.sql.Date"/>
+	<parameter name="DateTo" class="java.sql.Date"/>
+	<parameter name="RESOURCE_DIR" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[
+select
+--	e.ad_org_id  ,
+	e.name ad_org_n, crr.currentdate ,
+--	,f.m_product_id,
+	
+	f.value m_product_v ,f.name m_product_n,
+	coalesce(stock_prod_to_date(f.m_product_id, crr.currentdate, 1000000 , e.ad_org_id),0) as stock
+from
+	ad_org E 
+	full join m_product F on 1=1
+	full join (select '2023-05-01' currentdate
+union
+select * from (
+SELECT
+'2023-05-01'::date + ROW_NUMBER () OVER (ORDER BY m_product_id) currentdate 
+FROM
+	m_product limit (select extract(days from (timestamp '2023-05-05' - '2023-05-01')))
+	
+	)  x order by currentdate) crr on 1=1 
+where
+	e.ad_client_id = 1000000 
+	and f.M_Product_Category_ID in (1000044, 1000042)
+	and e.ad_org_id in (1000000,1000001, 1000002, 1000003, 1000004, 1000005,1000006, 1000007)
+order by ad_org_n,currentdate,m_product_v 
+]]>
+	</queryString>
+	<field name="ad_org_n" class="java.lang.String"/>
+	<field name="currentdate" class="java.sql.Date"/>
+	<field name="m_product_v" class="java.lang.String"/>
+	<field name="m_product_n" class="java.lang.String"/>
+	<field name="stock" class="java.math.BigDecimal"/>
+	<group name="ad_org_n">
+		<groupExpression><![CDATA[$F{ad_org_n}]]></groupExpression>
+		<groupHeader>
+			<band height="23"/>
+		</groupHeader>
+		<groupFooter>
+			<band height="50"/>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="15" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="152" height="15" uuid="c42eabb3-20c3-4aec-9e52-99b8b298d43b"/>
+				<text><![CDATA[ad_org_n]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="152" y="0" width="150" height="15" uuid="6fd94bef-2591-4a5c-ac7a-8a79c0ed88ed"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[currentdate]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="302" y="0" width="150" height="15" uuid="4a806156-508c-4d9f-af79-54d4ff5f0b40">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<text><![CDATA[m_product_v]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="452" y="0" width="150" height="15" uuid="8aee22c6-fd67-4d90-a51e-8bd474760eb3"/>
+				<text><![CDATA[m_product_n]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="602" y="0" width="150" height="15" uuid="6e90e9df-32ac-4612-89e7-5a8974f3218d"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[stock]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="13" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="110" height="13" uuid="803118e7-a429-4a9c-9bbd-89a5b368b7b8">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{ad_org_n}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="110" y="0" width="78" height="13" uuid="f283f292-e925-49be-abab-56478950159c">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{currentdate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="188" y="0" width="81" height="13" uuid="07ca37de-9663-42eb-8d41-1b564c7370b2"/>
+				<textElement>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{m_product_v}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="269" y="0" width="332" height="13" uuid="3620c57c-4b6a-4501-b0e8-ed6b95e25502"/>
+				<textFieldExpression><![CDATA[$F{m_product_n}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="602" y="0" width="150" height="13" uuid="f5c3620c-e9b8-4664-af18-195531f7478b"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{stock}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

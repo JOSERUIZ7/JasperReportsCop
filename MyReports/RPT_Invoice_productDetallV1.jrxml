@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT_Invoice_product" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4bfdd1f7-c0f0-46c5-8bac-488919c9ba9c">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="168"/>
@@ -78,7 +78,7 @@ select
 	a.AD_CLIENT_ID,	a.AD_ORG_ID )),2) as tax_line_cv,
 	ROUND(sum(currencyConvert(((a.linenetamt + (a.linenetamt * (a.rate / 100::numeric)) )),a.c_currency_id,$P{C_Currency_ID},a.dateinvoiced,
 	a.C_ConversionType_ID,a.AD_CLIENT_ID,a.AD_ORG_ID )),2) as total_line_cv,
-   ( CASE WHEN MAX(a.DocBaseType) IN ('ARI','ARC') THEN 'Analisis de Ventas por Producto' WHEN MAX(a.DocBaseType) IN ('API','APC') THEN 'Analisis de Compras por Producto' END)  REPONAME ,
+   ( CASE WHEN MAX(a.DocBaseType) IN ('ARI','ARC') THEN 'Analisis de Documentos de Ventas Detallado' WHEN MAX(a.DocBaseType) IN ('API','APC') THEN 'Analisis de Documentos de  Compras Detallado' END)  REPONAME ,
 	  'Montos expresados en: '|| max(cu.Description) || CHR(13) ||
 	'DESDE: '|| substring($P{DateInvoiced1},9,2) || '/'|| substring($P{DateInvoiced1},6,2) ||'/'|| substring($P{DateInvoiced1},1,4)
 || ' - HASTA:'||  substring($P{DateInvoiced2},9,2) || '/'|| substring($P{DateInvoiced2},6,2) ||'/'|| substring($P{DateInvoiced2},1,4) || CHR(13) ||	
@@ -87,7 +87,7 @@ select
 	case when $P{C_BP_Group_ID} is null then '' else ' Solo Grupo de terceros: ' || max(bpg.name)  || ' - ' end ||
 	case when $P{M_Product_Category_ID} is null then '' else ' Solo Categoria de productos: ' || max(mpc.name)  || ' - ' end ||
 	case when $P{M_Product_ID} is null then '' else ' Solo Producto: ' || max(d.name) end as doc_info,
-round(sum(a.qtyinvoiced)/1000,2) qty_ton,
+round(sum(a.qtyinvoiced*d.weight)/1000,2) qty_ton,
 max(cum.name) UOMSymbol, 1 NIVEL
 from	
 	cop_rv_c_invoiceline a
@@ -539,7 +539,7 @@ order by TypeCustomer,nivel,DOCUMENTNO,m_product_n,uomsymbol]]>
 			<band height="8">
 				<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				<textField pattern="" isBlankWhenNull="true">
-					<reportElement x="2" y="0" width="28" height="8" uuid="b9540c12-b9a7-428e-acb0-94857d260bae">
+					<reportElement x="2" y="0" width="48" height="8" uuid="b9540c12-b9a7-428e-acb0-94857d260bae">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -550,7 +550,7 @@ order by TypeCustomer,nivel,DOCUMENTNO,m_product_n,uomsymbol]]>
 					<textFieldExpression><![CDATA[$F{value}]]></textFieldExpression>
 				</textField>
 				<textField pattern="" isBlankWhenNull="true">
-					<reportElement x="31" y="0" width="152" height="8" uuid="d7d305fd-cd42-4d03-b52d-5b9900d529f0">
+					<reportElement x="60" y="0" width="152" height="8" uuid="d7d305fd-cd42-4d03-b52d-5b9900d529f0">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 						<property name="com.jaspersoft.studio.unit.y" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>

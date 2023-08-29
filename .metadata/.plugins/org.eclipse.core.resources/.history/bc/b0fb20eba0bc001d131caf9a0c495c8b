@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT_LABEL_PRODUCTv3.jrxml" printOrder="Horizontal" pageWidth="283" pageHeight="141" columnWidth="279" leftMargin="2" rightMargin="2" topMargin="2" bottomMargin="2" isSummaryWithPageHeaderAndFooter="true" uuid="e87ac7bf-7f6f-4bee-820b-0f7e8a425c18">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.report.description" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="275"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="714"/>
+	<parameter name="RESOURCE_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="M_Product_Category_ID" class="java.lang.Integer"/>
+	<parameter name="M_Product_ID" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select
+	a.value ,
+	a.name, A.VALUE || ' - ' ||A.NAME M_PRODUCT_N ,
+	b.UOMSymbol c_uom_n,
+	c.name M_Product_Category_n ,
+	d.value || ' - ' || coalesce(d.description,'') location_n 	
+from
+	m_product a
+join c_uom_trl b on
+	b.c_uom_id = a.c_uom_id
+	and b.ad_language = 'es_CO'
+join M_Product_Category c on
+	c.m_product_category_id = a.m_product_category_id
+left join M_Locator d on
+	d.M_Locator_ID = a.M_Locator_ID
+where
+	(a.M_Product_Category_ID = $P{M_Product_Category_ID} or $P{M_Product_Category_ID} iS null) 
+	 and (a.M_Product_ID = $P{M_Product_ID} or $P{M_Product_ID} iS null)  
+	and a.isactive = 'Y' and IsStocked = 'Y'
+order by
+	c.name,a.value]]>
+	</queryString>
+	<field name="value" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="value"/>
+		<property name="com.jaspersoft.studio.field.label" value="value"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_product"/>
+	</field>
+	<field name="name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_product"/>
+	</field>
+	<field name="m_product_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="m_product_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_product_n"/>
+	</field>
+	<field name="c_uom_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="c_uom_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="c_uom_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_uom_trl"/>
+	</field>
+	<field name="m_product_category_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="m_product_category_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_product_category_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_product_category"/>
+	</field>
+	<field name="location_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="location_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="location_n"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</band>
+	</title>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="104" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField>
+				<reportElement x="35" y="17" width="240" height="22" uuid="4693559e-30f5-403a-a78a-ca20101cfe6d">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Top">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="35" y="1" width="240" height="16" uuid="e45c7a83-823e-455b-be94-0e9637fa5b36">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{m_product_category_n}]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement x="14" y="39" width="261" height="65" uuid="d3d34864-6a74-43f2-be28-c351b17031e4"/>
+				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="Code128" drawText="true" checksumRequired="false">
+					<jr:codeExpression><![CDATA[$F{value}]]></jr:codeExpression>
+				</jr:barbecue>
+			</componentElement>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+</jasperReport>

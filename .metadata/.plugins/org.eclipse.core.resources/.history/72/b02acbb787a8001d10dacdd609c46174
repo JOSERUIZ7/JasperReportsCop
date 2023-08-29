@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_Letter_3" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="25607923-a540-4fa3-9446-580c71a83285">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="248"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="745"/>
+	<queryString>
+		<![CDATA[
+select 
+--	x2.m_product_id ,
+	mp.value,mp.name,
+--	rlt.name movementtype,
+	 
+	coalesce(
+	case when x2.movementtype ='II' then 'Inventario Inicial'  else null end,
+	case when x2.m_inventoryline_id is not null then 'Inventario Fisico'  else null end,
+	case when x2.m_movementline_id  is not null then 'Movimiento de Inventario'  else null end,
+	case when x2.m_inoutline_id  is not null then 'Recepcion / Entrega'  else null end,
+	case when x2.m_productionline_id is not null then 'Produccion' else null end) movementtype_n ,
+	
+	x2.movementdate ,
+	x2.credit ,
+	x2.debit ,
+	sum(mount) over (order by mdate,x desc ) as balance ,
+	ao.name ad_org_n ,
+--	x2.ad_org_id ,
+--	x2.ad_client_id,
+	
+	
+	
+	coalesce (a2.documentno,b2.documentno ,c2.documentno ,d2.documentno) documento
+
+ from 
+
+(select *, balance + credit + debit  as mount  from 
+(select
+	1015221m_product_id, 'II' as movementtype ,('2023-01-01'::date - 1 ) movementdate,
+	0000000000.00 as credit , 	0000000000.00 as debit ,
+		stock_prod_to_date(1015221,('2023-01-01'::date - 1 ) ,1000000,1000006) balance ,
+	1000006 as ad_org_id , 1000000 ad_client_id ,  'II'  || '2023-01-01'::DATE::text  as x
+	, ('2023-01-01'::date - 1)::timestamp mdate,
+	00000000000 m_inventoryline_id ,
+	00000000000 m_movementline_id ,
+	00000000000 m_inoutline_id ,
+	00000000000 m_productionline_id
+	union 
+select 
+	B.m_product_id ,
+	B.movementtype ,  
+	B.movementdate ::date , 
+	case when ASCII(substr(B.movementtype,2,1)) = 43 then sum(B.movementqty) else 0 end credit,   
+	case when ASCII(substr(B.movementtype,2,1)) = 45 then sum(B.movementqty) else 0 end debit  ,
+	0000000000.00 as balance ,
+	D.ad_org_id , B.ad_client_id ,  b.movementtype || b.movementdate::DATE::text  as x
+	, (B.created)::timestamp mdate,
+	b.m_inventoryline_id ,
+	b.m_movementline_id ,
+	b.m_inoutline_id ,
+	b.m_productionline_id 
+from M_Transaction B join M_Locator D on D.m_locator_id = B.M_LOCATOR_ID
+
+where 
+B.ad_client_id = 1000000 and D.ad_org_id = 1000006 
+and B.m_product_id = 1015221 and B.MovementDate between  '2023-01-01' and  '2023-02-06' 
+group by 
+	B.m_product_id ,
+	B.movementtype ,
+	B.movementdate ,B.created, D.ad_org_id , B.ad_client_id ,
+	b.m_inventoryline_id ,
+	b.m_movementline_id ,
+	b.m_inoutline_id ,
+	b.m_productionline_id
+--	union 
+	
+--	select
+--	1015221m_product_id,'IF' as movementtype ,('2023-02-06'::date + 1 ) movementdate,
+--	0000000000.00 as credit , 	0000000000.00 as debit ,
+--		stock_prod_to_date(1015221,('2023-02-06'::date + 1 ) ,1000000,1000006) balance ,
+--	1000006 as ad_org_id , 1000000 ad_client_id,  'IF' || '2023-01-01'::DATE::text  as x
+	)
+
+	
+	as x
+order by movementdate ) as x2 join m_product mp on mp.m_product_id = x2.m_product_id
+join ad_org ao on ao.ad_org_id = x2.ad_org_id
+--left join AD_Ref_List rl on rl.value = x2.movementtype and rl.ad_client_id = x2.ad_client_id
+--left join AD_Ref_List_Trl rlt on rlt.AD_Ref_List_id =  rl.AD_Ref_List_id and rlt.AD_Language = 'es_CO'
+left join 	m_inventoryline a on a.m_inventoryline_id = x2.m_inventoryline_id
+left join 	m_movementline b  on b.m_movementline_id = x2.m_movementline_id
+left join 	m_inoutline c on c.m_inoutline_id = x2.m_inoutline_id
+left join 	m_productionline d  on d.m_productionline_id = x2.m_productionline_id
+
+left join 	m_inventory a2 on a2.m_inventory_id = a.m_inventory_id
+left join 	m_movement b2  on b2.m_movement_id = b.m_movement_id
+left join 	m_inout c2 on c2.m_inout_id = c.m_inout_id
+left join 	m_production d2  on d2.m_production_id = d.m_production_id
+
+
+]]>
+	</queryString>
+	<field name="value" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="value"/>
+		<property name="com.jaspersoft.studio.field.label" value="value"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_product"/>
+	</field>
+	<field name="name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="name"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_product"/>
+	</field>
+	<field name="movementtype_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="movementtype_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="movementtype_n"/>
+	</field>
+	<field name="movementdate" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="movementdate"/>
+		<property name="com.jaspersoft.studio.field.label" value="movementdate"/>
+	</field>
+	<field name="credit" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="credit"/>
+		<property name="com.jaspersoft.studio.field.label" value="credit"/>
+	</field>
+	<field name="debit" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="debit"/>
+		<property name="com.jaspersoft.studio.field.label" value="debit"/>
+	</field>
+	<field name="balance" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="balance"/>
+		<property name="com.jaspersoft.studio.field.label" value="balance"/>
+	</field>
+	<field name="ad_org_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ad_org_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="ad_org_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org"/>
+	</field>
+	<field name="documento" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="documento"/>
+		<property name="com.jaspersoft.studio.field.label" value="documento"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="15" splitType="Stretch">
+			<textField>
+				<reportElement x="7" y="5" width="48" height="9" uuid="929cf905-5cd8-4967-8046-1c55e6fb01e6">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="1b78c053-617b-4323-80bd-3b6ad275aaf8"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="5" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{value}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="55" y="6" width="110" height="9" uuid="b5562169-bc34-4383-b446-d139e03010eb">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="1b78c053-617b-4323-80bd-3b6ad275aaf8"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="5" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="11" splitType="Stretch">
+			<textField>
+				<reportElement x="85" y="0" width="135" height="11" uuid="3c8dc7bd-34df-4c4f-8040-cc4e69925252">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="1b78c053-617b-4323-80bd-3b6ad275aaf8"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<textElement>
+					<font fontName="SansSerif" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{movementtype_n}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##">
+				<reportElement x="430" y="0" width="70" height="11" uuid="fd39445d-5222-445d-891e-9a4a5c3f0a4e">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="b39bc82d-8a6d-4153-b09f-bfe961181946"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{debit}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##">
+				<reportElement x="500" y="0" width="70" height="11" uuid="2c8a9abe-0114-4a77-a766-9b81983ecbc1">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="b39bc82d-8a6d-4153-b09f-bfe961181946"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{balance}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MM/dd/yyyy">
+				<reportElement x="220" y="0" width="62" height="11" uuid="1705a425-591f-4f08-8a0f-f16c0e3266fd">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="1b78c053-617b-4323-80bd-3b6ad275aaf8"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font fontName="SansSerif" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{movementdate}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.##">
+				<reportElement x="360" y="0" width="70" height="11" uuid="738dff8e-5aec-4932-bca0-7bc08dcedda4">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="b39bc82d-8a6d-4153-b09f-bfe961181946"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{credit}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="12" y="0" width="73" height="11" uuid="2f215193-a16d-4116-ab08-53d3ff50b7fb">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="1b78c053-617b-4323-80bd-3b6ad275aaf8"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font fontName="SansSerif" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{documento}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

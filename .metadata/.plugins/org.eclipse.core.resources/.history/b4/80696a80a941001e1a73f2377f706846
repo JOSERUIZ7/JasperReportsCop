@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
+<!-- 2023-08-23T07:37:55 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_Letter" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e87ac7bf-7f6f-4bee-820b-0f7e8a425c18">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="72"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="917"/>
+	<parameter name="ShowHeader" class="java.lang.String">
+		<defaultValueExpression><![CDATA["Y"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="RESOURCE_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DateTo" class="java.sql.Date">
+		<defaultValueExpression><![CDATA[NOW()]]></defaultValueExpression>
+	</parameter>
+	<parameter name="AD_Org_ID" class="java.lang.Integer"/>
+	<parameter name="M_Product_ID" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select 
+		coalesce(A.DOCUMENTNO,
+				b.DOCUMENTNO,
+				c.DOCUMENTNO,
+				d.DOCUMENTNO,
+				e.DOCUMENTNO,
+				f.DOCUMENTNO,
+				g.DOCUMENTNO) as DOCUMENTNO ,
+
+				case 
+				when Y.cop_require_id is not null then 'Requerimiento' 
+				when Y.m_requisition_id is not null then 'Requisicion' 
+				when Y.c_order_id is not null then 'Orden de Compra' 
+				when Y.c_invoice_id is not null then 'Factura' 
+				when Y.m_inout_id is not null then 'Recepcion de Producto' 
+				when Y.c_payment_id is not null then 'Pago' 
+				when Y.c_allocationhdr_id is not null then 'Asignacion de Pago' 
+				end tipo ,
+				
+			coalesce(A.DateDoc ,
+				b.DateDoc ,
+				c.DateOrdered  ,
+				d.DateInvoiced  ,
+				e.MovementDate  ,
+				f.DateTrx  ,
+				g.DateTrx  ) as date  , orden,
+				
+				case 
+				when 'RECEIPT' = 'REQUIRE' and Y.cop_require_id is not null then 'Y' 
+				when 'RECEIPT' = 'REQUISITION' and Y.m_requisition_id is not null then 'Y' 
+				when 'RECEIPT' = 'CORDER' and Y.c_order_id is not null then 'Y' 
+				when 'RECEIPT' = 'INVOICE' and Y.c_invoice_id is not null then 'Y' 
+				when 'RECEIPT' = 'RECEIPT' and Y.m_inout_id is not null then 'Y' 
+				when 'RECEIPT' = 'PAY' and Y.c_payment_id is not null then 'Y' 
+				when 'RECEIPT' = 'ASSIGNMENT' and Y.c_allocationhdr_id is not null then 'Y' 
+				
+				else '' end ,'' doc_info ,'' Reportname
+				
+from (
+(	select distinct 
+		cop_require_id ,
+		null::numeric m_requisition_id ,
+		null::numeric c_order_id ,
+		null::numeric c_invoice_id ,
+		null::numeric m_inout_id ,
+		null::numeric c_payment_id ,
+		null::numeric c_allocationhdr_id , 1 ORDEN
+from
+		cop_document_relationship
+	where
+		case
+			when 'RECEIPT' = 'REQUIRE' then cop_require_id = 1029865
+			when 'RECEIPT' = 'REQUISITION' then m_requisition_id = 1029865
+			when 'RECEIPT' = 'CORDER' then c_order_id = 1029865
+			when 'RECEIPT' = 'INVOICE' then c_invoice_id = 1029865
+			when 'RECEIPT' = 'RECEIPT' then m_inout_id = 1029865
+			when 'RECEIPT' = 'PAY' then C_Payment_ID = 1029865
+			when 'RECEIPT' = 'ASSIGNMENT' then c_allocationhdr_id = 1029865
+		end
+)
+union 
+(
+	select distinct 
+
+		null::NUMERIC cop_require_id ,
+		m_requisition_id ,
+		null::numeric c_order_id ,
+		null::numeric c_invoice_id ,
+		null::numeric m_inout_id ,
+		null::numeric c_payment_id ,
+		null::numeric c_allocationhdr_id, 2 ORDEN
+	
+	
+	from
+		cop_document_relationship
+	where
+		case
+			when 'RECEIPT' = 'REQUIRE' then cop_require_id = 1029865
+			when 'RECEIPT' = 'REQUISITION' then m_requisition_id = 1029865
+			when 'RECEIPT' = 'CORDER' then c_order_id = 1029865
+			when 'RECEIPT' = 'INVOICE' then c_invoice_id = 1029865
+			when 'RECEIPT' = 'RECEIPT' then m_inout_id = 1029865
+			when 'RECEIPT' = 'PAY' then C_Payment_ID = 1029865
+			when 'RECEIPT' = 'ASSIGNMENT' then c_allocationhdr_id = 1029865
+		end
+)
+union 
+(
+	select distinct 
+
+		null::NUMERIC cop_require_id ,
+		null::numeric m_requisition_id ,
+		c_order_id ,
+		null::numeric c_invoice_id ,
+		null::numeric m_inout_id ,
+		null::numeric c_payment_id ,
+		null::numeric c_allocationhdr_id, 3 ORDEN
+	
+	
+	from
+		cop_document_relationship
+	where
+		case
+			when 'RECEIPT' = 'REQUIRE' then cop_require_id = 1029865
+			when 'RECEIPT' = 'REQUISITION' then m_requisition_id = 1029865
+			when 'RECEIPT' = 'CORDER' then c_order_id = 1029865
+			when 'RECEIPT' = 'INVOICE' then c_invoice_id = 1029865
+			when 'RECEIPT' = 'RECEIPT' then m_inout_id = 1029865
+			when 'RECEIPT' = 'PAY' then C_Payment_ID = 1029865
+			when 'RECEIPT' = 'ASSIGNMENT' then c_allocationhdr_id = 1029865
+		end
+)
+union 
+(
+	select distinct 
+
+		null::NUMERIC cop_require_id ,
+		null::numeric m_requisition_id ,
+		null::numeric c_order_id ,
+		 c_invoice_id ,
+		null::numeric m_inout_id ,
+		null::numeric c_payment_id ,
+		null::numeric c_allocationhdr_id, 4 ORDEN
+	
+	
+	from
+		cop_document_relationship
+	where
+		case
+			when 'RECEIPT' = 'REQUIRE' then cop_require_id = 1029865
+			when 'RECEIPT' = 'REQUISITION' then m_requisition_id = 1029865
+			when 'RECEIPT' = 'CORDER' then c_order_id = 1029865
+			when 'RECEIPT' = 'INVOICE' then c_invoice_id = 1029865
+			when 'RECEIPT' = 'RECEIPT' then m_inout_id = 1029865
+			when 'RECEIPT' = 'PAY' then C_Payment_ID = 1029865
+			when 'RECEIPT' = 'ASSIGNMENT' then c_allocationhdr_id = 1029865
+		end
+)
+union 
+(
+	select distinct 
+
+		null::NUMERIC cop_require_id ,
+		null::numeric m_requisition_id ,
+		null::numeric c_order_id ,
+		null::numeric  c_invoice_id ,
+		m_inout_id ,
+		null::numeric c_payment_id ,
+		null::numeric c_allocationhdr_id, 5 ORDEN
+	
+	
+	from
+		cop_document_relationship
+	where
+		case
+			when 'RECEIPT' = 'REQUIRE' then cop_require_id = 1029865
+			when 'RECEIPT' = 'REQUISITION' then m_requisition_id = 1029865
+			when 'RECEIPT' = 'CORDER' then c_order_id = 1029865
+			when 'RECEIPT' = 'INVOICE' then c_invoice_id = 1029865
+			when 'RECEIPT' = 'RECEIPT' then m_inout_id = 1029865
+			when 'RECEIPT' = 'PAY' then C_Payment_ID = 1029865
+			when 'RECEIPT' = 'ASSIGNMENT' then c_allocationhdr_id = 1029865
+		end
+)
+union 
+(
+	select distinct 
+
+		null::NUMERIC cop_require_id ,
+		null::numeric m_requisition_id ,
+		null::numeric c_order_id ,
+		null::numeric  c_invoice_id ,
+		null::numeric m_inout_id ,
+		c_payment_id ,
+		null::numeric c_allocationhdr_id, 6 ORDEN
+	
+	
+	from
+		cop_document_relationship
+	where
+		case
+			when 'RECEIPT' = 'REQUIRE' then cop_require_id = 1029865
+			when 'RECEIPT' = 'REQUISITION' then m_requisition_id = 1029865
+			when 'RECEIPT' = 'CORDER' then c_order_id = 1029865
+			when 'RECEIPT' = 'INVOICE' then c_invoice_id = 1029865
+			when 'RECEIPT' = 'RECEIPT' then m_inout_id = 1029865
+			when 'RECEIPT' = 'PAY' then C_Payment_ID = 1029865
+			when 'RECEIPT' = 'ASSIGNMENT' then c_allocationhdr_id = 1029865
+		end
+)
+union 
+(
+	select distinct 
+
+		null::NUMERIC cop_require_id ,
+		null::numeric m_requisition_id ,
+		null::numeric c_order_id ,
+		null::numeric  c_invoice_id ,
+		null::numeric m_inout_id ,
+		null::numeric c_payment_id ,
+		c_allocationhdr_id, 7 ORDEN
+	
+	
+	from
+		cop_document_relationship
+	where
+		case
+			when 'RECEIPT' = 'REQUIRE' then cop_require_id = 1029865
+			when 'RECEIPT' = 'REQUISITION' then m_requisition_id = 1029865
+			when 'RECEIPT' = 'CORDER' then c_order_id = 1029865
+			when 'RECEIPT' = 'INVOICE' then c_invoice_id = 1029865
+			when 'RECEIPT' = 'RECEIPT' then m_inout_id = 1029865
+			when 'RECEIPT' = 'PAY' then C_Payment_ID = 1029865
+			when 'RECEIPT' = 'ASSIGNMENT' then c_allocationhdr_id = 1029865
+		end
+)) as Y 
+
+left join COP_REQUIRE A on A.cop_require_id = Y.COP_REQUIRE_ID
+left join m_requisition b on b.m_requisition_id = Y.m_requisition_ID
+left join c_order c on c.c_order_id = Y.c_order_ID
+left join c_invoice d on d.c_invoice_id = Y.c_invoice_ID
+left join m_inout e on e.m_inout_id = Y.m_inout_ID
+left join c_payment f on f.c_payment_id = Y.c_payment_ID
+left join c_allocationhdr g on g.c_allocationhdr_id = Y.c_allocationhdr_ID
+
+where Y.cop_require_id is not null
+		OR Y.m_requisition_id is not null
+		OR Y.c_order_id is not null
+		OR Y.c_invoice_id is not null
+		or Y.m_inout_id is not null
+		or Y.c_payment_id is not null
+		OR Y.c_allocationhdr_id is not null
+order by  3]]>
+	</queryString>
+	<field name="documentno" class="java.lang.String"/>
+	<field name="tipo" class="java.lang.String"/>
+	<field name="date" class="java.sql.Timestamp"/>
+	<field name="orden" class="java.lang.Integer"/>
+	<field name="case" class="java.lang.String"/>
+	<field name="doc_info" class="java.lang.String"/>
+	<field name="reportname" class="java.lang.String"/>
+	<variable name="movementqty 0" class="java.math.BigDecimal" resetType="Group" resetGroup="m_product" calculation="Sum">
+		<variableExpression><![CDATA[$F{movementqty}]]></variableExpression>
+	</variable>
+	<variable name="movementqty 0_1" class="java.math.BigDecimal" resetType="Group" resetGroup="ad_org" calculation="Sum">
+		<variableExpression><![CDATA[$F{movementqty}]]></variableExpression>
+	</variable>
+	<variable name="movementqty 00_1" class="java.math.BigDecimal" resetType="Group" resetGroup="locator_n" calculation="Sum">
+		<variableExpression><![CDATA[$F{movementqty}]]></variableExpression>
+	</variable>
+	<group name="m_product">
+		<groupExpression><![CDATA[$F{m_product_n}]]></groupExpression>
+		<groupHeader>
+			<band>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="39" splitType="Stretch">
+			<printWhenExpression><![CDATA[$P{ShowHeader}.equals( "Y" )]]></printWhenExpression>
+			<staticText>
+				<reportElement x="523" y="5" width="10" height="11" uuid="2c110026-261d-467d-9b16-cb4f625186ff">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[de:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="110" y="-1" width="364" height="13" printWhenGroupChanges="ad_org" uuid="fecb3801-3ccf-4849-a650-729e5b419028">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{reponame}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" isBlankWhenNull="true">
+				<reportElement x="537" y="5" width="21" height="11" uuid="33cb3ce7-1deb-41b1-9048-543107b7cd46">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="511" y="5" width="11" height="11" uuid="27507d02-ea68-4a27-b241-918b7f80ade7">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="474" y="5" width="36" height="11" uuid="a2c3e9f2-648c-452e-93c8-952132d6f2b9">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Página:]]></text>
+			</staticText>
+			<image>
+				<reportElement x="0" y="0" width="110" height="39" uuid="75f1250b-9f84-4522-893d-7a2b3a88f0bd"/>
+				<imageExpression><![CDATA[$P{RESOURCE_DIR} + "logo.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="474" y="16" width="36" height="11" uuid="b5e1d2b6-8da2-4b42-8192-818aeba0ba5e">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="509" y="16" width="49" height="11" uuid="11725dfe-0279-4a13-8b47-46596d53bedd">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="474" y="27" width="36" height="11" uuid="bbcaa597-121e-4d50-8d5c-5e58ddbf9081">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora:]]></text>
+			</staticText>
+			<textField pattern="HH:mm" isBlankWhenNull="true">
+				<reportElement x="509" y="27" width="49" height="11" uuid="c56701e8-29bf-4cf8-a759-3bdaa3605982">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("h:mm a").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="110" y="13" width="363" height="22" printWhenGroupChanges="ad_org" uuid="ce801d77-9b36-4437-b1f3-8edfac7a8538">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{doc_info}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="12" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<staticText>
+				<reportElement x="511" y="1" width="61" height="11" uuid="11b3ce9a-7307-46b5-9cf2-635330ae92a3">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cantidad]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="316" y="1" width="100" height="11" uuid="e1e37478-2d5c-463d-b445-28d76c9fc493">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ubicacion]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="416" y="1" width="95" height="11" uuid="e7a769d9-d799-4b4b-b068-d3074ce46dae">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Lote]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="182" y="1" width="79" height="11" uuid="0f42c504-247f-438a-bf8a-84c166cb1b78">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Organizacion]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="1" width="159" height="11" uuid="e55070e1-ffba-45a9-9c00-2d7de70f495f">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Producto]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="261" y="1" width="54" height="11" uuid="9ca3f515-419a-432b-9521-09ddedf7dc8b">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				</reportElement>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="6" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Almacen]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="51" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			<textField pattern="#,##0.##">
+				<reportElement x="511" y="0" width="61" height="9" uuid="437600e0-433e-48b7-9f7c-b03ff2c5e5d9">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="b39bc82d-8a6d-4153-b09f-bfe961181946"/>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="5" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{movementqty}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="70" y="9" width="79" height="9" uuid="83c088db-f708-414c-8128-45e5840e4a0c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="1b78c053-617b-4323-80bd-3b6ad275aaf8"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="5" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="70" y="20" width="159" height="9" printWhenGroupChanges="ad_org" uuid="7655ecdd-f9ea-4ad6-bdb0-3ada31842007">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="5" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{documentno}$F{m_product_n}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="70" y="30" width="54" height="9" uuid="af7952fc-6072-4ea3-a6f5-48811e7d1d62">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="1b78c053-617b-4323-80bd-3b6ad275aaf8"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement>
+					<font size="5" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{date}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="18" splitType="Stretch"/>
+	</summary>
+</jasperReport>

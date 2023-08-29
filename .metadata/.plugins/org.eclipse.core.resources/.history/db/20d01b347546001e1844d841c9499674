@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
+<!-- 2023-08-29T10:05:00 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Buy_Book" language="groovy" pageWidth="1184" pageHeight="752" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="1184" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isSummaryNewPage="true" isFloatColumnFooter="true" uuid="a0114db2-d81d-4461-9b9d-0f9a487ae3a3">
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="2502"/>
+	<property name="ireport.y" value="199"/>
+	<property name="ireport.callouts" value="##Wed Oct 26 11:53:05 VET 2011"/>
+	<style name="table_TH" mode="Opaque" backcolor="#73B0E6">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#CFDBE6">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab Data Text" hTextAlign="Center" hImageAlign="Center"/>
+	<style name="table">
+		<box>
+			<topPen lineWidth="1.0" lineColor="#000000"/>
+			<bottomPen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1">
+		<box>
+			<topPen lineWidth="1.0" lineColor="#000000"/>
+			<bottomPen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#EFF7FF"/>
+		</conditionalStyle>
+	</style>
+	<style name="table 2">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#EFF7FF"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="AD_Org_ID" class="java.lang.Integer"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/home/alara/Documentos/Punto Com/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="from" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="to" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="AD_Client_ID" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="RESOURCE_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["/home/alara/Documentos/Punto Com/reports/"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+     lve_buy_book."ad_org_id",
+     lve_buy_book."ad_client_id",
+     lve_buy_book."dateinvoice",
+     lve_buy_book."rif",
+     lve_buy_book."name",
+     lve_buy_book."number_voucher",
+     lve_buy_book."nrofac",
+     lve_buy_book."numbre_control",
+     lve_buy_book."numbre_debit_note",
+     lve_buy_book."numbre_credit_note",
+     lve_buy_book."tipe_transcc",
+     lve_buy_book."number_invoice_affected",
+     lve_buy_book."total",
+     case when lve_buy_book."nosale" is null then '0.00' else lve_buy_book."nosale" end AS nosale,
+     lve_buy_book."base",
+     lve_buy_book."rate",
+     lve_buy_book."total_tax",
+     lve_buy_book."retained_tax",
+     lve_buy_book."datefilter",c_currency_id,import_base,import_taxamt,'' nro_exp_import ,base8,base12,tax8,tax12,'' nro_form_import
+FROM
+     "adempiere".lve_buy_book
+where
+(lve_buy_book."datefilter"::Date >= $P{from}::Date OR $P{from}=null) AND
+ (lve_buy_book."datefilter"::Date <= $P{to}::Date OR $P{to}=null)
+
+AND  (   lve_buy_book."ad_org_id"= $P{AD_Org_ID} or $P{AD_Org_ID}=0)
+AND (lve_buy_book."ad_client_id" = $P{AD_Client_ID})
+AND docstatus = 'CO'
+ORDER BY
+dateinvoice]]>
+	</queryString>
+	<field name="ad_org_id" class="java.math.BigDecimal"/>
+	<field name="ad_client_id" class="java.math.BigDecimal"/>
+	<field name="dateinvoice" class="java.sql.Timestamp"/>
+	<field name="rif" class="java.lang.String"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="number_voucher" class="java.lang.String"/>
+	<field name="nrofac" class="java.lang.String"/>
+	<field name="numbre_control" class="java.lang.String"/>
+	<field name="numbre_debit_note" class="java.lang.String"/>
+	<field name="numbre_credit_note" class="java.lang.String"/>
+	<field name="tipe_transcc" class="java.lang.String"/>
+	<field name="number_invoice_affected" class="java.lang.String"/>
+	<field name="total" class="java.math.BigDecimal"/>
+	<field name="nosale" class="java.math.BigDecimal"/>
+	<field name="base" class="java.math.BigDecimal"/>
+	<field name="rate" class="java.math.BigDecimal"/>
+	<field name="total_tax" class="java.math.BigDecimal"/>
+	<field name="retained_tax" class="java.math.BigDecimal"/>
+	<field name="datefilter" class="java.sql.Timestamp"/>
+	<field name="c_currency_id" class="java.math.BigDecimal"/>
+	<field name="import_base" class="java.math.BigDecimal"/>
+	<field name="import_taxamt" class="java.math.BigDecimal"/>
+	<field name="nro_exp_import" class="java.lang.String"/>
+	<field name="base8" class="java.math.BigDecimal"/>
+	<field name="base12" class="java.math.BigDecimal"/>
+	<field name="tax8" class="java.math.BigDecimal"/>
+	<field name="tax12" class="java.math.BigDecimal"/>
+	<field name="nro_form_import" class="java.lang.String"/>
+	<sortField name="dateinvoice"/>
+	<sortField name="nrofac"/>
+	<variable name="buy_book_total_tax12" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{nro_exp_import}.equals( null ) ?$F{tax12}:0]]></variableExpression>
+	</variable>
+	<variable name="buy_book_retained_tax" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{retained_tax}.equals( null ) ? 0:$F{retained_tax}]]></variableExpression>
+	</variable>
+	<variable name="count" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$F{nrofac}]]></variableExpression>
+	</variable>
+	<variable name="tot" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{nro_exp_import}.equals( null ) ?(($F{rate}!=0?$F{nosale}:0)+$F{total}):(($F{rate}!=0?$F{nosale}:0)+$F{total}+$F{import_base}+$F{import_taxamt})]]></variableExpression>
+		<initialValueExpression><![CDATA[]]></initialValueExpression>
+	</variable>
+	<variable name="buy_book_total" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$V{tot}]]></variableExpression>
+	</variable>
+	<variable name="nosales" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{nosale}]]></variableExpression>
+	</variable>
+	<variable name="buy_book_nosales" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{nosale}]]></variableExpression>
+	</variable>
+	<variable name="buy_book_base12" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{nro_exp_import}.equals( null ) ?$F{base12}:0]]></variableExpression>
+	</variable>
+	<variable name="buy_book_total_tax8" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{nro_exp_import}.equals( null ) ?$F{tax8}:0]]></variableExpression>
+	</variable>
+	<variable name="buy_book_base8" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{nro_exp_import}.equals( null ) ?$F{base8}:0]]></variableExpression>
+	</variable>
+	<variable name="buy_book_base_imp" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{nro_exp_import}.equals( null ) ?0:$F{base12}+$F{import_base}]]></variableExpression>
+	</variable>
+	<variable name="buy_book_total_tax_imp" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{nro_exp_import}.equals( null ) ?0:$F{tax12}+$F{import_taxamt}]]></variableExpression>
+	</variable>
+	<group name="LIBRO">
+		<groupExpression><![CDATA[$F{ad_client_id}]]></groupExpression>
+		<groupFooter>
+			<band height="10"/>
+		</groupFooter>
+	</group>
+	<title>
+		<band height="1" splitType="Stretch"/>
+	</title>
+	<columnHeader>
+		<band height="26" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="10"/>
+	</detail>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

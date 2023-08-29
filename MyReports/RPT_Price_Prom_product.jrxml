@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
+<!-- 2023-03-23T15:33:24 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT_Invoice_product" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4bfdd1f7-c0f0-46c5-8bac-488919c9ba9c">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
@@ -72,23 +73,24 @@
 	then 0
 		else round((SUM(R1.linenetamt_cv) / SUM(R1.qtyinvoiced)) / MAX(R1.WeightSunagro), 2)
 	end as p1 ,	
+
 	
 	case
 		when MAX(R1.WeightSunagro) = 0
 		or MAX(R1.WeightSunagro) isnull
-		or SUM(R1.qtyinvoiced) = 0
+		or SUM(R1.qtyinvoiced) = 0 or max(r1.sum_qty) = 0
 	then 0
 		else 
 		round((SUM(R1.linenetamt_cv) / SUM(R1.qtyinvoiced)) / MAX(R1.WeightSunagro) * (SUM(R1.qtyinvoiced) / max(r1.sum_qty) ) , 2)
 	end as PROMP1,
 	
 	case
-		when SUM(R1.qtyinvoiced) <> 0 then 
+		when SUM(R1.qtyinvoiced) <> 0 and max(r1.sum_qty) <> 0 then 
 		round( (SUM(R1.linenetamt_cv) / SUM(R1.qtyinvoiced)) * (SUM(R1.qtyinvoiced) / max(r1.sum_qty) ) , 2)
 		else 
 		0
-	end as PROMLINE 
-	, R1.reponame ,
+	end as PROMLINE ,	
+	 R1.reponame ,
 	R1.doc_info,
 case when 	r1.sum_qty_all <> 0 then 
  (SUM(R1.qtyinvoiced) / r1.sum_qty_all) *  

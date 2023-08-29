@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
+<!-- 2023-08-08T13:57:33 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Cop_c_invoice_ajust" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="66f2b890-2705-4595-a626-bb2aefca15ff">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="C_Invoice_ID" class="java.lang.Integer"/>
+	<parameter name="GrandTotal" class="java.math.BigDecimal"/>
+	<parameter name="RESOURCE_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["/"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select
+	distinct 
+	a.DOCUMENTNO,
+	a.DateInvoiced,
+	max(ct.Rate) / 100 + 1 as rate ,
+	b.name,	 
+	a.TotalLines ,
+	a.GrandTotal, 
+	currencyrate(a.c_currency_id,
+	1000001,
+	a.dateinvoiced,
+	a.c_conversiontype_id,
+	a.ad_client_id,
+	a.ad_org_id) tasa,
+	$P{GrandTotal} as VALOR , 
+	$P{GrandTotal} - a.TotalLines as ajuste 
+,
+	a.TotalLines,
+	((currencyconvert(a.GrandTotal,
+	a.c_currency_id,
+	1000001,
+	a.dateinvoiced,
+	a.c_conversiontype_id,
+	a.ad_client_id,
+	a.ad_org_id)) / (max(ct.Rate) / 100 + 1) ) as diferencia2,
+	$P{GrandTotal} - ((currencyconvert(a.GrandTotal,
+	a.c_currency_id,
+	1000001,
+	a.dateinvoiced,
+	a.c_conversiontype_id,
+	a.ad_client_id,
+	a.ad_org_id)) / (max(ct.Rate) / 100 + 1) ) as ajuste2 ,
+	currencyconvert($P{GrandTotal} - ((currencyconvert(a.GrandTotal,
+	a.c_currency_id,
+	1000001,
+	a.dateinvoiced,
+	a.c_conversiontype_id,
+	a.ad_client_id,
+	a.ad_org_id)) / 1.16 ),
+	1000001,
+	a.c_currency_id,
+	a.dateinvoiced,
+	a.c_conversiontype_id,
+	a.ad_client_id,
+	a.ad_org_id) as ajuste3, 
+	(currencyconvert(a.GrandTotal,
+	a.c_currency_id,
+	1000001,
+	a.dateinvoiced,
+	a.c_conversiontype_id,
+	a.ad_client_id,
+	a.ad_org_id)) valor2
+from
+	c_invoice a
+join C_BPARTNER B on
+	B.C_BPARTNER_ID = a.C_BPARTNER_ID
+join C_InvoiceTax c on
+	c.c_invoice_id = a.c_invoice_id
+join c_tax ct on
+	ct.c_tax_id = c.C_Tax_ID
+where
+	a.C_Invoice_ID = $P{C_Invoice_ID}
+group by
+	a.documentno,
+	a.dateinvoiced,
+	b.name,
+	a.totallines,
+	a.grandtotal,
+	a.c_currency_id,
+	a.c_conversiontype_id,
+	a.ad_client_id,
+	a.ad_org_id]]>
+	</queryString>
+	<field name="documentno" class="java.lang.String"/>
+	<field name="dateinvoiced" class="java.sql.Timestamp"/>
+	<field name="rate" class="java.math.BigDecimal"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="totallines" class="java.math.BigDecimal"/>
+	<field name="grandtotal" class="java.math.BigDecimal"/>
+	<field name="tasa" class="java.math.BigDecimal"/>
+	<field name="valor" class="java.lang.Integer"/>
+	<field name="ajuste" class="java.math.BigDecimal"/>
+	<field name="COLUMN_10" class="java.math.BigDecimal"/>
+	<field name="diferencia2" class="java.math.BigDecimal"/>
+	<field name="ajuste2" class="java.math.BigDecimal"/>
+	<field name="ajuste3" class="java.math.BigDecimal"/>
+	<field name="valor2" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="81" splitType="Stretch">
+			<image>
+				<reportElement x="1" y="12" width="109" height="41" uuid="6ce23d6d-6ade-46a0-be45-fc59ecbe94d8"/>
+				<imageExpression><![CDATA[$P{RESOURCE_DIR} + "logo.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="230" y="21" width="230" height="20" uuid="e22c9150-f1e9-4fca-917a-4f1244023ccd"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[Monto Ajuste por Factura]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="215" splitType="Stretch">
+			<staticText>
+				<reportElement x="23" y="10" width="70" height="18" uuid="ebe01d71-e10b-40f5-92c1-c354026efab3"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="11"/>
+				</textElement>
+				<text><![CDATA[Documento]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="24" y="29" width="70" height="18" uuid="6f6e156c-bd24-45c9-aa22-319a0b6ef71d"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="11"/>
+				</textElement>
+				<text><![CDATA[Tercero]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="23" y="86" width="70" height="18" uuid="d4aa48bd-9221-4d02-a434-7ac514e5367b"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="11"/>
+				</textElement>
+				<text><![CDATA[Valor]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="23" y="67" width="70" height="18" uuid="e654d579-fdd8-4fd2-a9b4-8afc7a6907be"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="11"/>
+				</textElement>
+				<text><![CDATA[Total Linea]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="24" y="48" width="70" height="18" uuid="6e1b1810-856a-488c-868f-e2ca32aa52c8"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="11"/>
+				</textElement>
+				<text><![CDATA[Fecha Factura]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="105" width="70" height="18" forecolor="#235E06" uuid="3fdb3390-7b07-4f89-ae39-dabc48c74d49"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ajuste]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="94" y="10" width="189" height="18" uuid="c80d86c8-2d8c-49a2-870f-e2523dc9d9fc"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{documentno}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="94" y="29" width="189" height="18" uuid="27042295-e067-476e-b2db-5d63e757f72b"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.############">
+				<reportElement x="94" y="86" width="189" height="18" uuid="12fb39c5-16f1-4560-9087-f93c10fa3f25"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.############">
+				<reportElement x="94" y="67" width="189" height="18" uuid="a319a7cc-f742-40e2-b8bb-0fccbdb68e62"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{totallines}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="94" y="48" width="189" height="18" uuid="eafb9b55-9940-4922-89c6-8840b4a0081d"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dateinvoiced}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.############">
+				<reportElement x="11" y="125" width="559" height="18" forecolor="#235E06" backcolor="#EBE8E8" uuid="8e8ad6bc-1b56-4a11-8273-5de5d15998f7"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ajuste}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.############">
+				<reportElement x="390" y="29" width="156" height="18" uuid="79aed3f4-b144-4e97-91e0-271328ecdbf9"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tasa}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="286" y="29" width="104" height="18" uuid="3a61b668-0000-4c0b-81cf-400f1186535b"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="11"/>
+				</textElement>
+				<text><![CDATA[Tasa Cambio:]]></text>
+			</staticText>
+			<textField pattern="#,##0.############">
+				<reportElement x="392" y="67" width="156" height="18" uuid="1ae2ab26-faee-4788-b034-6ef638c57de8"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor2}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="288" y="67" width="104" height="18" uuid="8c8c44a9-7d19-4c23-9648-4eab8aea62e5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="11"/>
+				</textElement>
+				<text><![CDATA[Gran Total:]]></text>
+			</staticText>
+			<textField pattern="#,##0.############">
+				<reportElement x="5" y="170" width="565" height="18" forecolor="#235E06" backcolor="#EBE8E8" uuid="9388bc96-529b-4250-852e-efe822d8c66c"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ajuste3}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="3" y="152" width="104" height="18" forecolor="#235E06" uuid="286afdf1-8c71-42c2-9f6d-df3964adf3cc"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="DejaVu Sans" size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Ajuste USD:]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<columnFooter>
+		<band height="5" splitType="Stretch"/>
+	</columnFooter>
+</jasperReport>

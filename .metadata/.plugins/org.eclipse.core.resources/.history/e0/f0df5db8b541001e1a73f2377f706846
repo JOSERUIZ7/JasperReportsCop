@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
+<!-- 2023-08-23T08:40:11 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RV_Document_RelationShip.jrxml_1" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="fb4152cb-2c28-46e8-990d-424c002eef5c">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<parameter name="RESOURCE_DIR" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA["/"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select 
+		coalesce(A.DOCUMENTNO,
+				b.DOCUMENTNO,
+				c.DOCUMENTNO,
+				d.DOCUMENTNO,
+				e.DOCUMENTNO,
+				f.DOCUMENTNO,
+				g.DOCUMENTNO) as DOCUMENTNO ,
+
+				case 
+				when Y.cop_require_id is not null then 'Requerimiento' 
+				when Y.m_requisition_id is not null then 'Requisicion' 
+				when Y.c_order_id is not null then 'Orden de Compra' 
+				when Y.c_invoice_id is not null then 'Factura' 
+				when Y.m_inout_id is not null then 'Recepcion de Producto' 
+				when Y.c_payment_id is not null then 'Pago' 
+				when Y.c_allocationhdr_id is not null then 'Asignacion de Pago' 
+				end tipo ,
+				
+			coalesce(A.DateDoc ,
+				b.DateDoc ,
+				c.DateOrdered  ,
+				d.DateInvoiced  ,
+				e.MovementDate  ,
+				f.DateTrx  ,
+				g.DateTrx  ) as date  , orden,
+				
+				case 
+				when 'RECEIPT' = 'REQUIRE' and Y.cop_require_id is not null then 'Y' 
+				when 'RECEIPT' = 'REQUISITION' and Y.m_requisition_id is not null then 'Y' 
+				when 'RECEIPT' = 'CORDER' and Y.c_order_id is not null then 'Y' 
+				when 'RECEIPT' = 'INVOICE' and Y.c_invoice_id is not null then 'Y' 
+				when 'RECEIPT' = 'RECEIPT' and Y.m_inout_id is not null then 'Y' 
+				when 'RECEIPT' = 'PAY' and Y.c_payment_id is not null then 'Y' 
+				when 'RECEIPT' = 'ASSIGNMENT' and Y.c_allocationhdr_id is not null then 'Y' 
+				
+				else '' end ,'' doc_info ,'' Reponame
+				
+from (
+(	select distinct 
+		cop_require_id ,
+		null::numeric m_requisition_id ,
+		null::numeric c_order_id ,
+		null::numeric c_invoice_id ,
+		null::numeric m_inout_id ,
+		null::numeric c_payment_id ,
+		null::numeric c_allocationhdr_id , 1 ORDEN
+from
+		cop_document_relationship
+	where
+		case
+			when 'RECEIPT' = 'REQUIRE' then cop_require_id = 1029865
+			when 'RECEIPT' = 'REQUISITION' then m_requisition_id = 1029865
+			when 'RECEIPT' = 'CORDER' then c_order_id = 1029865
+			when 'RECEIPT' = 'INVOICE' then c_invoice_id = 1029865
+			when 'RECEIPT' = 'RECEIPT' then m_inout_id = 1029865
+			when 'RECEIPT' = 'PAY' then C_Payment_ID = 1029865
+			when 'RECEIPT' = 'ASSIGNMENT' then c_allocationhdr_id = 1029865
+		end
+)
+union 
+(
+	select distinct 
+
+		null::NUMERIC cop_require_id ,
+		m_requisition_id ,
+		null::numeric c_order_id ,
+		null::numeric c_invoice_id ,
+		null::numeric m_inout_id ,
+		null::numeric c_payment_id ,
+		null::numeric c_allocationhdr_id, 2 ORDEN
+	
+	
+	from
+		cop_document_relationship
+	where
+		case
+			when 'RECEIPT' = 'REQUIRE' then cop_require_id = 1029865
+			when 'RECEIPT' = 'REQUISITION' then m_requisition_id = 1029865
+			when 'RECEIPT' = 'CORDER' then c_order_id = 1029865
+			when 'RECEIPT' = 'INVOICE' then c_invoice_id = 1029865
+			when 'RECEIPT' = 'RECEIPT' then m_inout_id = 1029865
+			when 'RECEIPT' = 'PAY' then C_Payment_ID = 1029865
+			when 'RECEIPT' = 'ASSIGNMENT' then c_allocationhdr_id = 1029865
+		end
+)
+union 
+(
+	select distinct 
+
+		null::NUMERIC cop_require_id ,
+		null::numeric m_requisition_id ,
+		c_order_id ,
+		null::numeric c_invoice_id ,
+		null::numeric m_inout_id ,
+		null::numeric c_payment_id ,
+		null::numeric c_allocationhdr_id, 3 ORDEN
+	
+	
+	from
+		cop_document_relationship
+	where
+		case
+			when 'RECEIPT' = 'REQUIRE' then cop_require_id = 1029865
+			when 'RECEIPT' = 'REQUISITION' then m_requisition_id = 1029865
+			when 'RECEIPT' = 'CORDER' then c_order_id = 1029865
+			when 'RECEIPT' = 'INVOICE' then c_invoice_id = 1029865
+			when 'RECEIPT' = 'RECEIPT' then m_inout_id = 1029865
+			when 'RECEIPT' = 'PAY' then C_Payment_ID = 1029865
+			when 'RECEIPT' = 'ASSIGNMENT' then c_allocationhdr_id = 1029865
+		end
+)
+union 
+(
+	select distinct 
+
+		null::NUMERIC cop_require_id ,
+		null::numeric m_requisition_id ,
+		null::numeric c_order_id ,
+		 c_invoice_id ,
+		null::numeric m_inout_id ,
+		null::numeric c_payment_id ,
+		null::numeric c_allocationhdr_id, 4 ORDEN
+	
+	
+	from
+		cop_document_relationship
+	where
+		case
+			when 'RECEIPT' = 'REQUIRE' then cop_require_id = 1029865
+			when 'RECEIPT' = 'REQUISITION' then m_requisition_id = 1029865
+			when 'RECEIPT' = 'CORDER' then c_order_id = 1029865
+			when 'RECEIPT' = 'INVOICE' then c_invoice_id = 1029865
+			when 'RECEIPT' = 'RECEIPT' then m_inout_id = 1029865
+			when 'RECEIPT' = 'PAY' then C_Payment_ID = 1029865
+			when 'RECEIPT' = 'ASSIGNMENT' then c_allocationhdr_id = 1029865
+		end
+)
+union 
+(
+	select distinct 
+
+		null::NUMERIC cop_require_id ,
+		null::numeric m_requisition_id ,
+		null::numeric c_order_id ,
+		null::numeric  c_invoice_id ,
+		m_inout_id ,
+		null::numeric c_payment_id ,
+		null::numeric c_allocationhdr_id, 5 ORDEN
+	
+	
+	from
+		cop_document_relationship
+	where
+		case
+			when 'RECEIPT' = 'REQUIRE' then cop_require_id = 1029865
+			when 'RECEIPT' = 'REQUISITION' then m_requisition_id = 1029865
+			when 'RECEIPT' = 'CORDER' then c_order_id = 1029865
+			when 'RECEIPT' = 'INVOICE' then c_invoice_id = 1029865
+			when 'RECEIPT' = 'RECEIPT' then m_inout_id = 1029865
+			when 'RECEIPT' = 'PAY' then C_Payment_ID = 1029865
+			when 'RECEIPT' = 'ASSIGNMENT' then c_allocationhdr_id = 1029865
+		end
+)
+union 
+(
+	select distinct 
+
+		null::NUMERIC cop_require_id ,
+		null::numeric m_requisition_id ,
+		null::numeric c_order_id ,
+		null::numeric  c_invoice_id ,
+		null::numeric m_inout_id ,
+		c_payment_id ,
+		null::numeric c_allocationhdr_id, 6 ORDEN
+	
+	
+	from
+		cop_document_relationship
+	where
+		case
+			when 'RECEIPT' = 'REQUIRE' then cop_require_id = 1029865
+			when 'RECEIPT' = 'REQUISITION' then m_requisition_id = 1029865
+			when 'RECEIPT' = 'CORDER' then c_order_id = 1029865
+			when 'RECEIPT' = 'INVOICE' then c_invoice_id = 1029865
+			when 'RECEIPT' = 'RECEIPT' then m_inout_id = 1029865
+			when 'RECEIPT' = 'PAY' then C_Payment_ID = 1029865
+			when 'RECEIPT' = 'ASSIGNMENT' then c_allocationhdr_id = 1029865
+		end
+)
+union 
+(
+	select distinct 
+
+		null::NUMERIC cop_require_id ,
+		null::numeric m_requisition_id ,
+		null::numeric c_order_id ,
+		null::numeric  c_invoice_id ,
+		null::numeric m_inout_id ,
+		null::numeric c_payment_id ,
+		c_allocationhdr_id, 7 ORDEN
+	
+	
+	from
+		cop_document_relationship
+	where
+		case
+			when 'RECEIPT' = 'REQUIRE' then cop_require_id = 1029865
+			when 'RECEIPT' = 'REQUISITION' then m_requisition_id = 1029865
+			when 'RECEIPT' = 'CORDER' then c_order_id = 1029865
+			when 'RECEIPT' = 'INVOICE' then c_invoice_id = 1029865
+			when 'RECEIPT' = 'RECEIPT' then m_inout_id = 1029865
+			when 'RECEIPT' = 'PAY' then C_Payment_ID = 1029865
+			when 'RECEIPT' = 'ASSIGNMENT' then c_allocationhdr_id = 1029865
+		end
+)) as Y 
+
+left join COP_REQUIRE A on A.cop_require_id = Y.COP_REQUIRE_ID
+left join m_requisition b on b.m_requisition_id = Y.m_requisition_ID
+left join c_order c on c.c_order_id = Y.c_order_ID
+left join c_invoice d on d.c_invoice_id = Y.c_invoice_ID
+left join m_inout e on e.m_inout_id = Y.m_inout_ID
+left join c_payment f on f.c_payment_id = Y.c_payment_ID
+left join c_allocationhdr g on g.c_allocationhdr_id = Y.c_allocationhdr_ID
+
+where Y.cop_require_id is not null
+		OR Y.m_requisition_id is not null
+		OR Y.c_order_id is not null
+		OR Y.c_invoice_id is not null
+		or Y.m_inout_id is not null
+		or Y.c_payment_id is not null
+		OR Y.c_allocationhdr_id is not null
+order by  3]]>
+	</queryString>
+	<field name="documentno" class="java.lang.String"/>
+	<field name="tipo" class="java.lang.String"/>
+	<field name="date" class="java.sql.Timestamp"/>
+	<field name="orden" class="java.lang.Integer"/>
+	<field name="case" class="java.lang.String"/>
+	<field name="doc_info" class="java.lang.String"/>
+	<field name="reponame" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="45" splitType="Stretch">
+			<textField>
+				<reportElement x="122" y="2" width="392" height="20" uuid="3f9c6908-6771-4c54-ac56-b1afca1747ec"/>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{reponame}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="122" y="25" width="392" height="20" uuid="e8366a4f-235b-4a4f-8888-9c6ab5cdc2a0">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Center">
+					<font fontName="SansSerif" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{doc_info}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="4" y="3" width="110" height="40" uuid="cdde5811-4b0f-4f98-988b-67afab825503"/>
+				<imageExpression><![CDATA[$P{RESOURCE_DIR} + "logo.png"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="74" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<textField>
+				<reportElement x="180" y="25" width="182" height="12" uuid="99340d51-eb88-44ed-a107-9ecbf689f898">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<textElement>
+					<font fontName="SansSerif" size="8" isBold="true" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{documentno}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="180" y="40" width="182" height="12" uuid="1641a017-4354-4280-ae15-3dbddaac10d6"/>
+				<textElement>
+					<font fontName="SansSerif" size="8" isBold="true" isItalic="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{date}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="168" y="5" width="182" height="16" uuid="c1d40a3a-1813-44d0-8e78-b0af1d5e136b">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement>
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
+			</textField>
+			<ellipse>
+				<reportElement x="122" y="0" width="37" height="35" backcolor="#120C0C" uuid="b73b9075-4925-411f-9b0f-3d682afd8dc2"/>
+			</ellipse>
+			<line direction="BottomUp">
+				<reportElement x="140" y="23" width="1" height="51" uuid="e18bea4a-6ab4-4b0a-8cc9-868987c6681d">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+			</line>
+			<ellipse>
+				<reportElement x="121" y="0" width="37" height="35" backcolor="#57D61C" uuid="454f89a1-c3ad-4ad4-b9cf-8503d0d1bb9b">
+					<printWhenExpression><![CDATA[$F{case}.equals("Y")]]></printWhenExpression>
+				</reportElement>
+			</ellipse>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

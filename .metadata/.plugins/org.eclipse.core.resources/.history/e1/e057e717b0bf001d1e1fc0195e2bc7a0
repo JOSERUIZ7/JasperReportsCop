@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Rpt_Sales_Product_Consolidated" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6c673fc6-3870-45f2-8b2c-c26a0f9879fb">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="55"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="934"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<style name="Crosstab_CH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab_CG" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab_CT" mode="Opaque" backcolor="#0AB504">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab_CD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<parameter name="DateInvoiced1" class="java.sql.Date"/>
+	<parameter name="DateInvoiced2" class="java.sql.Date"/>
+	<parameter name="IsEndowment" class="java.lang.String">
+		<defaultValueExpression><![CDATA["N"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="FiscalYear" class="java.lang.String"/>
+	<parameter name="AD_Client_ID" class="java.lang.Integer"/>
+	<parameter name="IsDiscount" class="java.lang.String">
+		<defaultValueExpression><![CDATA["N"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IsDonation" class="java.lang.String">
+		<defaultValueExpression><![CDATA["N"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TypeCustomer" class="java.lang.String"/>
+	<parameter name="RESOURCE_DIR" class="java.lang.String"/>
+	<queryString language="plsql">
+		<![CDATA[select 
+		C.NAME ad_org_N ,
+		A.value , 
+		A.m_product_description m_product_n,
+		b.periodno ,
+		B.PERIOD_n
+		,SUM(A.QtyInvoiced) QtyInvoiced ,
+		SUM(A.LineNetAmt) LineNetAmt , 'namename' as name 
+ from cop_rv_c_invoiceline A 
+join 
+(select B.C_PERIOD_ID,
+		b.startdate ,
+		b.enddate,
+		b.periodno ,
+		TRIM(extract(YEAR from b.startdate)::text) || ' - ' ||
+		extract(month from b.startdate)::text PERIOD_n
+from
+	c_year a join c_period b on b.c_year_id = a.c_year_id 
+where
+	a.fiscalyear = $P{FiscalYear} 
+	and a.ad_client_id = $P{AD_Client_ID}
+	and b.ad_client_id = $P{AD_Client_ID}) b 
+	on B.C_PERIOD_ID = A.C_PERIOD_ID  
+	join AD_ORG C on C.ad_org_id = A.ad_org_id 
+
+where  A.issotrx = 'Y'  
+	and a.m_product_id is not null
+
+group by C.NAME ,
+		A.value , 
+		A.m_product_description,
+		b.periodno ,
+		B.PERIOD_n
+order by C.NAME ,b.periodno]]>
+	</queryString>
+	<field name="ad_org_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="ad_org_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="ad_org_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="ad_org"/>
+	</field>
+	<field name="value" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="value"/>
+		<property name="com.jaspersoft.studio.field.label" value="value"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_c_invoiceline"/>
+	</field>
+	<field name="m_product_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="m_product_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="m_product_n"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cop_rv_c_invoiceline"/>
+	</field>
+	<field name="periodno" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="periodno"/>
+		<property name="com.jaspersoft.studio.field.label" value="periodno"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="c_period"/>
+	</field>
+	<field name="period_n" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="period_n"/>
+		<property name="com.jaspersoft.studio.field.label" value="period_n"/>
+	</field>
+	<field name="qtyinvoiced" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="qtyinvoiced"/>
+		<property name="com.jaspersoft.studio.field.label" value="qtyinvoiced"/>
+	</field>
+	<field name="linenetamt" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="linenetamt"/>
+		<property name="com.jaspersoft.studio.field.label" value="linenetamt"/>
+	</field>
+	<field name="name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name"/>
+		<property name="com.jaspersoft.studio.field.label" value="name"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="54" splitType="Stretch">
+			<image>
+				<reportElement x="0" y="0" width="110" height="39" uuid="a021246b-3bdb-4dbc-be05-a5255350b1f3"/>
+				<imageExpression><![CDATA[$P{RESOURCE_DIR} + "logo.png"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="120" y="17" width="530" height="37" uuid="f4bcf599-0e97-4387-8b28-63ac1e664dd4">
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="653" y="6" width="36" height="11" uuid="c4a6a89b-1049-4459-a51a-ce08a46e4422">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Página:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="653" y="17" width="36" height="11" uuid="3e6cd65e-0b36-4ea8-8877-61f548d54504">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="653" y="28" width="36" height="11" uuid="475b0b46-f913-4227-8232-c62a68687bc5">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora:]]></text>
+			</staticText>
+			<textField pattern="HH:mm" isBlankWhenNull="true">
+				<reportElement x="688" y="28" width="49" height="11" uuid="b1236a90-fd53-47ae-97fa-83ebaf8f8776">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("h:mm a").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="688" y="17" width="49" height="11" uuid="f9a249b9-ca64-4cda-8753-97b39e63b1fa">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" isBlankWhenNull="true">
+				<reportElement x="716" y="6" width="21" height="11" uuid="8f157c0b-8df4-4f20-ad0c-e878cfa56ca3">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="702" y="6" width="10" height="11" uuid="cb7fdd8a-f1d3-425b-a0b7-76e0957320a4">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[de:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="690" y="6" width="11" height="11" uuid="d2894c59-0b77-494f-81b4-882a19203196">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="120" y="0" width="530" height="16" uuid="0dd8cb2d-e92c-410a-bed2-a7e532bc93ad"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[RESUMEN DE VENTAS DE  PRODUCTOS POR DISTRIBUIDORA]]></text>
+			</staticText>
+		</band>
+	</title>
+	<summary>
+		<band height="110" splitType="Stretch">
+			<crosstab>
+				<reportElement x="0" y="14" width="750" height="96" uuid="aedb0e64-3206-443f-9a38-38e9bb9f5264">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.crosstab.style.header" value="Crosstab_CH"/>
+					<property name="com.jaspersoft.studio.crosstab.style.group" value="Crosstab_CG"/>
+					<property name="com.jaspersoft.studio.crosstab.style.total" value="Crosstab_CT"/>
+					<property name="com.jaspersoft.studio.crosstab.style.detail" value="Crosstab_CD"/>
+				</reportElement>
+				<crosstabDataset>
+					<dataset resetType="Report"/>
+				</crosstabDataset>
+				<rowGroup name="m_product_n" width="260" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{m_product_n}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents mode="Opaque" style="Crosstab_CH">
+							<textField>
+								<reportElement x="0" y="0" width="260" height="30" uuid="f17fd4d3-e09f-4cf4-96f9-ad05eeb2fafd">
+									<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+									<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+								</reportElement>
+								<textElement verticalAlignment="Middle">
+									<font size="8"/>
+									<paragraph leftIndent="2"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{m_product_n}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents mode="Opaque" style="Crosstab_CT">
+							<staticText>
+								<reportElement x="0" y="0" width="260" height="20" forecolor="#FFFFFF" uuid="4e797782-e553-444f-970d-6f4d1dbada5d">
+									<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+								</reportElement>
+								<textElement verticalAlignment="Middle">
+									<font size="8"/>
+									<paragraph leftIndent="2"/>
+								</textElement>
+								<text><![CDATA[Total]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="period_n" height="40" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{period_n}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents mode="Opaque" style="Crosstab_CH">
+							<textField>
+								<reportElement x="0" y="0" width="120" height="40" uuid="26b22100-3978-437b-9da5-3ad0a8e71dd7"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{period_n}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents mode="Opaque" style="Crosstab_CT">
+							<staticText>
+								<reportElement x="0" y="0" width="40" height="40" forecolor="#FFFFFF" uuid="a55f7b7d-d85b-4439-88d2-cf936fcbb986"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<text><![CDATA[Total]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<measure name="qtyinvoiced_MEASURE" class="java.math.BigDecimal" calculation="Sum">
+					<measureExpression><![CDATA[$F{qtyinvoiced}]]></measureExpression>
+				</measure>
+				<measure name="linenetamt_Measure" class="java.math.BigDecimal" calculation="Sum">
+					<measureExpression><![CDATA[$F{linenetamt}]]></measureExpression>
+				</measure>
+				<crosstabCell width="120" height="30">
+					<cellContents mode="Opaque" style="Crosstab_CD">
+						<textField pattern="#,##0.###;(#,##0.###-)">
+							<reportElement x="0" y="0" width="120" height="15" uuid="74d35adb-f4a3-418f-bf29-7c7564550c57">
+								<property name="com.jaspersoft.studio.unit.spacingAfter" value="px"/>
+								<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+								<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+							</reportElement>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="8"/>
+								<paragraph lineSpacing="Single" lineSpacingSize="1.0" firstLineIndent="0" rightIndent="2" spacingAfter="0"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{qtyinvoiced_MEASURE}]]></textFieldExpression>
+						</textField>
+						<textField pattern="#,##0.###;(#,##0.###-)">
+							<reportElement x="0" y="15" width="120" height="15" uuid="85bd6db3-124f-47dc-b9fd-008bb28b1165">
+								<property name="com.jaspersoft.studio.unit.spacingAfter" value="px"/>
+								<property name="com.jaspersoft.studio.unit.firstLineIndent" value="px"/>
+								<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+							</reportElement>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="8"/>
+								<paragraph lineSpacing="Single" lineSpacingSize="1.0" firstLineIndent="0" rightIndent="2" spacingAfter="0"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{linenetamt_Measure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="40" height="30" columnTotalGroup="period_n">
+					<cellContents mode="Opaque" style="Crosstab_CT">
+						<textField pattern="#,##0.###;(#,##0.###-)">
+							<reportElement x="0" y="0" width="40" height="30" forecolor="#FFFFFF" uuid="955b8c89-6a03-462e-8c85-bdc9db51aa3d">
+								<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+							</reportElement>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="8"/>
+								<paragraph lineSpacing="Single" lineSpacingSize="1.0" firstLineIndent="0" rightIndent="2" spacingAfter="0"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{qtyinvoiced_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="120" height="20" rowTotalGroup="m_product_n">
+					<cellContents mode="Opaque" style="Crosstab_CT">
+						<textField pattern="#,##0.###;(#,##0.###-)">
+							<reportElement x="0" y="0" width="120" height="20" forecolor="#FFFFFF" uuid="9a48198c-e89a-4c67-bcbe-2a1083b0bbe4">
+								<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+							</reportElement>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="8"/>
+								<paragraph lineSpacing="Single" lineSpacingSize="1.0" firstLineIndent="0" rightIndent="2" spacingAfter="0"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{qtyinvoiced_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="40" height="20" rowTotalGroup="m_product_n" columnTotalGroup="period_n">
+					<cellContents mode="Opaque" style="Crosstab_CT">
+						<textField pattern="#,##0.###;(#,##0.###-)">
+							<reportElement x="0" y="0" width="40" height="20" forecolor="#FFFFFF" uuid="74867fcb-4637-406d-9b60-44915615e476">
+								<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+							</reportElement>
+							<textElement textAlignment="Right" verticalAlignment="Middle">
+								<font size="8"/>
+								<paragraph lineSpacing="Single" lineSpacingSize="1.0" firstLineIndent="0" rightIndent="2" spacingAfter="0"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$V{qtyinvoiced_MEASURE}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+			</crosstab>
+		</band>
+	</summary>
+</jasperReport>
