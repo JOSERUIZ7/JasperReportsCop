@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
+<!-- 2023-09-20T14:11:24 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Checking_Balanceiversion1" pageWidth="842" pageHeight="1500" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="55" uuid="bc6356ae-947e-4537-8168-82e9364f17e0">
+	<property name="net.sf.jasperreports.export.xls.white.page.background" value="false"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.columns" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.ignore.cell.background" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.collapse.row.span" value="true"/>
+	<property name="com.jaspersoft.jrs.export.xls.paginated" value="false"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="pageHeader"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="DateAcct1" class="java.util.Date"/>
+	<parameter name="DateAcct2" class="java.util.Date"/>
+	<parameter name="AD_Org_ID" class="java.lang.Integer"/>
+	<parameter name="AD_Client_ID" class="java.lang.Integer"/>
+	<parameter name="AccountNo1" class="java.lang.String"/>
+	<parameter name="AccountNo2" class="java.lang.String"/>
+	<parameter name="ShowToLevel" class="java.math.BigDecimal"/>
+	<parameter name="IsSummary" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<parameter name="AD_Tree_Account_ID" class="java.lang.Integer"/>
+	<parameter name="AD_Tree_Org_ID" class="java.lang.Integer"/>
+	<queryString language="SQL">
+		<![CDATA[select 
+	startdate ,
+	X.enddate ,
+	X.organizacion ,
+	X.rif_organizacion ,
+	x.C_Elementvalue_ID,
+	b.SeqNo,
+	X.cuenta ,
+--	d.value ,
+	X.nombre_cuenta ,
+	X.issummary ,
+	X.levelno ,
+	X.debe ,
+	X.haber ,
+	X.saldomes ,
+	X.saldoi ,
+	X.total, a.name 
+from (
+			select * from (Select TO_CHAR($P{DateAcct1}::date,'DD-MM-YYYY') As StartDate,
+				   TO_CHAR($P{DateAcct2}::date,'DD-MM-YYYY') As EndDate,
+				   AO.ClientName AS Organizacion,
+				   AO.TaxID AS Rif_Organizacion,
+				   EV.C_Elementvalue_ID,
+				   EV.Value As Cuenta,
+				   EV.Name As Nombre_Cuenta,
+				   EV.IsSummary,
+				   N.LevelNo,
+				   Sum(COALESCE(FA.debe,0)) As Debe, 
+				   Sum(COALESCE(FA.haber,0)) As Haber, 
+				   Sum(COALESCE(FA.saldomes,0)) As SaldoMes, 
+				   Sum(COALESCE(FA.saldoi,0)) As SaldoI, 
+			   	   Sum(COALESCE(FA.total,0)) As Total
+			From C_Element E
+			JOIN C_ElementValue EV ON E.C_Element_ID = EV.C_Element_ID 
+			JOIN (SELECT DISTINCT Node_ID,LevelNo FROM getnodesbylevel(0,$P{AD_Tree_Account_ID},$P{AD_Client_ID}) AS N(Parent_ID numeric,Node_ID numeric,LevelNo numeric)) N ON EV.C_ElementValue_ID = N.Node_ID 
+			Inner Join (SELECT N.Parent_ID,N.Node_ID, 
+			SUM(FA.debe) AS debe,
+			SUM(FA.haber) AS haber,
+			SUM(FA.saldomes) AS saldomes,
+			SUM(FA.saldoi) AS saldoi,
+			SUM(FA.total) AS total 
+			FROM getnodes(0,$P{AD_Tree_Account_ID},$P{AD_Client_ID}) AS N(Parent_ID numeric,Node_ID numeric) 
+			LEFT JOIN (SELECT fa.Account_ID,
+				SUM(CASE WHEN fa.DateAcct BETWEEN $P{DateAcct1} AND $P{DateAcct2} THEN fa.amtacctdr ELSE 0 END) AS debe, 
+				SUM(CASE WHEN fa.DateAcct BETWEEN $P{DateAcct1} AND $P{DateAcct2} THEN fa.amtacctcr ELSE 0 END) haber,
+				SUM(CASE WHEN fa.DateAcct BETWEEN $P{DateAcct1} AND $P{DateAcct2} THEN fa.amtacctdr-fa.amtacctcr ELSE 0 END) saldomes,
+				SUM(CASE WHEN fa.DateAcct < $P{DateAcct1} THEN fa.amtacctdr-fa.amtacctcr ELSE 0 END) saldoi, 
+				SUM(fa.amtacctdr-fa.amtacctcr) total 
+			FROM fact_acct fa
+			 LEFT JOIN c_cash cash ON fa.record_id = cash.c_cash_id AND fa.ad_table_id = 407::numeric
+			 LEFT JOIN c_invoice invoice ON fa.record_id = invoice.c_invoice_id AND fa.ad_table_id = 318::numeric
+			 LEFT JOIN c_payment pay ON fa.record_id = pay.c_payment_id AND fa.ad_table_id = 335::numeric
+			 LEFT JOIN m_movement mov ON fa.record_id = mov.m_movement_id AND fa.ad_table_id = 323::numeric
+			 LEFT JOIN m_production pr ON fa.record_id = pr.m_production_id AND fa.ad_table_id = 325::numeric
+			 LEFT JOIN a_asset_disposed ad ON fa.record_id = ad.a_asset_disposed_id AND fa.ad_table_id = 53127::numeric
+			 LEFT JOIN m_matchinv minv ON fa.record_id = minv.m_matchinv_id AND fa.ad_table_id = 472::numeric
+			 LEFT JOIN c_allocationhdr ahdr ON fa.record_id = ahdr.c_allocationhdr_id AND fa.ad_table_id = 735::numeric
+			 LEFT JOIN a_asset_addition aa ON fa.record_id = aa.a_asset_addition_id AND fa.ad_table_id = 53137::numeric
+			 LEFT JOIN a_depreciation_entry ade ON fa.record_id = ade.a_depreciation_entry_id AND fa.ad_table_id = 53121::numeric
+			 LEFT JOIN m_inventory inv ON fa.record_id = inv.m_inventory_id AND fa.ad_table_id = 321::numeric
+			 LEFT JOIN gl_journal glj ON fa.record_id = glj.gl_journal_id AND fa.ad_table_id = 224::numeric
+			 LEFT JOIN m_inout io ON fa.record_id = io.m_inout_id AND fa.ad_table_id = 319::numeric
+			 LEFT JOIN c_bankstatement bs ON fa.record_id = bs.c_bankstatement_id AND fa.ad_table_id = 392::numeric 
+			WHERE fa.AD_Client_ID = $P{AD_Client_ID} AND (CASE WHEN $P{AD_Org_ID}<>0 THEN fa.AD_Org_ID IN (SELECT DISTINCT Node_ID FROM getnodes(0,$P{AD_Tree_Org_ID},$P{AD_Client_ID}) AS N(Parent_ID numeric,Node_ID numeric) WHERE Parent_ID = $P{AD_Org_ID}) ELSE TRUE END) 
+			AND fa.DateAcct <= $P{DateAcct2}
+			GROUP BY fa.Account_ID) AS FA ON FA.Account_ID = N.Node_ID 
+			GROUP BY N.Parent_ID,N.Node_ID) FA ON EV.C_ElementValue_ID = FA.Parent_ID,
+			(SELECT Name AS ClientName,TaxID FROM AD_Org_V WHERE AD_Org_ID = $P{AD_Org_ID}) AO
+			Where E.ElementType = 'A' AND EV.AD_CLIENT_ID=$P{AD_Client_ID} And EV.ISACTIVE='Y' 
+			And (EV.Value Between $P{AccountNo1} And $P{AccountNo2})
+			Group By AO.ClientName,AO.TaxID,EV.C_Elementvalue_ID,EV.Value,EV.Name,EV.IsSummary,N.LevelNo) t 
+			where Debe<>0 or Haber<>0 or SaldoI<>0 
+			Order By Cuenta
+		) x 
+			join PA_ReportLineSet a  on a.PA_ReportLineSet_ID=1000012 
+			join PA_ReportLine b on b.PA_ReportLineSet_ID = a.PA_ReportLineSet_ID
+			join PA_ReportSource c on c.pa_reportline_id = b.pa_reportline_id and x.c_elementvalue_id = c.c_elementvalue_id 
+			where round(debe,2) + round(haber,2) <> 0 
+			order by b.SeqNo]]>
+	</queryString>
+	<field name="startdate" class="java.lang.String"/>
+	<field name="enddate" class="java.lang.String"/>
+	<field name="organizacion" class="java.lang.String"/>
+	<field name="rif_organizacion" class="java.lang.String"/>
+	<field name="c_elementvalue_id" class="java.math.BigDecimal"/>
+	<field name="seqno" class="java.math.BigDecimal"/>
+	<field name="cuenta" class="java.lang.String"/>
+	<field name="nombre_cuenta" class="java.lang.String"/>
+	<field name="issummary" class="java.lang.String"/>
+	<field name="levelno" class="java.math.BigDecimal"/>
+	<field name="debe" class="java.math.BigDecimal"/>
+	<field name="haber" class="java.math.BigDecimal"/>
+	<field name="saldomes" class="java.math.BigDecimal"/>
+	<field name="saldoi" class="java.math.BigDecimal"/>
+	<field name="total" class="java.math.BigDecimal"/>
+	<field name="name" class="java.lang.String"/>
+	<variable name="debe1" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{debe}]]></variableExpression>
+	</variable>
+	<variable name="haber1" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{haber}]]></variableExpression>
+	</variable>
+	<variable name="totalmes" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{saldomes}]]></variableExpression>
+	</variable>
+	<variable name="totalacumulado1" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{saldoi}]]></variableExpression>
+	</variable>
+	<variable name="totalgeneral" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{total}]]></variableExpression>
+	</variable>
+	<group name="group resultados">
+		<groupFooter>
+			<band height="16">
+				<textField pattern="#,##0.###">
+					<reportElement x="401" y="0" width="100" height="16" uuid="142dcd04-3e5b-427d-a4ae-c33710b4dfed">
+						<property name="local_mesure_unitwidth" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{debe1}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.###">
+					<reportElement x="504" y="0" width="100" height="16" uuid="a67032cd-1c88-4b3d-aa22-5cb0824f5568">
+						<property name="local_mesure_unitwidth" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{haber1}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.###">
+					<reportElement x="297" y="0" width="100" height="16" uuid="d292ddbb-a2e9-41ac-8983-04c86b559b33">
+						<property name="local_mesure_unitwidth" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{totalacumulado1}]]></textFieldExpression>
+				</textField>
+				<textField pattern="#,##0.###">
+					<reportElement x="604" y="0" width="92" height="16" uuid="80bc5e40-6db7-4893-a30c-7d251fce8ba3">
+						<property name="local_mesure_unitwidth" value="pixel"/>
+					</reportElement>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="8" isBold="true" isItalic="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{totalgeneral}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="0" width="297" height="16" uuid="5e787a84-1483-4ec1-9780-68869f850ea2"/>
+					<box>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="SansSerif" size="10" isBold="true" isItalic="true"/>
+					</textElement>
+					<text><![CDATA[Total General]]></text>
+				</staticText>
+				<line>
+					<reportElement x="0" y="0" width="700" height="1" uuid="2fc6cf6e-52a8-4966-873b-bdfa18c2c39b"/>
+				</line>
+				<line>
+					<reportElement x="0" y="15" width="700" height="1" uuid="6672912e-916f-49b6-bdc4-9a7927e96c1d"/>
+				</line>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch">
+			<property name="local_mesure_unitheight" value="pixel"/>
+		</band>
+	</background>
+	<pageHeader>
+		<band height="78">
+			<staticText>
+				<reportElement x="0" y="64" width="297" height="14" uuid="b6957337-978c-4f23-91db-eec81bfca929"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Cuenta]]></text>
+			</staticText>
+			<textField pattern="">
+				<reportElement x="1" y="26" width="420" height="13" uuid="436f2870-e6c9-47a0-b1f6-20d753b60975"/>
+				<textElement textAlignment="Left">
+					<font fontName="SansSerif"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Periodo desde: "+$F{startdate}+" hasta: "+$F{enddate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="401" y="64" width="100" height="14" uuid="1d473f35-4f49-48dd-ae4d-5d5e860cad85"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Debe Mes]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="504" y="64" width="100" height="14" uuid="c6789668-cf0b-4a0f-9d15-74bb149d08f3"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Haber Mes]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="297" y="64" width="100" height="14" uuid="9f0f9768-32a3-4f15-8a58-5097f48016a2"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Saldo Inicial.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="604" y="64" width="92" height="14" uuid="3b8a631e-e338-4469-8351-a9edb0f9fb38"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Saldo Total]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="0" width="260" height="13" uuid="6ebd9be3-c56d-45f7-9ccc-f5adef072202"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Consorcio Oleaginoso Portuguesa S.A."]]></textFieldExpression>
+			</textField>
+			<textField pattern="HH:mm" isBlankWhenNull="true">
+				<reportElement x="752" y="24" width="49" height="11" uuid="7006ca54-6e84-40bd-8aec-9dacdb074ef5"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("h:mm a").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="752" y="13" width="49" height="11" uuid="4ddbcdab-e9d2-4537-a42b-f40c083cdbb0"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="752" y="2" width="11" height="11" uuid="a33f021b-c114-46ff-ad2b-6a5eaf3bf3b9"/>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="767" y="2" width="10" height="11" uuid="098dd50c-8fcb-408b-94b9-38c0c6fbab76"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[de:]]></text>
+			</staticText>
+			<textField evaluationTime="Report" isBlankWhenNull="true">
+				<reportElement x="780" y="2" width="21" height="11" uuid="f7f80e54-e04c-4469-85ef-aaa132e02566"/>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="720" y="24" width="32" height="11" uuid="6b25964a-bac0-4301-8fe2-27c598101c24"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="720" y="13" width="35" height="11" uuid="c25a4afa-a154-42f8-9c55-ae314c3662ff"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="720" y="2" width="39" height="11" uuid="788ced0e-d4cf-4aa3-8100-461b8fb5904a"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Página:]]></text>
+			</staticText>
+			<textField pattern="">
+				<reportElement x="1" y="13" width="420" height="13" uuid="e7275bf1-e5d0-463a-a1a5-4e546527b162">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Left">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="60" height="15" uuid="f1f78f16-8967-4362-9a0a-4ec8e72b7a56"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cuenta}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="60" y="0" width="237" height="15" uuid="ee7aace7-30dc-4187-98c4-5464f5373692"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre_cuenta}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.###">
+				<reportElement x="401" y="0" width="100" height="15" uuid="9fa51971-f6e8-47c4-93ad-8fec2164edf6">
+					<property name="local_mesure_unitwidth" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{debe}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.###">
+				<reportElement x="504" y="0" width="100" height="15" uuid="a1119e42-d08d-4b4e-8267-2081b7c024ba"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{haber}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.###">
+				<reportElement x="297" y="0" width="100" height="15" printWhenGroupChanges="group resultados" uuid="194fad0f-9838-459d-b13e-2e943e4ab35e"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{saldoi}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.###">
+				<reportElement x="604" y="0" width="92" height="15" uuid="4c2b7e1b-56fa-44ac-b9a5-4ff4c7599a13"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

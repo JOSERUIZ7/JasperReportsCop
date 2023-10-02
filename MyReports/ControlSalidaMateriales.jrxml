@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
-<!-- 2023-06-13T10:14:59 -->
+<!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ControlSalidaMateriales" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="99c24662-fda7-4632-972a-9e50945c3950">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
 	<parameter name="RESOURCE_DIR" class="java.lang.String">
@@ -107,7 +106,7 @@ group by
 left join cop_inoutmaterial iom on m.COP_Reference_ID = iom.COP_InOutMaterial_ID
 left join c_bpartner cb2 on cb2.C_BPartner_ID = ca.C_BPartner_ID
 left join M_Requisition re on re.M_Requisition_ID = ca.M_Requisition_ID
-where m.cop_inoutmaterial_id = $P{RECORD_ID}]]>
+where m.cop_inoutmaterial_id = $P{RECORD_ID} and ml.movementqty <> 0]]>
 	</queryString>
 	<field name="cop_reference_id" class="java.math.BigDecimal"/>
 	<field name="nationalcode" class="java.lang.String"/>

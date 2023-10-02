@@ -30,7 +30,7 @@
 	</section>
 	<section name="SaveAsDialogSettings">
 		<item value="700" key="DIALOG_WIDTH"/>
-		<item value="1|Segoe UI|9.0|0|WINDOWS|1|-15|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI" key="DIALOG_FONT_NAME"/>
+		<item value="1|Segoe UI|9.0|0|WINDOWS|1|-15|0|0|0|400|0|0|0|1|0|0|5|0|Segoe UI" key="DIALOG_FONT_NAME"/>
 		<item value="643" key="DIALOG_HEIGHT"/>
 		<item value="466" key="DIALOG_X_ORIGIN"/>
 		<item value="52" key="DIALOG_Y_ORIGIN"/>
