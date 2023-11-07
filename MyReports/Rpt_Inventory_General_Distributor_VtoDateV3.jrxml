@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
-<!-- 2023-07-26T11:25:38 -->
+<!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RPT_org_product_onHand" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="762" leftMargin="15" rightMargin="15" topMargin="15" bottomMargin="15" uuid="6c673fc6-3870-45f2-8b2c-c26a0f9879fb">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Coposaprod"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="55"/>
 	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="934"/>
@@ -319,6 +318,9 @@
 							<property name="com.jaspersoft.studio.crosstab.style.total" value="Crosstab_CT"/>
 							<property name="com.jaspersoft.studio.crosstab.style.detail" value="Crosstab_CD"/>
 						</reportElement>
+						<crosstabDataset>
+							<dataset resetType="Report"/>
+						</crosstabDataset>
 						<rowGroup name="producto" width="270" totalPosition="End">
 							<bucket class="java.lang.String">
 								<bucketExpression><![CDATA[$F{producto}]]></bucketExpression>
@@ -326,15 +328,16 @@
 							<crosstabRowHeader>
 								<cellContents mode="Opaque" style="Crosstab_CH">
 									<textField>
-										<reportElement x="0" y="0" width="270" height="20" uuid="21359e7e-061e-40f1-aae3-2bfc9e272dd4">
+										<reportElement x="0" y="0" width="270" height="10" uuid="21359e7e-061e-40f1-aae3-2bfc9e272dd4">
 											<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
 											<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 											<property name="com.jaspersoft.studio.unit.spacingAfter" value="px"/>
 											<property name="com.jaspersoft.studio.unit.spacingBefore" value="px"/>
 											<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+											<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 										</reportElement>
 										<textElement textAlignment="Left" verticalAlignment="Middle">
-											<font size="7" isBold="true"/>
+											<font size="5" isBold="true"/>
 											<paragraph leftIndent="2" rightIndent="0" spacingBefore="0" spacingAfter="1"/>
 										</textElement>
 										<textFieldExpression><![CDATA[$V{producto}]]></textFieldExpression>
@@ -363,7 +366,7 @@
 							<crosstabColumnHeader>
 								<cellContents mode="Opaque" style="Crosstab_CH">
 									<textField>
-										<reportElement x="0" y="0" width="50" height="40" uuid="5c621085-7146-4d8c-8800-4079aa17a27f"/>
+										<reportElement x="0" y="0" width="40" height="40" uuid="5c621085-7146-4d8c-8800-4079aa17a27f"/>
 										<textElement textAlignment="Center" verticalAlignment="Middle">
 											<font size="5" isBold="true"/>
 										</textElement>
@@ -395,26 +398,25 @@
 						<measure name="existencia_MEASURE" class="java.math.BigDecimal" calculation="Sum">
 							<measureExpression><![CDATA[$F{existencia}]]></measureExpression>
 						</measure>
-						<crosstabCell width="50" height="20">
+						<crosstabCell width="40" height="10">
 							<cellContents mode="Opaque" style="Crosstab_CD">
 								<textField pattern="#,##0.###;(#,##0.###-)">
-									<reportElement style="Crosstab_CD" x="0" y="0" width="50" height="20" uuid="e2343756-71f1-4971-a4c5-4dcd46e0402d">
+									<reportElement style="Crosstab_CD" x="0" y="0" width="40" height="10" uuid="e2343756-71f1-4971-a4c5-4dcd46e0402d">
 										<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 										<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
-										<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
 									</reportElement>
 									<textElement textAlignment="Right" verticalAlignment="Middle">
-										<font size="9"/>
+										<font size="6"/>
 										<paragraph rightIndent="3"/>
 									</textElement>
 									<textFieldExpression><![CDATA[$V{existencia_MEASURE}]]></textFieldExpression>
 								</textField>
 							</cellContents>
 						</crosstabCell>
-						<crosstabCell width="5" height="20" columnTotalGroup="organizacion">
+						<crosstabCell width="5" height="10" columnTotalGroup="organizacion">
 							<cellContents mode="Opaque" style="Crosstab_CT">
 								<textField pattern="#,##0.###;(#,##0.###-)">
-									<reportElement mode="Opaque" x="0" y="0" width="5" height="20" forecolor="#FFFFFF" uuid="ca36a77a-2613-4bef-8e09-f485da5ebd10">
+									<reportElement mode="Opaque" x="0" y="0" width="5" height="10" forecolor="#FFFFFF" uuid="ca36a77a-2613-4bef-8e09-f485da5ebd10">
 										<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 									</reportElement>
 									<box>
@@ -432,16 +434,16 @@
 								</textField>
 							</cellContents>
 						</crosstabCell>
-						<crosstabCell width="50" height="20" rowTotalGroup="producto">
+						<crosstabCell width="40" height="20" rowTotalGroup="producto">
 							<cellContents mode="Opaque" style="Crosstab_CT">
 								<textField pattern="#,##0.###;(#,##0.###-)">
-									<reportElement x="0" y="0" width="50" height="20" forecolor="#FFFFFF" uuid="34385fe3-5ac9-4681-846e-87fe073d0f1c">
+									<reportElement x="0" y="0" width="40" height="20" forecolor="#FFFFFF" uuid="34385fe3-5ac9-4681-846e-87fe073d0f1c">
 										<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 										<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 										<property name="com.jaspersoft.studio.unit.height" value="px"/>
 									</reportElement>
 									<textElement textAlignment="Right" verticalAlignment="Middle">
-										<font size="9"/>
+										<font size="8"/>
 										<paragraph rightIndent="3"/>
 									</textElement>
 									<textFieldExpression><![CDATA[$V{existencia_MEASURE}]]></textFieldExpression>

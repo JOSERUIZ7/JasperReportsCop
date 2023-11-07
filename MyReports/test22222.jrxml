@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
+<!-- 2023-10-18T11:21:20 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="test22222" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5df712a5-db0d-4757-80d5-46127f3ced34">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<queryString>
+		<![CDATA[select
+ad_client_id ,
+a.ad_org_id ,
+a.isactive ,
+a.created ,
+a.createdby ,
+a.updated ,
+a.updatedby ,
+a.ftu_recordweight_id ,
+a.ftu_entryticket_id ,
+a.documentno_ticket ,
+a.ftu_driver_id ,
+a.ftu_vehicle_id ,
+a.m_product_id ,
+a.m_shipper_id ,
+a.referenceno ,
+a.trailerplate ,
+a.horometer ,
+a.odometer ,
+a.container_id ,
+a.ftu_mobilizationguide_id ,
+a.ftu_loadorder_id ,
+a.documentno_load_order ,
+a.documentno ,
+a.grossweight ,
+a.netweight ,
+a.payweight ,
+a.tareweight ,
+a.weightstatus ,
+a.ftu_weightscale_id ,
+a.minweight ,
+a.maxweight ,
+a.m_warehouse_id ,
+a.ftu_rw_approvalmotive_id ,
+a.ftu_chute_id ,
+a.hrs_analysis_id ,
+a.driver_name ,
+a.driver_phone ,
+a.vehicleplate ,
+a.shipper_name ,
+a.code_driver ,
+a.datedoc ,
+a.indate ,
+a.outdate ,
+a.operationtype ,
+a.docstatus ,
+a.desc_load ,
+a.m_inout_id ,
+a.m_movement_id ,
+a.origintareweight ,
+a.origingrossweight ,
+a.originnetweight ,
+a.plates ,
+a.isvin ,
+a.guidesurvey ,
+a.dif_neto ,
+a.dif_tare ,
+a.tanknumber ,
+a.description ,
+a.c_bpartner_id ,
+a.value ,
+a.c_bpartner_seller ,
+a.c_order_id ,
+a.order_doc ,
+a.m_product_nsell ,
+a.guidesada ,
+a.cop_vessel_id ,
+a.cop_vessel_n ,
+a.guideorigen ,
+a.m_product_v ,
+a.m_product_category_id ,
+a.dd_orderline_id ,
+a.dd_order_id ,
+a.remittancenumber ,
+a.outdate_t ,
+a.indate_t ,
+a.time_to_download ,
+a.minutes ,
+a.name_partner ,
+	'Control de Materia Prima' as  reponame ,	
+	' DESDE: ' || substring('2023-10-10'::text , 9, 2) || '/' || substring('2023-10-10'::text, 6, 2) || '/' || substring('2023-10-10'::text, 1, 4) ||	substring('2023-10-10'::text , 11, 9) ||
+	' - HASTA:' || substring('2023-10-18'::text, 9, 2) || '/' || substring('2023-10-18'::text, 6, 2) || '/' || substring('2023-10-18'::text, 1, 4) ||	substring('2023-10-18'::text , 11, 9) ||  CHR(13) doc_info
+from
+	COP_RV_RecordWeight a
+where
+    a.OperationType in ('RMR','PBR','RMP')
+ 	and a.docstatus = 'CO' 
+ 	and ((a.OutDate::TIMESTAMP between '2023-10-10'::TIMESTAMP and '2023-10-18'::TIMESTAMP) or '2023-10-10'::TIMESTAMP is null )
+order by
+	datedoc,
+	documentno]]>
+	</queryString>
+	<field name="documentno_ticket" class="java.lang.String"/>
+	<field name="documentno_load_order" class="java.lang.String"/>
+	<field name="documentno" class="java.lang.String"/>
+	<field name="netweight" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

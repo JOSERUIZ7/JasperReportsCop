@@ -78,6 +78,26 @@
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/COP_RV_RecordWeight_V1 (2).jrxml</location>
 		</link>
 		<link>
+			<name>COP_RV_RecordWeight_V2 (1).jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/COP_RV_RecordWeight_V2 (1).jasper</location>
+		</link>
+		<link>
+			<name>COP_RV_RecordWeight_V2 (1).jrxml</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/COP_RV_RecordWeight_V2 (1).jrxml</location>
+		</link>
+		<link>
+			<name>COP_RV_RecordWeight_V2 (2)respaldo.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/COP_RV_RecordWeight_V2 (2)respaldo.jasper</location>
+		</link>
+		<link>
+			<name>COP_RV_RecordWeight_V2 (2)respaldo.jrxml</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/COP_RV_RecordWeight_V2 (2)respaldo.jrxml</location>
+		</link>
+		<link>
 			<name>Checking_Balance.jasper</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/Checking_Balance.jasper</location>
@@ -126,6 +146,16 @@
 			<name>FLUJO_CAJA_TABLEV2_1.jrxml</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/FLUJO_CAJA_TABLEV2.jrxml</location>
+		</link>
+		<link>
+			<name>FTU_Sales_BOOK.jasper</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/FTU_Sales_BOOK.jasper</location>
+		</link>
+		<link>
+			<name>FTU_Sales_BOOK.jrxml</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/FTU_Sales_BOOK.jrxml</location>
 		</link>
 		<link>
 			<name>LedgerDetailed (1).jrxml</name>

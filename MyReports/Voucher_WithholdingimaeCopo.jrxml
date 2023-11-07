@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.16.0.final using JasperReports Library version 5.5.1  -->
-<!-- 2021-11-26T15:06:48 -->
+<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
+<!-- 2023-10-17T11:50:48 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Voucher_Withholding" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="dd801c74-63d6-4bae-9bde-0d8118234d17">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
 	<parameter name="RECORD_ID" class="java.lang.Integer"/>
 	<parameter name="RESOURCE_DIR" class="java.lang.String">
 		<parameterDescription><![CDATA[]]></parameterDescription>
@@ -25,11 +26,13 @@
 	COALESCE(ci.lve_poinvoiceno,ci.documentno) AS numerodocumento,
     ci.lve_controlnumber AS control,
     currencyconvert(ci.GrandTotal,ci.C_Currency_ID,vw.c_currency_id,ci.dateinvoiced,ci.C_ConversionType_ID,ci.AD_CLIENT_ID,ci.AD_ORG_ID) as montodocumento,
-    (iw.taxbaseamt / (case when bp.A_License_No is not null then 2 else 1 end)) AS baseimponible,
 	wr.code as LCO_ISIC_n,
-	case when bp.A_License_No is not null then to_char((iw.percent * 4),'99.9'::text) else to_char(iw.percent, '99.99'::text) end AS alic,
+	case when bp.A_License_No is not null then to_char((iw.percent ),'99.9'::text) else to_char(iw.percent, '99.99'::text) end AS alic,
 	case when bp.A_License_No is not null then 50 else 100 end AS percentwithholding,
-    abs(iw.taxamt) as montoiva
+   case when dt.C_DocTypeDeclare = '03' then abs(iw.taxbaseamt) * -1
+   else abs(iw.taxbaseamt) end AS baseimponible,
+     case when dt.C_DocTypeDeclare = '03' then abs(iw.taxamt) * -1 
+     else abs(iw.taxamt) end AS montoiva 
    FROM c_invoice ci
      JOIN lco_invoicewithholding iw ON ci.c_invoice_id = iw.c_invoice_id 
      JOIN lve_voucherwithholding vw ON vw.lve_voucherwithholding_id = iw.lve_voucherwithholding_id
@@ -37,7 +40,7 @@
      JOIN lco_withholdingrule wr ON iw.lco_withholdingrule_id = wr.lco_withholdingrule_id
      JOIN c_doctype dt ON ci.c_doctype_id = dt.c_doctype_id AND (dt.docbasetype = ANY (ARRAY['API'::bpchar, 'APC'::bpchar, 'APD'::bpchar, 'ARI'::bpchar, 'ARD'::bpchar, 'ARC'::bpchar]))
      JOIN c_bpartner bp ON bp.c_bpartner_id = ci.c_bpartner_id 
-     JOIN ad_org_v ao ON ao.ad_org_id = ci.ad_org_id 
+     LEFT JOIN ad_org_v ao ON ao.ad_org_id = ci.ad_org_id 
      JOIN ad_client ao2 ON ao2.ad_client_id  = ci.ad_client_id
   	 left join c_bpartner_location cbl on ci.c_bpartner_location_id = cbl.c_bpartner_location_id
      LEFT JOIN c_location l ON cbl.c_location_id = l.c_location_id
@@ -63,10 +66,10 @@
 	<field name="numerodocumento" class="java.lang.String"/>
 	<field name="control" class="java.lang.String"/>
 	<field name="montodocumento" class="java.math.BigDecimal"/>
-	<field name="baseimponible" class="java.math.BigDecimal"/>
 	<field name="lco_isic_n" class="java.lang.String"/>
 	<field name="alic" class="java.lang.String"/>
 	<field name="percentwithholding" class="java.lang.Integer"/>
+	<field name="baseimponible" class="java.math.BigDecimal"/>
 	<field name="montoiva" class="java.math.BigDecimal"/>
 	<variable name="Total_GrandTotal" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$F{montodocumento}]]></variableExpression>
