@@ -118,6 +118,11 @@
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/Estatus_requisicion2.jrxml</location>
 		</link>
 		<link>
+			<name>Example2.jasper</name>
+			<type>1</type>
+			<location>D:/Desarrrollo_SIA/sia/libreria/Example2.jasper</location>
+		</link>
+		<link>
 			<name>FLUJO_CAJA_TABLE.jasper</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/FLUJO_CAJA_TABLE.jasper</location>
@@ -466,6 +471,11 @@
 			<name>Rpt_Inventory_General_Distributor_VtoDateV2.jrxml</name>
 			<type>1</type>
 			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/Rpt_Inventory_General_Distributor_VtoDateV2.jrxml</location>
+		</link>
+		<link>
+			<name>SalesBookNoFiscal2.jrxml</name>
+			<type>1</type>
+			<location>C:/Users/pc08.inf/Documents/GitHub/JasperReportsCop/MyReports/SalesBookNoFiscal2.jrxml</location>
 		</link>
 		<link>
 			<name>Voucher_WithholdingimaeCopo.jasper</name>

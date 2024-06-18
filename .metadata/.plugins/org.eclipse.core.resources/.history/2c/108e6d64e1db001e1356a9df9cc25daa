@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ReporteTarazona" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a49c77e9-37d5-427f-a809-c6ce04cc242a">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="AD_Client_ID" class="java.lang.Integer"/>
+	<parameter name="DocBaseType" class="java.lang.String"/>
+	<parameter name="C_Currency_ID" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[
+	select
+	cb.name as Partner,
+	c.name cop_paygroup_n,	
+		a.c_invoice_id,
+--		a.c_bpartner_id ,
+--		a.COP_PayGroup_ID,
+		a.documentno,	currencyconvert(a.GrandTotal,
+		a.C_Currency_ID,
+		$P{C_Currency_ID},
+		a.dateinvoiced,
+		a.C_ConversionType_ID,
+		a.AD_CLIENT_ID,
+		a.AD_ORG_ID) as original_amount,
+		
+		(currencyconvert(a.GrandTotal,
+		a.C_Currency_ID,
+		$P{C_Currency_ID},
+		a.dateinvoiced,
+		a.C_ConversionType_ID,
+		a.AD_CLIENT_ID,
+		a.AD_ORG_ID)  - currencyconvert(cop_invoiceopentodatetx(a.c_invoice_id,null,now()::date),
+		a.C_Currency_ID,
+		$P{C_Currency_ID},
+		a.dateinvoiced,
+		a.C_ConversionType_ID,
+		a.AD_CLIENT_ID,
+		a.AD_ORG_ID) ) payment , 
+		
+		
+	--	cop_invoiceopentodatetx(a.c_invoice_id,null,now()::date) test, 
+		currencyconvert(cop_invoiceopentodatetx(a.c_invoice_id,null,now()::date),
+		a.C_Currency_ID,
+		$P{C_Currency_ID},
+		a.dateinvoiced,
+		a.C_ConversionType_ID,
+		a.AD_CLIENT_ID,
+		a.AD_ORG_ID) as invoiceopen,
+		a.DateInvoiced,
+		paymenttermduedate(a.c_paymentterm_id,
+		a.dateinvoiced) :: date as duedate_D,
+		(now()::date - 		paymenttermduedate(a.c_paymentterm_id,
+		a.dateinvoiced) :: date) expiration_day,
+		
+		extract(WEEK from paymenttermduedate(a.c_paymentterm_id,a.dateinvoiced) ) t_week,
+		extract(year from paymenttermduedate(a.c_paymentterm_id,a.dateinvoiced) ) t_year,
+		
+		z.date_ini	  ,z.date_end,
+		trim(z.date_ini::text) || '  ' || trim(z.date_end::text) d_week
+		
+	from
+		c_invoice a
+	left join c_bpartner cb on a.c_bpartner_id = cb.c_bpartner_id
+	left outer join C_DocType b on b.C_DocType_id = a.C_DocType_id
+	left outer join cop_paygroup c on c.cop_paygroup_id = a.cop_paygroup_id
+	left outer join cop_period_week z on z.ad_client_id = a.ad_client_id and 
+case when  paymenttermduedate(a.c_paymentterm_id,a.dateinvoiced) >= now() then
+		z.year_id = extract(year from paymenttermduedate(a.c_paymentterm_id,a.dateinvoiced) ) and 
+		z.week_id = extract(WEEK from paymenttermduedate(a.c_paymentterm_id,a.dateinvoiced) )
+else
+		z.year_id = extract(year from now() ) and 
+		z.week_id = extract(WEEK from now() )
+end
+	
+	where
+		a.isactive = 'Y'
+		and a.issotrx = (
+		select
+			case
+				when $P{DocBaseType} in ('ARI', 'ARC') then 'Y'
+				when $P{DocBaseType} in ('API', 'APC') then 'N'
+			end)
+		and a.docstatus = 'CO'
+		and a.ad_client_id = $P{AD_Client_ID}
+		and cop_invoiceopentodatetx(a.c_invoice_id,null,now()::date) > 2
+		order by cop_paygroup_n,partner, dateinvoiced , documentno]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

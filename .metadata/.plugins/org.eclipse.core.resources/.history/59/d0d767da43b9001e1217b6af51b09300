@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
+<!-- 2024-01-22T12:31:32 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ITA_RV_Asset_Header_Mov" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="13d9af51-794a-4632-8ecf-8cc18a09de98">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="COPOSAPROD"/>
+	<parameter name="ITA_Asset_Movement_ID" class="java.lang.Integer">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<queryString>
+		<![CDATA[select
+	B.NAME as AD_CLIENT_N ,
+	B.DESCRIPTION DIRECCION
+	
+	
+	,A.*
+from
+	ITA_RV_Asset_Header_Mov A 
+	join ad_client B on B.ad_client_id = A.ad_client_id 
+where
+	ITA_Asset_Movement_ID = 1000000]]>
+	</queryString>
+	<field name="ad_client_n" class="java.lang.String"/>
+	<field name="direccion" class="java.lang.String"/>
+	<field name="ita_asset_movement_id" class="java.math.BigDecimal"/>
+	<field name="datetrx" class="java.sql.Timestamp"/>
+	<field name="ita_asset_id" class="java.math.BigDecimal"/>
+	<field name="movementtypeasset_id" class="java.math.BigDecimal"/>
+	<field name="observation" class="java.lang.String"/>
+	<field name="isactive" class="java.lang.String"/>
+	<field name="created" class="java.sql.Timestamp"/>
+	<field name="createdby" class="java.math.BigDecimal"/>
+	<field name="updated" class="java.sql.Timestamp"/>
+	<field name="updatedby" class="java.math.BigDecimal"/>
+	<field name="ad_client_id" class="java.math.BigDecimal"/>
+	<field name="ad_org_id" class="java.math.BigDecimal"/>
+	<field name="startdate" class="java.sql.Timestamp"/>
+	<field name="enddate" class="java.sql.Timestamp"/>
+	<field name="ad_user_id" class="java.math.BigDecimal"/>
+	<field name="status" class="java.lang.String"/>
+	<field name="logo_id" class="java.math.BigDecimal"/>
+	<field name="allocated" class="java.math.BigDecimal"/>
+	<field name="c_invoice_id" class="java.math.BigDecimal"/>
+	<field name="c_order_id" class="java.math.BigDecimal"/>
+	<field name="depressiondate" class="java.sql.Timestamp"/>
+	<field name="description" class="java.lang.String"/>
+	<field name="ita_brand_id" class="java.math.BigDecimal"/>
+	<field name="ita_model_id" class="java.math.BigDecimal"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="observationdet" class="java.lang.String"/>
+	<field name="remote_addr" class="java.lang.String"/>
+	<field name="serial" class="java.lang.String"/>
+	<field name="value" class="java.lang.String"/>
+	<field name="warrantydate" class="java.sql.Timestamp"/>
+	<field name="ita_rv_asset_header_id" class="java.math.BigDecimal"/>
+	<field name="org_location_id" class="java.math.BigDecimal"/>
+	<field name="ad_orginfo_phone" class="java.lang.String"/>
+	<field name="taxid" class="java.lang.String"/>
+	<field name="hr_department_id" class="java.math.BigDecimal"/>
+	<field name="ita_rv_asset_header_mov_id" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="80" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="130" height="20" uuid="b8002745-03fe-4eab-aeb9-aee5af20188d"/>
+				<textFieldExpression><![CDATA[$F{ad_client_n}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="22" width="300" height="20" uuid="72c8784c-7c69-4f1b-9241-17cc48d4622d"/>
+				<textFieldExpression><![CDATA[$F{direccion} + $F{ad_orginfo_phone}
+]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="260" y="0" width="100" height="20" uuid="045520a7-d0a6-473c-9d27-56f936d38734"/>
+				<text><![CDATA[Activos TI]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="432" y="10" width="130" height="20" uuid="76ffbdfd-68e9-476d-8cbc-536cd1f5cda0"/>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="433" y="32" width="130" height="20" uuid="0fb4a70b-fe00-4597-9435-b22e1ee61280"/>
+				<textFieldExpression><![CDATA[$F{startdate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="435" y="54" width="130" height="20" uuid="7ace62b9-b040-4144-a8fb-221f59c2c8a4"/>
+				<textFieldExpression><![CDATA[$F{enddate}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="96" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="60" width="610" height="30" uuid="708061cf-f55d-408d-b6c8-1d6125a86f07"/>
+				<textFieldExpression><![CDATA[$F{observation}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="50" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

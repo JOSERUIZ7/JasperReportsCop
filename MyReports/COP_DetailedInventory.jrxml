@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.18.1.final using JasperReports Library version 6.18.1-9d75d1969e774d4f179fb3be8401e98a0e6d1611  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="COP_DetailedInventory" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="82edd1a2-62e5-47b5-8d64-b1cb03dcd876">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Coposaprod"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<parameter name="DateFrom" class="java.sql.Date"/>
+	<parameter name="AD_Client_ID" class="java.lang.Integer"/>
+	<parameter name="AD_Org_ID" class="java.lang.Integer"/>
+	<parameter name="DateTo" class="java.sql.Date"/>
+	<parameter name="M_Product_ID" class="java.lang.Integer"/>
+	<parameter name="RESOURCE_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["/"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select
+	value, name_p,
+	case  when inicial is NULL then 0 else inicial end as incial, 
+	case  when credit is NULL then 0 else credit end as credit,  
+	case  when debit is NULL then 0 else debit end as debit,
+	(case  when inicial is NULL then 0 else inicial end) + (case  when credit is NULL then 0 else credit end) + (case  when debit is NULL then 0 else debit end) as balance
+from
+	(
+	select
+		ao."name" ,
+		m_product_id ,
+		mp.value,
+		mp.name name_p,
+		stock_prod_to_date(mp.m_product_id ,
+		($P{DateFrom}::date - 1 ) ,
+		$P{AD_Client_ID},
+		$P{AD_Org_ID}) as inicial,
+		(
+		select
+			sum(credit)
+		from
+			(
+			select
+				b.m_product_id ,
+				b.movementtype ,
+				case
+					when ASCII(substr(B.movementtype, 2, 1)) = 43 then sum(B.movementqty)
+					else 0
+				end credit
+			from
+				M_Transaction B
+			where
+				ASCII(substr(B.movementtype, 2, 1)) = 43
+				and 
+		B.AD_Client_ID = $P{AD_Client_ID}
+				and B.AD_Org_ID = $P{AD_Org_ID}
+				and B.M_Product_ID = mp.m_product_id
+				and B.MovementDate between ($P{DateFrom} || ' 00:00:00')::timestamp and ( $P{DateTo} || ' 23:59:59')::timestamp
+			group by
+				B.M_Product_ID ,
+				B.movementtype) as c) as credit ,
+		(
+		select
+			sum(debit)
+		from
+			(
+			select
+				case
+					when ASCII(substr(B.movementtype, 2, 1)) = 45 then sum(B.movementqty)
+					else 0
+				end debit
+			from
+				M_Transaction B
+			where
+				ASCII(substr(B.movementtype, 2, 1)) = 45
+					and 
+		B.AD_Client_ID = $P{AD_Client_ID}
+					and B.AD_Org_ID = $P{AD_Org_ID}
+					and B.M_Product_ID = mp.m_product_id
+					and B.MovementDate between ($P{DateFrom} || ' 00:00:00')::timestamp and ( $P{DateTo} || ' 23:59:59')::timestamp
+				group by
+					B.M_Product_ID ,
+					B.movementtype ) as c) as debit
+	from
+		m_product mp
+	left join ad_org ao on
+		ao.ad_org_id = $P{AD_Org_ID}
+		and mp.ad_client_id = $P{AD_Org_ID}
+	where
+	    (mp.m_product_id  = $P{M_Product_ID}  or $P{M_Product_ID} is null) and 
+		mp.isactive = 'Y'
+		and mp.ProductType = 'I'
+		and mp.isstocked = 'Y' ) as y]]>
+	</queryString>
+	<field name="value" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="value"/>
+		<property name="com.jaspersoft.studio.field.label" value="value"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_product"/>
+	</field>
+	<field name="name_p" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="name_p"/>
+		<property name="com.jaspersoft.studio.field.label" value="name_p"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="m_product"/>
+	</field>
+	<field name="incial" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="incial"/>
+		<property name="com.jaspersoft.studio.field.label" value="incial"/>
+	</field>
+	<field name="credit" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="credit"/>
+		<property name="com.jaspersoft.studio.field.label" value="credit"/>
+	</field>
+	<field name="debit" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="debit"/>
+		<property name="com.jaspersoft.studio.field.label" value="debit"/>
+	</field>
+	<field name="balance" class="java.math.BigDecimal">
+		<property name="com.jaspersoft.studio.field.name" value="balance"/>
+		<property name="com.jaspersoft.studio.field.label" value="balance"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="86" splitType="Stretch">
+			<staticText>
+				<reportElement x="177" y="8" width="277" height="20" uuid="f92b8126-f7cf-43c5-826f-4e0524444a6c"/>
+				<textElement textAlignment="Center">
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DETALLADO DE INVENTARIO]]></text>
+			</staticText>
+			<image>
+				<reportElement x="0" y="0" width="150" height="59" uuid="16b81d97-f0b1-4d92-99e9-2ebbf6d010ca"/>
+				<imageExpression><![CDATA[$P{RESOURCE_DIR} + "logo.png"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="177" y="28" width="277" height="20" uuid="f8be5715-3ba1-4bc4-b2b8-0875bee53bb2"/>
+				<textElement textAlignment="Center">
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ENTRADAS Y SALIDAS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="532" y="31" width="12" height="11" uuid="9b42efeb-e89c-4fea-94a3-2bd23f1a42c7"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[de:]]></text>
+			</staticText>
+			<textField pattern="HH:mm" isBlankWhenNull="true">
+				<reportElement x="511" y="53" width="59" height="11" uuid="e53429b4-15b9-45a8-af41-221e1009f023"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("h:mm a").format(new java.util.Date())]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="473" y="53" width="27" height="11" uuid="10d2433b-b422-44e7-b56d-2dea72f26dce"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Hora:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="473" y="31" width="38" height="11" uuid="92bfec92-18e1-48ee-afc1-95038cedc9a7"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Página:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="473" y="42" width="27" height="11" uuid="9aace573-7aa5-471b-980a-c9ce02faf184"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="511" y="31" width="20" height="11" uuid="e6f2ca92-aa10-4555-9689-0a21fe01b8e6"/>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" isBlankWhenNull="true">
+				<reportElement x="546" y="31" width="18" height="11" uuid="e4107087-68fe-4757-bf7e-bd4c136bf64a"/>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="511" y="42" width="59" height="11" uuid="32d00246-6845-4580-a515-34505d327d96"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="32" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="30" uuid="b4dbc2f6-850f-4d9e-b1b6-852538a30fac">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="b25db244-c14e-4ec6-b6b5-9dceee120752"/>
+				</reportElement>
+				<text><![CDATA[Descripción]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="200" y="0" width="100" height="30" uuid="f19bd641-b449-4425-b260-60b088bc4b18">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="d9707ad2-d51e-4691-b88e-f9a6227f273a"/>
+				</reportElement>
+				<text><![CDATA[Inventario Inicial]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="300" y="0" width="100" height="30" uuid="b35a02ad-8c9a-48ad-ba15-c07419259642">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="21693ac3-c7d0-4429-8e90-5832d8e7c2ea"/>
+				</reportElement>
+				<text><![CDATA[Entradas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="400" y="0" width="100" height="30" uuid="e543ab27-fe05-4511-86dc-b16c2a2c5cae">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="383af5df-467a-4b4c-9d20-036971edaaaa"/>
+				</reportElement>
+				<text><![CDATA[Salidas]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="500" y="0" width="70" height="30" uuid="406f5dde-9a3c-44c2-9c77-447671d5ef05">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="db72d7c9-7a80-4cb9-b695-cd02c557f343"/>
+				</reportElement>
+				<text><![CDATA[Inventario Final]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="200" height="20" uuid="ec540a77-3068-46db-ac95-bad95e68cc08">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="adf832db-f06e-4d37-8840-464c24973d07"/>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{name_p}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="200" y="0" width="100" height="20" uuid="c7ddaac5-2bc6-4013-b791-f2ca6b8c2a5b">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="d9707ad2-d51e-4691-b88e-f9a6227f273a"/>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{incial}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="300" y="0" width="100" height="20" uuid="d15caa2a-fd99-4263-9890-30d1c434003a">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="21693ac3-c7d0-4429-8e90-5832d8e7c2ea"/>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{credit}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="400" y="0" width="100" height="20" uuid="58385faa-7bc5-4434-9f2f-6a92795ca630">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="383af5df-467a-4b4c-9d20-036971edaaaa"/>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{debit}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="500" y="0" width="70" height="20" uuid="f1d8e269-7d6b-4db7-be76-0885a207faa4">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="db72d7c9-7a80-4cb9-b695-cd02c557f343"/>
+				</reportElement>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{balance}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

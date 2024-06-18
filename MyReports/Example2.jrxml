@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Example2" language="groovy" pageWidth="612" pageHeight="395" columnWidth="572" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3d459ecf-14cd-4f38-b7f1-3debc94ad589">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="cedula" class="java.lang.String">
+		<defaultValueExpression><![CDATA[20156541]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT * FROM tgennomina WHERE cedula =  $P{cedula}]]>
+	</queryString>
+	<field name="cedula" class="java.lang.String"/>
+	<field name="ficha" class="java.lang.String"/>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="apellido" class="java.lang.String"/>
+	<field name="compania" class="java.lang.String"/>
+	<field name="tiponomina" class="java.lang.String"/>
+	<field name="tipotrabajador" class="java.lang.Integer"/>
+	<field name="amparado" class="java.lang.String"/>
+	<field name="grupo" class="java.lang.String"/>
+	<field name="cc" class="java.lang.String"/>
+	<field name="fechaingreso" class="java.sql.Date"/>
+	<field name="fechaegreso" class="java.sql.Date"/>
+	<field name="sexo" class="java.lang.String"/>
+	<field name="cargo" class="java.lang.String"/>
+	<field name="cargodescripcion" class="java.lang.String"/>
+	<field name="estatus" class="java.lang.String"/>
+	<field name="hcm" class="java.lang.String"/>
+	<field name="fechanacimiento" class="java.sql.Date"/>
+	<field name="sueldomensual" class="java.math.BigDecimal"/>
+	<field name="sueldodiario" class="java.math.BigDecimal"/>
+	<field name="estadocivil" class="java.lang.String"/>
+	<field name="nacionalidad" class="java.lang.String"/>
+	<field name="profesion" class="java.lang.String"/>
+	<field name="ccnomina" class="java.lang.String"/>
+	<field name="tipogasto" class="java.lang.String"/>
+	<field name="contratado" class="java.lang.String"/>
+	<field name="localidad" class="java.lang.String"/>
+	<field name="fechasueldo" class="java.sql.Date"/>
+	<group name="cedula">
+		<groupExpression><![CDATA[$F{cedula}]]></groupExpression>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="43" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="57" height="16" uuid="da2dc2d5-0870-4c50-86c2-04b1a6332760"/>
+				<textElement>
+					<font fontName="Serif" size="12"/>
+				</textElement>
+				<text><![CDATA[COPOSA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="16" width="255" height="13" uuid="519f08a1-3d18-4ab7-9a4a-51d2df59428a"/>
+				<text><![CDATA[Consorcio Oleaginoso Portuguesa S.A.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="29" width="100" height="14" uuid="0c93fd73-c507-443a-9a97-e68f3dc4e1cc"/>
+				<text><![CDATA[R.I.F.: J-08502021-7]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="472" y="0" width="100" height="16" uuid="ef3b941d-29a9-4608-887f-9ca18882639f"/>
+				<textFieldExpression><![CDATA[$F{cedula}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="472" y="29" width="100" height="13" uuid="8af8d442-dbfd-4f9f-97a5-fb11b6261997"/>
+				<textFieldExpression><![CDATA[$F{ficha}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="bcf6e1cb-247b-47d9-bbd2-8533af8cee5e"/>
+				<text><![CDATA[Nombre:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="20" width="100" height="20" uuid="6e5be762-31de-4459-b0ae-8845bfc9e1ce"/>
+				<text><![CDATA[Apellido:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="41" width="100" height="20" uuid="f41f9d80-f60f-4bce-be1e-e39098c9280c"/>
+				<text><![CDATA[Cedula:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="100" y="0" width="472" height="20" uuid="df009888-2254-415e-81ab-9686bdafbdf5"/>
+				<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="21" width="472" height="20" uuid="a6510c24-64eb-424c-9796-4fd5e51fffe7"/>
+				<textFieldExpression><![CDATA[$F{apellido}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="40" width="472" height="20" uuid="46ef1a11-0da0-4a54-8da1-ba984c744b97"/>
+				<textFieldExpression><![CDATA[$F{cedula}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+</jasperReport>
